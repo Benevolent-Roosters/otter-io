@@ -4,10 +4,10 @@ The project description
 
 ## Team
 
-- teamMember
-- teamMember
-- teamMember
-- teamMember
+- Steve Kuo
+- Brendan Bansavage
+- Karun Pavathran
+- Daniel Cervoni
 
 ## Roadmap
 
