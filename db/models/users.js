@@ -7,13 +7,13 @@ const User = db.Model.extend({
     return this.belongsToMany('Board');
   },
   ownedBoards: function() {
-    return this.hasMany('Board');
+    return this.hasMany('Board', 'owner_id');
   },
   assignedTickets: function() {
-    return this.hasMany('Ticket');
+    return this.hasMany('Ticket', 'assignee_id');
   },
   createdTickets: function() {
-    return this.hasMany('Ticket');
+    return this.hasMany('Ticket', 'creator_id');
   }
 });
 
