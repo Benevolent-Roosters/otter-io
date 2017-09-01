@@ -10,10 +10,10 @@ const Ticket = db.Model.extend({
     return this.belongsTo('Panel');
   },
   creator: function() {
-    return this.belongsTo('User', 'creator_id');
+    return this.belongsTo('User');
   },
   assignee: function() {
-    return this.belongsTo('User', 'assignee_id');
+    return this.belongsTo('User');
   }
 });
 

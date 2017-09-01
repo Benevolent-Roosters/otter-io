@@ -7,7 +7,7 @@ const Board = db.Model.extend({
     return this.belongsToMany('User');
   },
   owner: function() {
-    return this.belongsTo('User', 'owner_id');
+    return this.belongsTo('User');
   },
   tickets: function() {
     return this.hasMany('Ticket');
