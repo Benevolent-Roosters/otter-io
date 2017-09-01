@@ -2,14 +2,16 @@
   "name": "course.thesis",
   "version": "1.0.0",
   "scripts": {
-    "postinstall": "curl -s https://raw.githubusercontent.com/reactorcore/pomander/master/bin/install | bash",
     "start": "nodemon server",
-    "test": "NODE_ENV=test grunt test",
-    "build": "webpack --watch"
+    "test": "jest NODE_ENV=test grunt test",
+    "build": "webpack --watch",
+    "test update": "jest -u",
+    "coverage": "jest --coverage"
   },
   "author": "Hack Reactor",
   "license": "MIT",
   "dependencies": {
+    "axios": "^0.16.2",
     "babel-core": "^6.24.1",
     "bcrypt-nodejs": "^0.0.3",
     "bluebird": "^3.5.0",
@@ -33,27 +35,33 @@
     "pg": "^6.4.2",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
-    "redis": "^2.7.1"
+    "react-redux": "^5.0.6",
+    "react-router": "^4.2.0",
+    "redis": "^2.7.1",
+    "redux": "^3.7.2",
+    "redux-thunk": "^2.2.0",
+    "yarn": "0.27.5"
   },
   "devDependencies": {
+    "babel-jest": "^20.0.3",
     "babel-loader": "^7.0.0",
-    "babel-plugin-transform-es2015-modules-commonjs": "^6.24.0",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.0",
     "babel-preset-latest": "^6.24.0",
     "babel-preset-react": "^6.23.0",
     "chai": "^3.5.0",
+    "enzyme": "^2.9.1",
+    "enzyme-to-json": "^1.5.1",
     "grunt": "~0.4.5",
     "grunt-eslint": "^19.0.0",
     "grunt-mocha-test": "^0.13.2",
+    "jest": "^20.0.4",
     "mocha": "^3.2.0",
     "node-mocks-http": "^1.6.1",
     "nodemon": "^1.11.0",
+    "react-test-renderer": "^15.6.1",
+    "regenerator-runtime": "^0.11.0",
     "supertest": "^3.0.0",
     "webpack": "^2.3.2",
     "webpack-dev-server": "^2.4.2"
-  },
-  "babel": {
-    "plugins": [
-      "transform-es2015-modules-commonjs"
-    ]
   }
 }
