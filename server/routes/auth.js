@@ -67,4 +67,11 @@ router.get('/auth/twitter/callback', middleware.passport.authenticate('twitter',
   failureRedirect: '/login'
 }));
 
+router.get('/auth/github', middleware.passport.authenticate('github'));
+
+router.get('/auth/github/callback', middleware.passport.authenticate('github', {
+  successRedirect: '/profile',
+  failureRedirect: '/login'
+}));
+
 module.exports = router;
