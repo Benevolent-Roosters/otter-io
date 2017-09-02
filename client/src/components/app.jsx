@@ -1,6 +1,5 @@
 import React from 'react';
-
-
+import { connect } from 'react-redux';
 
 class App extends React.Component {
   constructor(props) {
@@ -10,8 +9,20 @@ class App extends React.Component {
   render() {
     return (
       <div>HELLO</div>
-    );
-  }
+    )
+  } 
 }
 
-export default App;
+
+const mapStateToProps = (state) => {
+  return {
+
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+
+};
+
+export const UnwrappedApp = App;
+export default connect(mapStateToProps, mapDispatchToProps)(App);
