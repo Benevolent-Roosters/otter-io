@@ -1,8 +1,8 @@
 const expect = require('chai').expect;
-const Profile = require('../../db/models/profiles.js');
+const User = require('../../db/models/users.js');
 const dbUtils = require('../../db/lib/utils.js');
 
-describe('Profile model tests', function () {
+describe('User model tests', function () {
   // Deletes all tables, creates new tables, and seeds tables with test data
   beforeEach(function (done) {
     dbUtils.rollbackMigrate(done);
@@ -12,9 +12,8 @@ describe('Profile model tests', function () {
   afterEach(function (done) {
     dbUtils.rollback(done);
   });
-
   it('Should be able to retrieve test data', function (done) {
-    Profile.forge().fetchAll()
+    User.forge().fetchAll()
       .then(function (results) {
         expect(results.length).to.equal(1);
         expect(results.at(0).get('id')).to.equal(1);
@@ -28,7 +27,11 @@ describe('Profile model tests', function () {
 
   // it('Should verify that all usernames are unique', function (done) {
   //   // Insert a user with a username that's already in existence
-  //   Profile.forge({ username: 'TestUser1', password: 'abc' }).save()
+  //   User.forge({
+  //     github_handle:'stevepkuo',
+  //     profile_photo: 'https://avatars0.githubusercontent.com/u/14355395?v=4',
+  //     oauth_id: '14355395'
+  //   }).save()
   //     .then(function (result) {
   //       done(new Error('was not supposed to succeed'))
   //     })
@@ -40,19 +43,18 @@ describe('Profile model tests', function () {
   // });
 
   it('Should be able to update an already existing record', function (done) {
-    Profile.where({ id: 1 }).fetch()
+    User.where({ id: 1 }).fetch()
       .then(function (result) {
         expect(result.get('id')).to.equal(1);
       })
       .then(function () {
-        return Profile.where({ id: 1 }).save({ first: 'James', last: 'Davenport' }, { method: 'update' });
+        return User.where({ id: 1 }).save({ github_handle: 'James'}, { method: 'update' });
       })
       .then(function () {
-        return Profile.where({ id: 1 }).fetch();
+        return User.where({ id: 1 }).fetch();
       })
       .then(function (result) {
-        expect(result.get('first')).to.equal('James');
-        expect(result.get('last')).to.equal('Davenport');
+        expect(result.get('github_handle')).to.equal('James');
         done();
       })
       .catch(function (err) {
@@ -63,10 +65,10 @@ describe('Profile model tests', function () {
 
   it('Should be able to delete a record', function (done) {
     // Inserts a user
-    Profile.where({ id: 1 }).destroy()
+    User.where({ id: 1 }).destroy()
       // verifies that the user has been inserted
       .then(function () {
-        return Profile.where({ id: 1 }).fetch();
+        return User.where({ id: 1 }).fetch();
       })
       .then(function (result) {
         expect(result).to.equal(null);

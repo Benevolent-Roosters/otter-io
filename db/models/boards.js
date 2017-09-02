@@ -14,6 +14,9 @@ const Board = db.Model.extend({
   },
   panels: function() {
     return this.hasMany('Panel');
+  },
+  recentUsers: function() {
+    return this.hasMany('User', 'lastboard_id');
   }
 });
 

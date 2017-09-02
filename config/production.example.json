@@ -27,6 +27,12 @@
       "consumerKey": "FILL_ME_IN",
       "consumerSecret": "FILL_ME_IN",
       "callbackURL": "http://FILL_ME_IN/auth/twitter/callback"
+    },
+
+    "Github": {
+      "clientID": "FILL_ME_IN",
+      "clientSecret": "FILL_ME_IN",
+      "callbackURL": "http://FILL_ME_IN/auth/github/callback"
     }
   }
 }

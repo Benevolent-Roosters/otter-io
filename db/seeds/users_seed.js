@@ -2,31 +2,20 @@ const models = require('../models');
 
 exports.seed = function (knex, Promise) {
 
-  return models.Profile.where({ email: 'admin@domain.com' }).fetch()
+  return models.User.where({ github_handle: 'stevepkuo' }).fetch()
     .then((profile) => {
       if (profile) {
         throw profile;
       }
-      return models.Profile.forge({
-        first: 'System',
-        last: 'Admin',
-        display: 'Administrator',
-        email: 'admin@domain.com'
+      return models.User.forge({
+        github_handle: 'stevepkuo',
+        profile_photo: 'https://avatars0.githubusercontent.com/u/14355395?v=4',
+        oauth_id: '14355395'
       }).save();
     })
     .error(err => {
       console.error('ERROR: failed to create profile');
       throw err;
-    })
-    .then((profile) => {
-      return models.Auth.forge({
-        type: 'local',
-        password: 'admin123',
-        profile_id: profile.get('id')
-      }).save();
-    })
-    .error(err => {
-      console.error('ERROR: failed to create auth');
     })
     .catch(() => {
       console.log('WARNING: defualt user already exists.');

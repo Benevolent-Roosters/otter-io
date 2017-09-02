@@ -35,12 +35,12 @@ describe('Profiles API', function () {
       .expect(res => {
         res.body = {
           id: res.body.id,
-          created_at: !!Date.parse(res.body.created_at)
+          github_handle: res.body.github_handle
         };
       })
       .expect(200, {
         id: 1,
-        created_at: true
+        github_handle: 'stevepkuo'
       })
       .end(done);
   });
@@ -74,11 +74,9 @@ describe('Profiles API', function () {
 
   it('accepts PUT requests to /api/profiles/:id', function () {
     let profile = {
-      first: 'James',
-      last: 'Davenport',
-      display: 'James Davenport',
-      email: 'example@email.com',
-      phone: '415-555-1234'
+      github_handle: 'James',
+      profile_photo: 'blah',
+      oauth_id: '1234'
     };
 
     return request(app)
@@ -90,11 +88,9 @@ describe('Profiles API', function () {
           .get('/api/profiles/1')
           .expect(res => {
             res.body = {
-              first: res.body.first,
-              last: res.body.last,
-              display: res.body.display,
-              email: res.body.email,
-              phone: res.body.phone
+              github_handle: res.body.github_handle,
+              profile_photo: res.body.profile_photo,
+              oauth_id: res.body.oauth_id
             };
           })
           .expect(200, profile);

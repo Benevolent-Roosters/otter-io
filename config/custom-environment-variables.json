@@ -16,6 +16,12 @@
       "consumerKey": "TWITTER_CLIENT_ID",
       "consumerSecret": "TWITTER_CLIENT_SECRET",
       "callbackURL": "TWITTER_CALLBACK_URL"
+    },
+
+    "Github": {
+      "clientID": "GITHUB_CLIENT_ID",
+      "clientSecret": "GITHUB_CLIENT_SECRET",
+      "callbackURL": "GITHUB_CALLBACK_URL"
     }
   }
 }

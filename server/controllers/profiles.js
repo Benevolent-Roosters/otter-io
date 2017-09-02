@@ -1,7 +1,7 @@
 const models = require('../../db/models');
 
 module.exports.getAll = (req, res) => {
-  models.Profile.fetchAll()
+  models.User.fetchAll()
     .then(profiles => {
       res.status(200).send(profiles);
     })
@@ -26,7 +26,7 @@ module.exports.create = (req, res) => {
 };
 
 module.exports.getOne = (req, res) => {
-  models.Profile.where({ id: req.params.id }).fetch()
+  models.User.where({ id: req.params.id }).fetch()
     .then(profile => {
       if (!profile) {
         throw profile;
@@ -42,7 +42,7 @@ module.exports.getOne = (req, res) => {
 };
 
 module.exports.update = (req, res) => {
-  models.Profile.where({ id: req.params.id }).fetch()
+  models.User.where({ id: req.params.id }).fetch()
     .then(profile => {
       if (!profile) {
         throw profile;
