@@ -23,4 +23,5 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
+export var UnwrappedBoard = Board;
 export default connect(mapStateToProps, mapDispatchToProps)(Board);

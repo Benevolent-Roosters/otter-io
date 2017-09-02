@@ -16,7 +16,7 @@ class App extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-
+    
   };
 };
 
@@ -24,5 +24,5 @@ const mapDispatchToProps = (dispatch) => {
 
 };
 
-export const UnwrappedApp = App;
+export var UnwrappedApp = App;
 export default connect(mapStateToProps, mapDispatchToProps)(App);

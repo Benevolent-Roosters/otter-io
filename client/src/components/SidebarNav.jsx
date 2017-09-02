@@ -26,4 +26,5 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
+export var UnwrappedSidebar = SidebarNavigation;
 export default connect(mapStateToProps, mapDispatchToProps)(SidebarNavigation);
