@@ -56,7 +56,7 @@ exports.up = function (knex, Promise) {
       table.integer('assignee_id').references('users.id').onDelete('CASCADE');
       table.integer('panel_id').references('panels.id').onDelete('CASCADE');
       table.integer('board_id').references('boards.id').onDelete('CASCADE');
-    })
+    }),
   ]);
 };
 

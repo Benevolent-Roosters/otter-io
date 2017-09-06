@@ -68,8 +68,6 @@ exports.seed = function (knex, Promise) {
     .error(err => {
       console.log('ERROR! Could not create ticket seed: ', err);
     })
-
-
     .then(() => {
       return models.User.where({ github_handle: 'stevepkuo2' }).fetch();
     })
@@ -106,8 +104,6 @@ exports.seed = function (knex, Promise) {
     .error(err => {
       console.log('ERROR! Could not create board: ', err);
     })
-
-    // .then( (board) => knex('boards_users').insert([{user_id: 1, board_id: 1}]))
     .then((board) => {
       return models.User.where({ github_handle: 'stevepkuo' }).fetch();
     })
@@ -117,7 +113,6 @@ exports.seed = function (knex, Promise) {
     .error(err => {
       console.log('ERROR! Could not link board1 to user1: ', err);
     })
-
     .then(() => {
       return models.User.where({ github_handle: 'dsc03' }).fetch();
     })
@@ -259,18 +254,7 @@ exports.seed = function (knex, Promise) {
     .error(err => {
       console.log('ERROR! Could not create ticket seed: ', err);
     })
-
-    .then((ticket) => {
-      return models.User.where({ github_handle: 'dsc03' }).fetch();
-    })
-    .then((user) => {
-      return user.memberOfBoards().attach(3);
-    })
-    .error(err => {
-      console.log('ERROR! Could not link board3 to user3: ', err);
-    })
-
     .catch((user = 'ok', board = 'ok', panel = 'ok', ticket = 'ok') => {
-      console.log(`There is a situation... user: ${user}, board: ${board}, panel: ${panel}, ticket: ${ticket}`);
+      console.log(`There is a situation: user: ${user}, board: ${board}, panel: ${panel}, ticket: ${ticket}`);
     });
 };
