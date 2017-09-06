@@ -41,6 +41,8 @@ const rootReducer = (state = defaultState, action) => {
       return reduceSetUser(state, action);
     case SET_CURRENT_BOARD:
       return reduceSetCurrentBoard(state, action);
+    case SET_CURRENT_PANEL:
+      return reduceSetCurrentPanel(state, action);
     case SET_BOARDS:
       return reduceSetBoards(state, action);
     case SET_PANELS:
@@ -56,9 +58,11 @@ const reduceSetUser = (state, action) => Object.assign({}, state, {user: action.
 
 const reduceSetCurrentBoard = (state, action) => Object.assign({}, state, {currentBoard: action.value});
 
+const reduceSetCurrentPanel = (state, action) => Object.assign({}, state, {currentPanel: action.value});
+
 const reduceSetBoards = (state, action) => Object.assign({}, state, {boards: boards.concat(action.value)});
 
-const reduceSetPanels = (state, actions) => Object.assign({}, state, {panels: panels.concat(action.value)});
+ const reduceSetPanels = (state, actions) => Object.assign({}, state, {panels: panels.concat(action.value)});
 
 const reduceSetTickets = (state, actions) => Object.assign({}, state, {tickets: tickets.concat(action.value)});
 

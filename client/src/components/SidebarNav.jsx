@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { setCurrentBoard, setBoards } from '../redux/actionCreators';
+import { setCurrentBoard } from '../redux/actionCreators';
 
 
 const SidebarNavigation = (props) => {
@@ -11,8 +11,8 @@ const SidebarNavigation = (props) => {
 
 const mapStateToProps = (state) => {
   return {
-    'gitHandle': state.gitHandle,
-    'profilePicture': state.profilePicture,
+    'gitHandle': state.user.github_handle,
+    'profilePicture': state.user.profile_photo,
     'boards': state.boards,
     'currentBoard': state.currentBoard
   };

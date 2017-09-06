@@ -1,5 +1,6 @@
-import { SET_USER, SET_CURRENT_BOARD, SET_BOARDS, SET_PANELS, SET_TICKETS } from './actions';
+import { SET_USER, SET_CURRENT_BOARD, SET_BOARDS, SET_PANELS, SET_TICKETS, SET_CURRENT_PANEL } from './actions';
 import axios from 'axios';
+
 
 export function setUser(user) {
   return {type: SET_USER, value: user};
@@ -7,6 +8,10 @@ export function setUser(user) {
 
 export function setCurrentBoard(clickedBoard) {
   return {type: SET_CURRENT_BOARD, value: clickedBoard};
+}
+
+export function setCurrentPanel(panel) {
+  return {type: SET_CURRENT_PANEL, value: panel};
 }
 
 export function setPanels(panels) {
@@ -73,50 +78,66 @@ export function getPanelsByBoard(boardid) {
 
 /** Grab all the tickets associated with a board's panels **/
 //TODO: sorting tickets in order of completion, followed by urgency
-export function getTicketsByPanels(panelId) {
+export function getTicketsByPanel(panelId) {
   return dispatch => {
     axios.get('/api/tickets', {panel_id: panelId})
       .then(response => {
         dispatch(setTickets(response.body));
+        return response.body;
       })
       .catch(err => {
-        console.log('Error in getTicketsByPanels: ', err);
+        console.log('Error in getTicketsByPanel: ', err);
       });
   };
 }
 
 /** Save the newly created board to the database & then retrieve all boards associated with a user **/
-//TODO: figure out how to handle owner_id when creating a board???
-export function postCreatedBoard(newBoard, userGithubHandle) {
-  return ((dispatch) => {
 
-    /** store the new board info in the database **/
-    axios.post('/api/boards', {board: newBoard})
+export function postCreatedBoard(newBoard, userGithubHandle, userid) {
+  return (dispatch => {
+
+    /** store the new board info and current userid (as owner) in the database **/
+    axios.post('/api/boards', {board: newBoard, userid: userid})
       .then(() => {
         return getBoardsByUser(userGithubHandle);
       })
     /** Add new board info to board and currentBoard state ONLY if it successfully saved **/
-      .then((response) => {
+      .then(response => {
         dispatch(setBoards(response));
         dispatch(setCurrentBoard(response[response.length - 1])); //set current state to most recently created Board
       })
       
-      .catch((error) => {
+      .catch(error => {
         console.log('ERROR ON CREATEBOARD:', error);
       });
   });
 }
 
-export function postCreatedPanel(newPanel, boardid) {
+/** Upon creation a panel, save the panel to the database and then retrieve all panels associated with the board and set the currentpanel to the newly created one **/
+export function postCreatedPanel(newPanel, boardid, userid) {
   return (dispatch => {
-
-    axios.post('/api/panels', {panel: newPanel})
+    axios.post('/api/panels', {panel: newPanel, userid: userid})
       .then(() => {
         return getPanelsByBoard(boardid);
       })
-      .then((response => {
+      .then(response => {
         dispatch(setPanels(response));
-      })
+        dispatch(setCurrentPanel(response[response.length - 1])); //new panel is now current
+      });
+  });
+}
 
-  })
+/** Upon creation of a ticket, save the ticket to the database and then retrieve all tickets associated with all panels currently in state  **/
+export function postCreatedTicket(newTicket, boardid, panelid, userid) {
+  return (dispatch => {
+    axios.post('/api/tickets', {ticket: newTicket, panelid: panelid, userid: userid})
+      .then(() => {
+        return getTicketsByPanel(panelid);
+      })
+      .then(response => {
+        dispatch(setTickets(response)); 
+        //no need to set current ticket upon creation
+      });
+
+  });
 }
