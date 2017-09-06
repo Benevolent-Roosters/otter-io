@@ -45,9 +45,10 @@ const Board = db.Model.extend({
           let boards = user.related('boards');
           if (boards.length === 0) {
             throw user;
-          }
+          } else {
           // change to throw?
-          return boards.toJSON();
+            return boards.toJSON();
+          }
         } else {
           // change to throw?
           return new Promise((resolve, reject) => {
@@ -106,7 +107,7 @@ const Board = db.Model.extend({
       .catch(board => {
         console.log(`Board ${board.board_name} already exists!`);
         throw board;
-      });
+      })
       .error(err => {
         console.log('Unable to fetch boards: ', err);
         throw err;

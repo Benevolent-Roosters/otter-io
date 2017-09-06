@@ -40,8 +40,9 @@ const Panel = db.Model.extend({
           let panels = board.related('panels');
           if (panels.length === 0) {
             throw board;
+          } else {
+            return panels.toJSON();
           }
-          return panels.toJSON();
         } else {
           return new Promise((resolve, reject) => {
             reject(`Board ID ${boardId} not found!`);
@@ -100,43 +101,7 @@ const Panel = db.Model.extend({
             throw panel;
           });
       });
-          return panels.toJSON();
-        } else {
-          return new Promise((resolve, reject) => {
-            reject(`Board ID ${BoardId} not found!`);
-          });
-        }
-      })
-      .error(err => {
-        console.log('Unable to fetch panels: ', err);
-        throw err;
-      })
-      .catch(panelId => {
-        console.log(`Panel ID ${panelId} not found!`);
-        throw panelId;
-      });
-  },
-  createPanel: function(data) {
-    return models.Panel.where({name: data.name})
-      .fetch()
-      .then((panel) => {
-        if (panel) {
-          throw panel;
-        }
-        return panel.forge(data).save()
-          .then(panel => {
-            console.log(`Panel ${data.name} saved!`);
-          })
-          .error(err => {
-            console.log(`Unable to create panel ${data.name}: `, err);
-            throw err;
-          })
-          .catch(panel => {
-            console.log(`Panel ${panel.name} already exists!`);
-            throw panel;
-          });
-      });
   }
-}
+});
 
 module.exports = db.model('Panel', Panel);

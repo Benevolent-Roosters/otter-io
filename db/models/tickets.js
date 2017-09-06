@@ -92,14 +92,25 @@ const Ticket = db.Model.extend({
       .then((board) => {
         if (board) {
           let tickets = board.related('tickets');
-          return tickets.toJSON();
+          if (tickets.length === 0) {
+            throw board;
+          } else {
+            return tickets.toJSON();
+          }
         } else {
           return new Promise((resolve, reject) => {
             reject(`Board ID ${boardId} not found!`);
           });
         }
       })
-      .error(err => console.log('Unable to fetch tickets: ', err));
+      .error(err => {
+        console.log(`Unable to fetch tickets for board ID ${boardId}: `, err);
+        throw err;
+      })
+      .catch(board => {
+        console.log(`No tickets found for board ${board.board_name}`);
+        throw board;
+      });
   },
   updateTicketById: function(ticketId, data) {
     return Ticket.forge({id: ticketId})

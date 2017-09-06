@@ -17,7 +17,7 @@ const User = db.Model.extend({
   },
   recentBoard: function() {
     return this.belongsTo('Board');
-  }
+  },
   getUserByUsername: function(username) {
     return User.forge({github_handle: username})
       // {require: true} below?
@@ -45,8 +45,9 @@ const User = db.Model.extend({
           let users = board.related('users');
           if (users.length === 0) {
             throw board;
+          } else {
+            return users.toJSON();
           }
-          return users.toJSON();
         } else {
           // change?
           return new Promise((resolve, reject) => {
