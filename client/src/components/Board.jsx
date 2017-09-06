@@ -1,6 +1,6 @@
 import React from 'react';
 import Panel from './Panel.jsx';
-import { setPanels } from '../redux/actionCreators.js';
+import { getPanelsByBoard } from '../redux/actionCreators.js';
 import { connect } from 'react-redux';
 
 const Board = (props) => {
@@ -17,8 +17,8 @@ const mapStateToProps = (state) => {
 };
 const mapDispatchToProps = (dispatch) => {
   return {
-    handleSetPanels(panels) {
-      dispatch(setPanels(panels));
+    handleGetPanelsByBoard(panels) {
+      dispatch(getPanelsByBoard(panels));
     }
   };
 };

@@ -28,11 +28,10 @@ router.route('/signup')
 //   failureFlash: true
 // }));
 
+/** ROUTE USED TO RETRIEVE AND SEND USER DATA BACK TO CLIENT **/
 router.route('/profile')
   .get(middleware.auth.verify, (req, res) => {
-    res.render('profile.ejs', {
-      user: req.user // get the user out of session and pass to template
-    });
+    res.send(req.user[0]);
   });
 
 router.route('/logout')

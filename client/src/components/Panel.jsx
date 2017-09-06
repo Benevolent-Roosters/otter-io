@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { getPanelsByBoard }
 
 const Panel = (props) => {
   return (

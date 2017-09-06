@@ -1,5 +1,5 @@
 import React from 'react';
-import { setCurrentBoard, setBoards } from '../redux/actionCreators.js';
+import { setCurrentBoard, setBoards, postCreatedBoard } from '../redux/actionCreators.js';
 import { connect } from 'react-redux';
 
 const CreateBoard = (props) => {
@@ -17,11 +17,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    handleSetCurrentBoard(boardClicked) {
-      dispatch(setCurrentBoard(boardClicked));
-    },
-    handleSetBoards(boardCreated) {
-      dispatch(setBoards(boardCreated));
+    handleSetAndPostCreatedBoard(boardObj) {
+      dispatch(postCreatedBoard(boardObj));
     }
   };
 };
