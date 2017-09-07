@@ -16,7 +16,7 @@ class App extends React.Component {
       })
 
       .then (boards => {
-        return this.props.handleSetPanels(boards[0].board_id);
+        return this.props.handleSetPanels(boards[0].id);
       })
 
       .then(panels => {
@@ -37,13 +37,6 @@ class App extends React.Component {
       }
     }
     return closest;
-  }
-
-  orderTickets(tickets) {
-    // let newOrdered = [];
-    // for (let ticket of tickets) {
-    //   if ()
-    // }
   }
 
   render() {
@@ -77,9 +70,6 @@ const mapDispatchToProps = (dispatch) => {
     },
     handleSetCurrentPanel(panel) {
       dispatch(setCurrentPanel(panel));
-    },
-    handleSetTickets(tickets) {
-      dispatch(setTickets(tickets));
     }
   };
 };

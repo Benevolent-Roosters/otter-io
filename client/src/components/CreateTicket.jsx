@@ -26,5 +26,5 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export var UnwrappedCreateTicket = CreateTicket;
-export default connect(mapStateToProps, mapDispatchToProps)(CreateTicket);
+export var UnwrappedCreatePanel = CreatePanel;
+export default connect(mapStateToProps, mapDispatchToProps)(CreatePanel);

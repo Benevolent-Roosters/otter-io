@@ -10,6 +10,7 @@ const EditPanel = props => {
     for (let i = 0; i < props.panels.length; i++) {
       if (editedPanel.panelId === props.panels[i].panelId) {
         idx = i;
+        break;
       }
     }
     return props.panels.slice(0, idx).concat(editedPanel).concat(props.panels.slice(idx + 1));

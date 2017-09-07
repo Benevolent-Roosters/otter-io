@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getTicketsByPanel } from '../redux/actionCreators.js';
+import { putEditedTicket, editTickets, editCurrentTicket } from '../redux/actionCreators.js';
 import axios from 'axios';
 
 
@@ -20,8 +20,12 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    handleEditTickets(newTickets, boardid, panelid, userid) {
-      dispatch(editTicket(newTicket, boardid, panelid, userid));
+    handleEditCurrentTicket(event) {
+      dispatch(editCurrentTicket(/**ticketObj from event **/));
+    },
+
+    handleEditTickets(tickets) {
+      dispatch(editTickets(tickets));
     }
   };
 };

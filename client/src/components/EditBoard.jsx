@@ -1,5 +1,5 @@
 import React from 'react';
-import { putCurrentBoard, editBoards } from '../redux/actionCreators.js';
+import { putEditedBoard, editBoards } from '../redux/actionCreators.js';
 import { connect } from 'react-redux';
 
 const EditBoard = (props) => {
@@ -9,6 +9,7 @@ const EditBoard = (props) => {
     for (let i = 0; i < props.boards.length; i++) {
       if (editedBoard.boardId === props.boards[i].boardId) {
         idx = i;
+        break;
       }
     }
     return props.boards.slice(0, idx).concat(editedBoard).concat(props.boards.slice(idx + 1));
@@ -33,7 +34,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     handleEditBoard(event) {
       dispatch(editBoards(reorderBoards(/*boardObj*/)));
-      dispatch(putCurrentBoard(/*boardObj*/))
+      dispatch(putEditedBoard(/*boardObj*/))
     }
   };
 };
