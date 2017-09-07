@@ -75,9 +75,23 @@ const reduceSetCurrentPanel = (state, action) => Object.assign({}, state, {curre
 
 const reduceSetBoards = (state, action) => Object.assign({}, state, {boards: boards.concat(action.value)});
 
- const reduceSetPanels = (state, actions) => Object.assign({}, state, {panels: panels.concat(action.value)});
+const reduceSetPanels = (state, action) => Object.assign({}, state, {panels: panels.concat(action.value)});
 
+<<<<<<< HEAD
 const reduceEditPanels = (state, action) => Object.assign({}, state, {panels: action.value});
+
+const reduceEditCurrentPanel = (state, action) => Object.assign({}, state, {currentPanel: action.value});
+=======
+const reduceSetTickets = (state, action) => Object.assign({}, state, {tickets: tickets.concat(action.value)});
+
+const reduceEditBoards = (state, action) => Object.assign({}, state, {boards: action.value});
+
+const reduceEditCurrentBoard = (state, action) => Object.assign({}, state, {currentBoard: action.value});
+>>>>>>> redux infrastructure for all components complete minus members handling
+
+const reduceEditTickets = (state, action) => Object.assign({}, state, {tickets: action.value});
+
+const reduceEditCurrentTicket = (state, action) => Object.assign({}, state, {currentTicket: action.value});
 
 const reduceEditCurrentPanel = (state, action) => Object.assign({}, state, {currentPanel: action.value});
 
