@@ -1,4 +1,4 @@
-import { SET_USER, SET_CURRENT_BOARD, SET_BOARDS, SET_PANELS, SET_TICKETS, SET_CURRENT_PANEL } from './actions';
+import { SET_USER, SET_CURRENT_BOARD, SET_BOARDS, SET_PANELS, SET_TICKETS, EDIT_CURRENT_BOARD, EDIT_BOARDS, EDIT_PANELS, EDIT_CURRENT_PANEL } from './actions';
 import axios from 'axios';
 
 
@@ -25,6 +25,22 @@ export function setBoards(boards) {
 
 export function setTickets(tickets) {
   return {type: SET_TICKETS, value: tickets};
+}
+
+export function editBoards(boards) {
+  return {type: EDIT_BOARDS, value: boards};
+}
+
+export function editCurrentBoard(boardObj) {
+  return {type: EDIT_CURRENT_BOARD, value: boardObj};
+}
+
+export function editCurrentPanel(panelObj) {
+  return {type: EDIT_CURRENT_PANEL, value: panelObj};
+}
+
+export function editPanels(panels) {
+  return {type: EDIT_PANELS, value: panels};
 }
 
 /** Upon Login, perform asynchronous Axios request to get user information and 
@@ -121,7 +137,8 @@ export function postCreatedPanel(newPanel, boardid, userid) {
         return getPanelsByBoard(boardid);
       })
       .then(response => {
-        dispatch(setPanels(response));
+        // to ensure we don't get duplicates of all current panels in the board, only append the latest created panel
+        dispatch(setPanels(response[response.length - 1]));
         dispatch(setCurrentPanel(response[response.length - 1])); //new panel is now current
       });
   });
@@ -135,9 +152,19 @@ export function postCreatedTicket(newTicket, boardid, panelid, userid) {
         return getTicketsByPanel(panelid);
       })
       .then(response => {
-        dispatch(setTickets(response)); 
+        // to ensure we don't get duplicates of all current tickets in the panel, only append the latest created ticket
+        dispatch(setTickets(response[response.length - 1])); 
         //no need to set current ticket upon creation
       });
 
+  });
+}
+
+export function putCurrentBoard(boardObj) {
+  return (dispatch => {
+    axios.put('/api/boards', boardObj)
+      .then(() => {
+        editCurrentBoard(boardObj);
+      });
   });
 }

@@ -52,26 +52,6 @@ describe('Profiles API', function () {
       .end(done);
   });
 
-  // it('accepts POST requests to /api/profiles', function (done) {
-  //   request(app)
-  //     .post('/api/profiles')
-  //     .send({
-  //       username: 'TestUser4',
-  //       password: 'happy'
-  //     })
-  //     .expect(res => {
-  //       res.body = {
-  //         username: res.body.username,
-  //         password: res.body.password
-  //       };
-  //     })
-  //     .expect(201, {
-  //       username: 'TestUser4',
-  //       password: undefined
-  //     })
-  //     .end(done);
-  // });
-
   it('accepts PUT requests to /api/profiles/:id', function () {
     let profile = {
       github_handle: 'James',
@@ -104,17 +84,4 @@ describe('Profiles API', function () {
       .end(done);
   });
 
-  // it('accepts DELETE requests to /api/profiles/:id', function (done) {
-  //   request(app)
-  //     .delete('/api/profiles/1')
-  //     .expect(200)
-  //     .end(done);
-  // });
-
-  // it('sends 404 if id on DELETE requests to /api/profiles/:id does not exist', function (done) {
-  //   request(app)
-  //     .delete('/api/profiles/123')
-  //     .expect(404)
-  //     .end(done);
-  // });
 });

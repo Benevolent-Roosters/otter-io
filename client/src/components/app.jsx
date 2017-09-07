@@ -28,6 +28,11 @@ class App extends React.Component {
       });
   }
 
+  componentWillUpdate() {
+    let closestIndex = this.findCurrentPanel(this.props.panels);
+    this.props.handleSetCurrentPanel(this.props.panels[closestIndex]);
+  }
+
   findCurrentPanel(panels) {
     let dueDates = panels.map(panel => panel.due_date.slice(0, 10));
     let closest = 0;
@@ -37,6 +42,13 @@ class App extends React.Component {
       }
     }
     return closest;
+  }
+
+  orderTickets(tickets) {
+    // let newOrdered = [];
+    // for (let ticket of tickets) {
+    //   if ()
+    // }
   }
 
   render() {
@@ -70,6 +82,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     handleSetCurrentPanel(panel) {
       dispatch(setCurrentPanel(panel));
+    },
+    handleSetTickets(tickets) {
+      dispatch(setTickets(tickets));
     }
   };
 };
