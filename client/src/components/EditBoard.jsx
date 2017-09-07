@@ -1,5 +1,5 @@
 import React from 'react';
-import { setCurrentBoard, setBoards, putEditBoard } from '../redux/actionCreators.js';
+import { putCurrentBoard, editBoards } from '../redux/actionCreators.js';
 import { connect } from 'react-redux';
 
 const EditBoard = (props) => {

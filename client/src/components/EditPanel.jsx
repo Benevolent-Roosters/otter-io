@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { postCreatedPanel } from '../redux/actionCreators.js';
+import { putEditedPanel, editPanel } from '../redux/actionCreators.js';
 import axios from 'axios';
 
 const EditPanel = props => {
@@ -34,6 +34,7 @@ const mapDispatchToProps = dispatch => {
   return {
     handleEditPanel(event) {
       dispatch(editPanel(reorderPanels(/*panelObj*/)));
+      dispatch(putEditedPanel(/*panelObj*/))
     }
   };
 };
