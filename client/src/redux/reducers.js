@@ -1,4 +1,4 @@
-import { SET_USER, SET_CURRENT_BOARD, SET_BOARDS, SET_PANELS, SET_TICKETS, EDIT_CURRENT_BOARD, EDIT_BOARDS } from './actions';
+import { SET_USER, SET_CURRENT_BOARD, SET_BOARDS, SET_PANELS, SET_TICKETS, EDIT_CURRENT_BOARD, EDIT_BOARDS, EDIT_PANELS, EDIT_CURRENT_PANEL } from './actions';
 
 const defaultState = {
   user: {
@@ -43,6 +43,10 @@ const rootReducer = (state = defaultState, action) => {
       return reduceEditBoards(state, action);
     case EDIT_CURRENT_BOARD:
       return reduceEditCurrentBoard(state, action);
+    case EDIT_PANELS:
+      return reduceEditPanels(state, action);
+    case EDIT_CURRENT_PANEL:
+      return reduceEditCurrentPanel(state, action);
     default:
       return state;
   }
@@ -63,5 +67,9 @@ const reduceSetTickets = (state, action) => Object.assign({}, state, {tickets: t
 const reduceEditBoards = (state, action) => Object.assign({}, state, {boards: action.value});
 
 const reduceEditCurrentBoard = (state, action) => Object.assign({}, state, {currentBoard: action.value});
+
+const reduceEditCurrentPanel = (state, action) => Object.assign({}, state, {currentPanel: action.value});
+
+const reduceEditPanels = (state, action) => Object.assign({}, state, {panels: action.value});
 
 export default rootReducer;

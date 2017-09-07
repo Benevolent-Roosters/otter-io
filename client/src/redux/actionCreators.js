@@ -1,4 +1,4 @@
-import { SET_USER, SET_CURRENT_BOARD, SET_BOARDS, SET_PANELS, SET_TICKETS, SET_CURRENT_PANEL } from './actions';
+import { SET_USER, SET_CURRENT_BOARD, SET_BOARDS, SET_PANELS, SET_TICKETS, EDIT_CURRENT_BOARD, EDIT_BOARDS, EDIT_PANELS, EDIT_CURRENT_PANEL } from './actions';
 import axios from 'axios';
 
 
@@ -33,6 +33,14 @@ export function editBoards(boards) {
 
 export function editCurrentBoard(boardObj) {
   return {type: EDIT_CURRENT_BOARD, value: boardObj};
+}
+
+export function editCurrentPanel(panelObj) {
+  return {type: EDIT_CURRENT_PANEL, value: panelObj};
+}
+
+export function editPanels(panels) {
+  return {type: EDIT_PANELS, value: panels};
 }
 
 /** Upon Login, perform asynchronous Axios request to get user information and 
