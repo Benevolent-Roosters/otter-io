@@ -95,6 +95,4 @@ xdescribe('Authentication', () => {
     });
   });
 
-  //if login through github 3rd party auth, it should show up in users table
-
 });

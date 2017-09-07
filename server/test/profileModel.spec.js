@@ -25,23 +25,6 @@ describe('User model tests', function () {
       });
   });
 
-  // it('Should verify that all usernames are unique', function (done) {
-  //   // Insert a user with a username that's already in existence
-  //   User.forge({
-  //     github_handle:'stevepkuo',
-  //     profile_photo: 'https://avatars0.githubusercontent.com/u/14355395?v=4',
-  //     oauth_id: '14355395'
-  //   }).save()
-  //     .then(function (result) {
-  //       done(new Error('was not supposed to succeed'))
-  //     })
-  //     .catch(function (err) {
-  //       expect(err).to.be.an('error');
-  //       expect(err).to.match(/duplicate key value violates unique constraint/);
-  //       done();
-  //     });
-  // });
-
   it('Should be able to update an already existing record', function (done) {
     User.where({ id: 1 }).fetch()
       .then(function (result) {

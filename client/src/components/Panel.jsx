@@ -1,7 +1,38 @@
 import React from 'react';
-import { getPanelsByBoard } from '../redux/actionCreators.js';
+import { getPanelsByBoard, getTicketsByPanel } from '../redux/actionCreators.js';
 
 const Panel = props => {
+  let finalTickets = [];
+  for (let ticket of this.props.tickets) {
+    if (ticket.status === 'complete') {
+      finalTickets.unshift(ticket);
+    }
+  }
+  for (let ticket of this.props.tickets) {
+    if (ticket.status === 'not started') {
+      finalTickets.unshift(ticket);
+    }
+  }
+  for (let ticket of this.props.tickets) {
+    if (ticket.status === 'in progress') {
+      finalTickets.unshift(ticket);
+    }
+  }
+  for (let ticket of this.props.tickets) {
+    if (ticket.priority === 3) {
+      finalTickets.unshift(ticket);
+    }
+  }
+  for (let ticket of this.props.tickets) {
+    if (ticket.priority === 2) {
+      finalTickets.unshift(ticket);
+    }
+  }
+  for (let ticket of this.props.tickets) {
+    if (ticket.priority === 1) {
+      finalTickets.unshift(ticket);
+    }
+  }
   return (
     <div>In Panels</div>
   );

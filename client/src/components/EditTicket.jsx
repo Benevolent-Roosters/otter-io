@@ -4,9 +4,9 @@ import { getTicketsByPanel } from '../redux/actionCreators.js';
 import axios from 'axios';
 
 
-const CreateTicket = props => {
+const EditTicket = props => {
   return (
-    <div>In CreateTicket</div>
+    <div>In EditTicket</div>
   );
 };
 
@@ -20,11 +20,11 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    handleSetTickets(newTickets, boardid, panelid, userid) {
-      dispatch(postCreatedTicket(newTicket, boardid, panelid, userid));
+    handleEditTickets(newTickets, boardid, panelid, userid) {
+      dispatch(editTicket(newTicket, boardid, panelid, userid));
     }
   };
 };
 
-export var UnwrappedCreateTicket = CreateTicket;
-export default connect(mapStateToProps, mapDispatchToProps)(CreateTicket);
+export var UnwrappedEditTicket = EditTicket;
+export default connect(mapStateToProps, mapDispatchToProps)(EditTicket);

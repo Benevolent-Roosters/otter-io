@@ -1,3 +1,6 @@
+export const EDIT_BOARDS = 'EDIT_BOARDS';
+
+export const EDIT_CURRENT_BOARD = 'EDIT_CURRENT_BOARD';
 
 export const SET_USER = 'SET_USER';
 
