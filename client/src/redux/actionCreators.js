@@ -156,7 +156,6 @@ export function postCreatedTicket(newTicket, boardid, panelid, userid) {
         dispatch(setTickets(response[response.length - 1])); 
         //no need to set current ticket upon creation
       });
-
   });
 }
 
@@ -164,7 +163,16 @@ export function putCurrentBoard(boardObj) {
   return (dispatch => {
     axios.put('/api/boards', boardObj)
       .then(() => {
-        editCurrentBoard(boardObj);
+        dispatch(editCurrentBoard(boardObj));
+      });
+  });
+}
+
+export function putEditedPanel(panelObj) {
+  return (dispatch => {
+    axios.put('/api/panels', panelObj)
+      .then(() => {
+        dispatch(editCurrentPanel(panelObj));
       });
   });
 }

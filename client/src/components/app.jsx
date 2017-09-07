@@ -28,11 +28,6 @@ class App extends React.Component {
       });
   }
 
-  componentWillUpdate() {
-    let closestIndex = this.findCurrentPanel(this.props.panels);
-    this.props.handleSetCurrentPanel(this.props.panels[closestIndex]);
-  }
-
   findCurrentPanel(panels) {
     let dueDates = panels.map(panel => panel.due_date.slice(0, 10));
     let closest = 0;
