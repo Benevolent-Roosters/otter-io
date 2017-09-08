@@ -16,7 +16,7 @@ const User = db.Model.extend({
     return this.hasMany('Ticket', 'creator_id');
   },
   recentBoard: function() {
-    return this.belongsTo('Board');
+    return this.belongsTo('Board', 'lastboard_id');
   }
 });
 

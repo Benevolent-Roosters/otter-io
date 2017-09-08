@@ -1,22 +1,22 @@
 exports.up = function (knex, Promise) {
   return Promise.all([
-    // knex.schema.createTableIfNotExists('profiles', function (table) {
-    //   table.increments('id').unsigned().primary();
-    //   table.string('first', 100).nullable();
-    //   table.string('last', 100).nullable();
-    //   table.string('display', 100).nullable();
-    //   table.string('email', 100).nullable().unique();
-    //   table.string('phone', 100).nullable();
-    //   table.timestamps(true, true);
-    // }),
-    // knex.schema.createTableIfNotExists('auths', function(table) {
-    //   table.increments('id').unsigned().primary();
-    //   table.string('type', 8).notNullable();
-    //   table.string('oauth_id', 30).nullable();
-    //   table.string('password', 100).nullable();
-    //   table.string('salt', 100).nullable();
-    //   table.integer('profile_id').references('profiles.id').onDelete('CASCADE');
-    // })
+    knex.schema.createTableIfNotExists('profiles', function (table) {
+      table.increments('id').unsigned().primary();
+      table.string('first', 100).nullable();
+      table.string('last', 100).nullable();
+      table.string('display', 100).nullable();
+      table.string('email', 100).nullable().unique();
+      table.string('phone', 100).nullable();
+      table.timestamps(true, true);
+    }),
+    knex.schema.createTableIfNotExists('auths', function(table) {
+      table.increments('id').unsigned().primary();
+      table.string('type', 8).notNullable();
+      table.string('oauth_id', 30).nullable();
+      table.string('password', 100).nullable();
+      table.string('salt', 100).nullable();
+      table.integer('profile_id').references('profiles.id').onDelete('CASCADE');
+    }),
     knex.schema.createTableIfNotExists('users', function(table) {
       table.increments('id').unsigned().primary();
       table.string('email', 100).nullable();
@@ -56,7 +56,7 @@ exports.up = function (knex, Promise) {
       table.integer('assignee_id').references('users.id').onDelete('CASCADE');
       table.integer('panel_id').references('panels.id').onDelete('CASCADE');
       table.integer('board_id').references('boards.id').onDelete('CASCADE');
-    }),
+    })
   ]);
 };
 
@@ -68,11 +68,6 @@ exports.down = function (knex, Promise) {
     knex.schema.dropTable('boards'),
     knex.schema.dropTable('users'),
     knex.schema.dropTable('auths'),
-    knex.schema.dropTable('profiles'),
-    knex.schema.dropTable('users'),
-    knex.schema.dropTable('boards'),
-    knex.schema.dropTable('users_boards'),
-    knex.schema.dropTable('tickets'),
-    knex.schema.dropTable('panels')
+    knex.schema.dropTable('profiles')
   ]);
 };

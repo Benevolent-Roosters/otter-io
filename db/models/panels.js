@@ -3,9 +3,6 @@ const Promise = require('bluebird');
 
 const Panel = db.Model.extend({
   tableName: 'panels',
-  panel: function() {
-    return this.belongsTo('panel');
-  },
   board: function() {
     return this.belongsTo('Board');
   },
