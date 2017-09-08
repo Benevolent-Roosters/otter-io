@@ -123,4 +123,4 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 export var UnwrappedApp = App;
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(App); 

@@ -2,10 +2,15 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { postCreatedPanel } from '../redux/actionCreators.js';
 import axios from 'axios';
+import { Modal } from 'react-bootstrap';
 
 const CreatePanel = props => {
   return (
-    <div>In CreatePanel</div>
+    <div>
+      <Modal.Dialog>
+        <Modal.Header>
+          <Modal.Title> Edit Panel </Modal.Title>
+        </Modal.Header>
   );
 };
 
