@@ -1,4 +1,3 @@
-
 exports.up = function (knex, Promise) {
   return Promise.all([
     knex.schema.createTableIfNotExists('profiles', function (table) {
@@ -50,6 +49,7 @@ exports.up = function (knex, Promise) {
       table.string('description', 200).nullable();
       table.string('status', 20).notNullable();
       table.integer('priority').notNullable();
+      // TODO: type needs a char limit!
       table.string('type').nullable();
       table.timestamp('created_at').defaultTo(knex.fn.now());
       table.integer('creator_id').references('users.id').onDelete('CASCADE');
@@ -71,4 +71,3 @@ exports.down = function (knex, Promise) {
     knex.schema.dropTable('profiles')
   ]);
 };
-
