@@ -28,7 +28,6 @@ const Ticket = require('./models/tickets.js');
 // getTicketById
 // getTicketsByUser
 // getTicketsByPanel
-// getTicketsByBoard
 // updateTicketById
 
 module.exports.createUser = function(data) {
@@ -36,21 +35,17 @@ module.exports.createUser = function(data) {
     .fetch()
     .then((user) => {
       if (user) {
-        throw user;
+        throw 'duplicateUser';
       }
       return User.forge(data).save();
     })
     .then(user => {
-      console.log(`User ${user.github_handle} saved!`);
+      console.log(`User ${user.toJSON().github_handle} saved!`);
       return user.toJSON();
     })
-    .error(err => {
-      console.log('Unable to create user', err);
-      throw err;
-    })
-    .catch(user => {
-      console.log(`User ${user.github_handle} already exists!`);
-      throw user;
+    .catch(situation => {
+      console.log(`There is a situation: user ${data.github_handle} already exists!`);
+      throw situation;
     });
 };
 
@@ -59,17 +54,13 @@ module.exports.getUserById = function(userId) {
     .fetch()
     .then(user => {
       if (!user) {
-        throw userId;
+        throw 'invalidUser';
       }
       return user.toJSON();
     })
-    .error(err => {
-      console.log('Unable to fetch user', err);
-      throw err;
-    })
-    .catch(userId => {
-      console.log(`User ID ${userId} not found! Sad!`);
-      throw userId;
+    .catch(situation => {
+      console.log(`There is a situation: user ID ${userId} does not exist!`);
+      throw situation;
     });
 };
 
@@ -78,7 +69,7 @@ module.exports.updateUserById = function(userId, data) {
     .fetch()
     .then(user => {
       if (!user) {
-        throw userId;
+        throw 'invalidUser';
       }
       return user.save(data);
     })
@@ -86,67 +77,63 @@ module.exports.updateUserById = function(userId, data) {
       console.log(`User ${user.toJSON().github_handle} updated!`);
       return user.toJSON();
     })
-    .error(err => {
-      console.log('Unable to update user', err);
-      throw err;
-    })
-    .catch(userId => {
-      console.log(`User ID ${userId} not found!`);
-      throw userId;
+    .catch(situation => {
+      console.log(`There is a situation: user ID ${userId} doesn't exist!`);
+      throw situation;
     });
 };
 
 module.exports.addUserToBoard = function(userId, boardId) {
-  return User.forge({id: userId})
-    // .fetchAll({withRelated: ['boards']})
-    .fetch({withRelated: ['memberOfBoards']})
+  return Board.forge({id: boardId})
+    .fetch()
+    .then(board => {
+      if (!board) {
+        throw 'invalidBoard';
+      }
+      return User.forge({id: userId}).fetch({withRelated: ['memberOfBoards']});
+    })
     .then(user => {
+      if (!user) {
+        throw 'invalidUser';
+      }
       let boardIds = user.related('memberOfBoards').toJSON().map(membership => membership.id);
       if (boardIds.includes(boardId)) {
-        throw user;
+        throw 'duplicateMembership';
       }
       return user.memberOfBoards().attach(boardId);
     })
-    .then((result) => {
-      console.log(`User ID ${userId} added to boardId ${boardId}`);
+    .then(result => {
       return result.toJSON();
     })
-    .error(err => {
-      console.log('Unable to add user to board');
-      throw err;
-    })
-    .catch(user => {
-      console.log(`User ${user.toJSON().github_handle} already belongs to board ID ${boardId}`);
-      throw user;
+    .catch(situation => {
+      if (situation === 'invalidBoard') {
+        console.log(`There is a situation: board ID ${boardId} doesn't exist!`);
+      }
+      if (situation === 'invalidUser') {
+        console.log(`There is a situation: user ID ${userId} doesn't exist!`);
+      }
+      if (situation === 'duplicateMembership') {
+        console.log(`There is a situation: user ID ${userId} already belongs to board ID ${boardId}!`);
+      }
+      throw situation;
     });
 };
 
 module.exports.getUsersByBoard = function(boardId) {
   return Board.forge({id: boardId})
-    // .fetchAll({withRelated: ['boards']})
     .fetch()
     .then(board => {
-      if (board) {
-        return board.related('users').fetch();
-      } else {
-        return new Promise((resolve, reject) => {
-          reject(`Board ID ${boardId} not found!`);
-        });
+      if (!board) {
+        throw 'invalidBoard';
       }
+      return board.related('users').fetch();
     })
     .then((users) => {
-      if (users.length === 0) {
-        throw users;
-      }
       return users.toJSON();
     })
-    .error(err => {
-      console.log(`Unable to fetch users for Board ID ${boardId}: `, err);
-      throw err;
-    })
-    .catch(users => {
-      console.log(`No users found for that board. Try again!`);
-      throw users;
+    .catch(situation => {
+      console.log(`There is a situation: board ID ${boardId} doesn't exist!`);
+      throw situation;
     });
 };
 
@@ -155,27 +142,17 @@ module.exports.getBoardsByUser = function(userId) {
     // .fetchAll({withRelated: ['boards']})
     .fetch()
     .then(user => {
-      if (user) {
-        return user.related('memberOfBoards').fetch();
-      } else {
-        return new Promise((resolve, reject) => {
-          reject(`User ID ${userId} not found!`);
-        });
+      if (!user) {
+        throw 'invalidUser';
       }
+      return user.related('memberOfBoards').fetch();
     })
     .then((boards) => {
-      if (boards.length === 0) {
-        throw boards;
-      }
       return boards.toJSON();
     })
-    .error(err => {
-      console.log(`Unable to fetch boards for User ID ${userId}: `, err);
-      throw err;
-    })
-    .catch(boards => {
-      console.log('No boards found for that user!');
-      throw boards;
+    .catch(situation => {
+      console.log(`There is a situation: user ID ${userId} doesn't exist!`);
+      throw situation;
     });
 };
 
@@ -184,21 +161,17 @@ module.exports.createBoard = function(data) {
     .fetch()
     .then((board) => {
       if (board) {
-        throw board;
+        throw 'duplicate';
       }
       return Board.forge(data).save();
     })
     .then(board => {
-      console.log(`Board ${board.board_name} saved!`);
+      console.log(`Board ${board.toJSON().board_name} saved!`);
       return board.toJSON();
     })
-    .error(err => {
-      console.log('Unable to create board', err);
-      throw err;
-    })
-    .catch(board => {
-      console.log(`Board ${board.board_name} already exists!`);
-      throw board;
+    .catch(situation => {
+      console.log(`Board ${data.board_name} already exists!`);
+      throw situation;
     });
 };
 
@@ -206,18 +179,14 @@ module.exports.getBoardById = function(boardId) {
   return Board.forge({id: boardId})
     .fetch()
     .then(board => {
-      if (board) {
-        return board.toJSON();
+      if (!board) {
+        throw 'invalidBoard';
       }
-      throw boardId;
+      return board.toJSON();
     })
-    .error(err => {
-      console.log('Unable to fetch board', err);
-      throw err;
-    })
-    .catch(boardId => {
-      console.log(`Board ID ${boardId} not found! Sad!`);
-      throw boardId;
+    .catch(situation => {
+      console.log(`There is a situation: board ID ${boardId} doesn't exist!`);
+      throw situation;
     });
 };
 
@@ -226,7 +195,7 @@ module.exports.updateBoardById = function(boardId, data) {
     .fetch()
     .then(board => {
       if (!board) {
-        throw boardId;
+        throw 'invalidBoard';
       }
       return board.save(data);
     })
@@ -234,13 +203,9 @@ module.exports.updateBoardById = function(boardId, data) {
       console.log(`Board ${board.toJSON().board_name} updated!`);
       return board.toJSON();
     })
-    .error(err => {
-      console.log('Unable to update board', err);
-      throw err;
-    })
-    .catch(boardId => {
-      console.log(`Board ID ${boardId} not found! Sad!`);
-      throw boardId;
+    .catch(situation => {
+      console.log(`There is a situation: board ID ${boardId} doesn't exist!`);
+      throw situation;
     });
 };
 
@@ -248,9 +213,12 @@ module.exports.createPanel = function(data) {
   return Board.forge({id: data.board_id})
     .fetch({withRelated: ['panels']})
     .then(board => {
+      if (!board) {
+        throw 'invalidBoard';
+      }
       let panelNames = board.related('panels').toJSON().map(panel => panel.name);
       if (panelNames.includes(data.name)) {
-        throw data;
+        throw 'duplicatePanel';
       }
       return Panel.forge(data).save();
     })
@@ -258,13 +226,14 @@ module.exports.createPanel = function(data) {
       console.log(`Panel ${panel.toJSON().name} saved!`);
       return panel.toJSON();
     })
-    .error(err => {
-      console.log('Unable to create panel', err);
-      throw err;
-    })
-    .catch(data => {
-      console.log(`Board already contains a panel named ${data.name}!`);
-      throw data;
+    .catch(situation => {
+      if (situation === 'invalidBoard') {
+        console.log(`There is a situation: board ID ${data.board_id} doesn't exist!`);
+      }
+      if (situation === 'duplicatePanel') {
+        console.log(`There is a situation: panel ${data.name} already exists on this board!`);
+      }
+      throw situation;
     });
 };
 
@@ -273,17 +242,13 @@ module.exports.getPanelById = function(panelId) {
     .fetch()
     .then(panel => {
       if (!panel) {
-        throw panelId; 
+        throw 'invalidPanel'; 
       }
       return panel.toJSON();
     })
-    .error(err => {
-      console.log('Unable to fetch panel', err);
-      throw err;
-    })
-    .catch(panelId => {
-      console.log(`Panel ID ${panelId} not found! Sad!`);
-      throw panelId;
+    .catch(situation => {
+      console.log(`There is a situation: panel ID ${panelId} doesn't exist!`);
+      throw situation;
     });
 };
 
@@ -291,25 +256,14 @@ module.exports.getPanelsByBoard = function(boardId) {
   return Board.forge({id: boardId})
     .fetch({withRelated: ['panels']})
     .then(board => {
-      if (board) {
-        let panels = board.related('panels');
-        if (panels.length === 0) {
-          throw board;
-        }
-        return panels.toJSON();
-      } else {
-        return new Promise((resolve, reject) => {
-          reject(`Board ID ${boardId} not found!`);
-        });
+      if (!board) {
+        throw 'invalidBoard';
       }
+      return board.related('panels').toJSON();
     })
-    .error(err => {
-      console.log('Unable to fetch panels', err);
-      throw err;
-    })
-    .catch(board => {
-      console.log(`No panels found for board ${board.board_name}`);
-      throw board;
+    .catch(situation => {
+      console.log(`There is a situation: board ID ${boardId} doesn't exist!`);
+      throw situation;
     });
 };
 
@@ -318,7 +272,7 @@ module.exports.updatePanelById = function(panelId, data) {
     .fetch()
     .then(panel => {
       if (!panel) {
-        throw panelId;
+        throw 'invalidPanel';
       }
       return panel.save(data);
     })
@@ -326,13 +280,9 @@ module.exports.updatePanelById = function(panelId, data) {
       console.log(`Panel ${panel.toJSON().name} updated!`);
       return panel.toJSON();
     })
-    .error(err => {
-      console.log('Unable to update panel', err);
-      throw err;
-    })
-    .catch(panelId => {
-      console.log(`Panel ID ${panelId} not found! Sad!`);
-      throw panelId;
+    .catch(situation => {
+      console.log(`There is a situation: panel ID ${data.panel_id} doesn't exist!`);
+      throw situation;
     });
 };
 
@@ -340,9 +290,12 @@ module.exports.createTicket = function(data) {
   return Panel.forge({id: data.panel_id})
     .fetch({withRelated: 'tickets'})
     .then(panel => {
+      if (!panel) {
+        throw 'invalidPanel';
+      }
       let ticketTitles = panel.related('tickets').toJSON().map(ticket => ticket.title);
       if (ticketTitles.includes(data.title)) {
-        throw data;
+        throw 'duplicateTicket';
       }
       return Ticket.forge(data).save();
     })
@@ -350,13 +303,14 @@ module.exports.createTicket = function(data) {
       console.log(`Ticket ${ticket.toJSON().title} saved!`);
       return ticket.toJSON();
     })
-    .error(err => {
-      console.log('Unable to create ticket', err);
-      throw err;
-    })
-    .catch(data => {
-      console.log(`Panel already contains a ticket titled ${data.title}!`);
-      throw data;
+    .catch(situation => {
+      if (situation === 'invalidPanel') {
+        console.log(`There is a situation: panel ID ${data.panel_id}`);
+      }
+      if (situation === 'duplicateTicket') {
+        console.log(`There is a situation: ticket ${data.title} already exists on this panel!`);
+      }
+      throw situation;
     });
 };
 
@@ -365,43 +319,28 @@ module.exports.getTicketById = function(ticketId) {
     .fetch()
     .then(ticket => {
       if (!ticket) {
-        throw ticketId;
+        throw 'invalidTicket';
       }
       return ticket.toJSON();
     })
-    .error(err => {
-      console.log('Unable to fetch ticket', err);
-      throw err;
-    })
-    .catch(ticketId => {
-      console.log(`Ticket ID ${ticketId} not found! Sad!`);
-      throw ticketId;
+    .catch(situation => {
+      console.log(`There is a situation: ticket ID ${ticketId} doesn't exist!`);
+      throw situation;
     });
 };
 
 module.exports.getTicketsByUser = function(userId) {
   return User.forge({id: userId})
-    .fetch({withRelated: ['assignedTickets']})
+    .fetch({withRelated: [{ assignedTickets: function(query) { query.orderBy('status', 'DESC').orderBy('priority', 'DESC'); }}]})
     .then((user) => {
-      if (user) {
-        let tickets = user.related('assignedTickets');
-        if (tickets === 0) {
-          throw user;
-        }
-        return tickets.toJSON();
-      } else {
-        return new Promise((resolve, reject) => {
-          reject(`User ID ${userId} not found!`);
-        });
+      if (!user) {
+        throw 'invalidUser';
       }
+      return user.related('assignedTickets').toJSON();
     })
-    .error(err => {
-      console.log(`Unable to fetch tickets for user ID ${userId}: `, err);
-      throw err;
-    })
-    .catch(user => {
-      console.log(`No tickets found for user ${user.toJSON().github_handle}`);
-      throw user;
+    .catch(situation => {
+      console.log(`There is a situation: user ID ${userId} doesn't exist!`);
+      throw situation;
     });
 };
 
@@ -409,52 +348,14 @@ module.exports.getTicketsByPanel = function(panelId) {
   return Panel.forge({id: panelId})
     .fetch({withRelated: [{ tickets: function(query) { query.orderBy('status', 'DESC').orderBy('priority', 'DESC'); }}]})
     .then((panel) => {
-      if (panel) {
-        let tickets = panel.related('tickets');
-        if (tickets.length === 0) {
-          throw panel;
-        }
-        return tickets.toJSON();
-      } else {
-        return new Promise((resolve, reject) => {
-          reject(`Panel ID ${panelId} not found!`);
-        });
+      if (!panel) {
+        throw 'invalidPanel';
       }
+      return panel.related('tickets').toJSON();
     })
-    .error(err => {
-      console.log('Unable to fetch tickets', err);
-      throw err;
-    })
-    .catch(panel => {
-      console.log(`No tickets found for panel ${panel.toJSON().name}`);
-      throw panel;
-    });
-};
-
-// Not being used, may need to be updated
-module.exports.getTicketsByBoard = function(boardId) {
-  return Board.forge({id: boardId})
-    .fetch({withRelated: ['tickets']})
-    .then((board) => {
-      if (board) {
-        let tickets = board.related('tickets');
-        if (tickets.length === 0) {
-          throw board;
-        }
-        return tickets.toJSON();
-      } else {
-        return new Promise((resolve, reject) => {
-          reject(`Board ID ${boardId} not found!`);
-        });
-      }
-    })
-    .error(err => {
-      console.log('Unable to fetch tickets', err);
-      throw err;
-    })
-    .catch(board => {
-      console.log(`No tickets found for board ${board.toJSON().board_name}`);
-      throw board;
+    .catch(situation => {
+      console.log(`There is a situation: panel ID ${panelId} doesn't exist!`);
+      throw situation;
     });
 };
 
@@ -463,7 +364,7 @@ module.exports.updateTicketById = function(ticketId, data) {
     .fetch()
     .then(ticket => {
       if (!ticket) {
-        throw ticketId;
+        throw 'invalidTicket';
       }
       return ticket.save(data);
     })
@@ -471,13 +372,8 @@ module.exports.updateTicketById = function(ticketId, data) {
       console.log(`Ticket ${ticket.toJSON().title} updated!`);
       return ticket.toJSON();
     })
-    .error(err => {
-      console.log('Unable to update ticket', err);
-      throw err;
-    })
-    .catch(ticketId => {
-      console.log(`Ticket ID ${ticketId} not found! Sad!`);
-      throw ticketId;
+    .catch(situation => {
+      console.log(`There is a situation: ticket ID ${ticketId} doesn't exist!`);
+      throw situation;
     });
 };
-
