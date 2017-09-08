@@ -3,6 +3,26 @@ const middleware = require('../middleware');
 
 const router = express.Router();
 
+//this is for testing purposes only to set up fake user session
+if (process.env.NODE_ENV === 'test') {
+  var fakeUser = {
+    'id': 1,
+    'email': null,
+    'github_handle': 'stevepkuo',
+    'profile_photo': 'https://avatars0.githubusercontent.com/u/14355395?v=5',
+    'oauth_id': '14355395',
+    'lastboard_id': null
+  };
+  router.use(middleware.auth.fakemiddleware);
+  router.route('/auth/fake')
+    .get((req, res) => {
+      req.session = req.session || {};  
+      req.session.user_tmp = fakeUser;
+      //res.redirect('/');
+      res.status(200).send();
+    });
+}
+
 router.route('/')
   .get(middleware.auth.verify, (req, res) => {
     res.render('index.ejs');
@@ -21,7 +41,7 @@ router.route('/signup')
 /** ROUTE USED TO RETRIEVE AND SEND USER DATA BACK TO CLIENT **/
 router.route('/profile')
   .get(middleware.auth.verify, (req, res) => {
-    res.send(req.user[0]);
+    res.send(req.user);
   });
 
 router.route('/logout')

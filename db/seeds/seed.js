@@ -68,7 +68,198 @@ exports.seed = function (knex, Promise) {
     .error(err => {
       console.log('ERROR! Could not create ticket seed: ', err);
     })
-    .then( () => knex('boards_users').insert([{user_id: 1, board_id: 1}]))
+
+
+    .then(() => {
+      return models.User.where({ github_handle: 'stevepkuo2' }).fetch();
+    })
+    .then((profile) => {
+      if (profile) {
+        throw profile;
+      }
+      return models.User.forge({
+        github_handle: 'stevepkuo2',
+        profile_photo: 'https://avatars0.githubusercontent.com/u/14355395?v=5',
+        oauth_id: '14355396'
+      }).save();
+    })
+    .error(err => {
+      console.error('ERROR: failed to create profile');
+      throw err;
+    })
+ 
+    .then((user) => {
+      return models.Board.where({ board_name: 'testboard2' })
+        .fetch();
+    })
+    .then(board => {
+      if (board) {
+        throw board;
+      }
+      return models.Board.forge({
+        board_name: 'testboard2',
+        repo_name: 'thesis2',
+        repo_url: 'https://github.com/Benevolent-Roosters/thesis2',
+        owner_id: 2
+      }).save();
+    })
+    .error(err => {
+      console.log('ERROR! Could not create board: ', err);
+    })
+
+    // .then( (board) => knex('boards_users').insert([{user_id: 1, board_id: 1}]))
+    .then((board) => {
+      return models.User.where({ github_handle: 'stevepkuo' }).fetch();
+    })
+    .then((user) => {
+      return user.memberOfBoards().attach(1);
+    })
+    .error(err => {
+      console.log('ERROR! Could not link board1 to user1: ', err);
+    })
+
+    .then(() => {
+      return models.User.where({ github_handle: 'dsc03' }).fetch();
+    })
+    .then((profile) => {
+      if (profile) {
+        throw profile;
+      }
+      return models.User.forge({
+        github_handle: 'dsc03',
+        profile_photo: 'https://avatars0.githubusercontent.com/u/25214199?v=4',
+        oauth_id: '25214199'
+      }).save();
+    })
+    .error(err => {
+      console.error('ERROR: failed to create profile');
+      throw err;
+    })
+    .then((user) => {
+      return models.Board.where({ board_name: 'testboard3' })
+        .fetch();
+    })
+    .then(board => {
+      if (board) {
+        throw board;
+      }
+      return models.Board.forge({
+        board_name: 'testboard3',
+        repo_name: 'thesis3',
+        repo_url: 'https://github.com/Benevolent-Roosters/thesis3',
+        owner_id: 3
+      }).save();
+    })
+    .error(err => {
+      console.log('ERROR! Could not create board: ', err);
+    })
+    .then( (board) => models.Panel.where({name: 'testpanel3A'}).fetch())
+    .then(panel => {
+      if (panel) {
+        throw panel;
+      }
+      return models.Panel.forge({
+        name: 'testpanel3A',
+        due_date: '2017-09-19',
+        board_id: 3
+      }).save();
+    })
+    .error(err => {
+      console.log('ERROR! Could not create panel seed: ', err);
+    })
+    .then( (panel) => models.Panel.where({name: 'testpanel3B'}).fetch())
+    .then(panel => {
+      if (panel) {
+        throw panel;
+      }
+      return models.Panel.forge({
+        name: 'testpanel3B',
+        due_date: '2017-09-20',
+        board_id: 3
+      }).save();
+    })
+    .error(err => {
+      console.log('ERROR! Could not create panel seed: ', err);
+    })
+    .then( (panel) => models.Panel.where({name: 'testpanel3C'}).fetch())
+    .then(panel => {
+      if (panel) {
+        throw panel;
+      }
+      return models.Panel.forge({
+        name: 'testpanel3C',
+        due_date: '2017-09-21',
+        board_id: 3
+      }).save();
+    })
+    .error(err => {
+      console.log('ERROR! Could not create panel seed: ', err);
+    })
+
+    .then((panel) => models.Ticket.where({title: 'testticket3A'}).fetch())
+    .then((ticket) => {
+      if (ticket) {
+        throw ticket;
+      }
+      return models.Ticket.forge({
+        title: 'testticket3A',
+        description: 'testing3A...',
+        status: 'in progress',
+        priority: 1,
+        type: 'feature',
+        created_at: knex.fn.now(),
+        creator_id: 3,
+        assignee_id: 3,
+        board_id: 3,
+        panel_id: 3
+      }).save();
+    })
+    .error(err => {
+      console.log('ERROR! Could not create ticket seed: ', err);
+    })
+    .then((ticket) => models.Ticket.where({title: 'testticket3B'}).fetch())
+    .then((ticket) => {
+      if (ticket) {
+        throw ticket;
+      }
+      return models.Ticket.forge({
+        title: 'testticket3B',
+        description: 'testing3B...',
+        status: 'in progress',
+        priority: 2,
+        type: 'feature',
+        created_at: knex.fn.now(),
+        creator_id: 3,
+        assignee_id: 3,
+        board_id: 3,
+        panel_id: 3
+      }).save();
+    })
+    .error(err => {
+      console.log('ERROR! Could not create ticket seed: ', err);
+    })
+    .then((ticket) => models.Ticket.where({title: 'testticket3C'}).fetch())
+    .then((ticket) => {
+      if (ticket) {
+        throw ticket;
+      }
+      return models.Ticket.forge({
+        title: 'testticket3C',
+        description: 'testing3C...',
+        status: 'in progress',
+        priority: 3,
+        type: 'feature',
+        created_at: knex.fn.now(),
+        creator_id: 3,
+        assignee_id: 3,
+        board_id: 3,
+        panel_id: 3
+      }).save();
+    })
+    .error(err => {
+      console.log('ERROR! Could not create ticket seed: ', err);
+    })
+
     .catch((user = 'ok', board = 'ok', panel = 'ok', ticket = 'ok') => {
       console.log(`There is a situation... user: ${user}, board: ${board}, panel: ${panel}, ticket: ${ticket}`);
     });

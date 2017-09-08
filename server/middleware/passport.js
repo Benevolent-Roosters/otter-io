@@ -16,7 +16,8 @@ passport.deserializeUser((user, done) => {
 passport.use('github', new GithubStrategy({
   clientID: config.Github.clientID,
   clientSecret: config.Github.clientSecret,
-  callbackURL: config.Github.callbackURL
+  callbackURL: config.Github.callbackURL,
+  scope: 'user:email' //get github email
 },
 (accessToken, refreshToken, profile, done) => getOrCreateGithubOAuthProfile('github', profile, done))
 );
@@ -28,29 +29,38 @@ const getOrCreateGithubOAuthProfile = (type, oauthProfile, done) => {
       //check if Auth table already has user
       if (oauthAccount) {
         console.log('User table already has the Github user');
-        throw oauthAccount;
+        console.log(oauthAccount);
+      } else {
+        console.log('Github User not found in User table');
+        console.log(oauthProfile);
       }
-      console.log('Github User not found in User table');
-      console.log(oauthProfile);
 
+      var email = null;
+      oauthProfile.emails.forEach((eachEmail) => {
+        if (!!eachEmail.primary) {
+          email = eachEmail.value;
+        }
+      });
       let profileInfo = {
         github_handle: oauthProfile.username,
         profile_photo: oauthProfile.photos[0].value,
-        oauth_id: oauthProfile.id
+        oauth_id: oauthProfile.id,
+        email: email
       };
+
+      if (oauthAccount) {
+        //update profile with info from oauthProfile
+        return oauthAccount.save(profileInfo, { method: 'update' });
+      }
+      //otherwise create new profile
       return models.User.forge(profileInfo).save();
     })
-    .catch(oauthAccount => {
-      if (!oauthAccount.get) {
-        throw oauthAccount;
-      }
-      return oauthAccount;
-    })
     .then(profile => {
-      if (profile) {
-        console.log('Saved user profile');
-        done(null, profile.serialize());
+      if (!profile) {
+        throw JSON.stringify(profile);
       }
+      console.log('Saved user profile');
+      done(null, profile.serialize());
     })
     .catch((err) => {
       console.log('Not saved user profile');

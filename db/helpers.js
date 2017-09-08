@@ -480,3 +480,4 @@ module.exports.updateTicketById = function(ticketId, data) {
       throw ticketId;
     });
 };
+

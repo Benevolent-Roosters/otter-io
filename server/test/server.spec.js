@@ -4,7 +4,7 @@ const express = require('express');
 const expect = require('chai').expect;
 const app = require('../app.js');
 
-describe('basic server', function() {
+xdescribe('basic server', function() {
   it('sends back hello world', function(done) {
     request(app)
       .get('/api')

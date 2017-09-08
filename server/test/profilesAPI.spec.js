@@ -5,7 +5,7 @@ const expect = require('chai').expect;
 const app = require('../app.js');
 const dbUtils = require('../../db/lib/utils.js');
 
-describe('Profiles API', function () {
+xdescribe('Profiles API', function () {
   beforeEach(function (done) {
     dbUtils.rollbackMigrate(done);
   });

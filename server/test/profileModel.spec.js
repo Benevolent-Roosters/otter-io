@@ -15,7 +15,7 @@ describe('User model tests', function () {
   it('Should be able to retrieve test data', function (done) {
     User.forge().fetchAll()
       .then(function (results) {
-        expect(results.length).to.equal(1);
+        expect(results.length).to.equal(2);
         expect(results.at(0).get('id')).to.equal(1);
         done();
       })
