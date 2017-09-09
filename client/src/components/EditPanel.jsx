@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { putEditedPanel, editPanel } from '../redux/actionCreators.js';
+import { putEditedPanel, editPanels, toggleEditPanel } from '../redux/actionCreators.js';
 import axios from 'axios';
 import { Modal, Form, FormGroup, ControlLabel, Col, FormControl, Button } from 'react-bootstrap';
 import DatePicker from 'material-ui/DatePicker';
@@ -11,25 +11,38 @@ class EditPanel extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      name: this.props.name
+      name: '',
+      due_date: ''
     }
   }
 
   reorderPanels(editedPanel) {
     let idx;
-    for (let i = 0; i < props.panels.length; i++) {
-      if (editedPanel.panelId === props.panels[i].panelId) {
+    for (let i = 0; i < this.props.panels.length; i++) {
+      if (editedPanel.panelId === this.props.panels[i].panelId) {
         idx = i;
         break;
       }
     }
-    return props.panels.slice(0, idx).concat(editedPanel).concat(props.panels.slice(idx + 1));
+    return this.props.panels.slice(0, idx).concat(editedPanel).concat(this.props.panels.slice(idx + 1));
+  }
+
+  handleNameChange(e) {
+    this.setState({
+      name: e.target.value
+    });
+  }
+
+  handleDateChange(e, date) {
+    this.setState({
+      due_date: moment(date).format().slice(0,10)
+    });
   }
 
   render() {
     return (
       <div>
-        <Modal.Dialog>
+        <Modal show={this.props.editPanelRendered}>
           <Modal.Header style={{backgroundColor: '#7ED321'}}>
             <Modal.Title> Edit Panel </Modal.Title>
           </Modal.Header>
@@ -54,10 +67,10 @@ class EditPanel extends React.Component {
             </Form>
           </Modal.Body>
           <Modal.Footer>
-            <Button>Cancel</Button>
-            <Button bsStyle="primary" onClick={() => {this.props.handleSetPanels()}}>Submit</Button>
+            <Button onClick={this.props.handleEditPanelRendered}>Cancel</Button>
+            <Button bsStyle="primary" onClick={() => {this.props.handleEditPanel(this.reorderPanels.bind(this), this.state)}}>Submit</Button>
           </Modal.Footer>
-        </Modal.Dialog>
+        </Modal>
       </div>
     );
   }
@@ -67,15 +80,20 @@ const mapStateToProps = state => {
   return {
     userId: state.user.userid, //double check what userid key actually is named
     currentBoardId: state.currentBoard.boardid, //double check what userid key actually is named
-    panels: state.panels
+    panels: state.panels,
+    currentPanel: state.currentPanel,
+    editPanelRendered: state.editPanelRendered
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    handleEditPanel(event) {
-      dispatch(editPanel(reorderPanels(/*panelObj*/)));
-      dispatch(putEditedPanel(/*panelObj*/))
+    handleEditPanel(reorderPanels, panelObj) {
+      dispatch(editPanels(reorderPanels(panelObj)));
+      dispatch(putEditedPanel(panelObj))
+    },
+    handleEditPanelRendered() {
+      dispatch(toggleEditPanel());
     }
   };
 };

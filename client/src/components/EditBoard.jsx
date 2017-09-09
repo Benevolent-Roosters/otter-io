@@ -86,8 +86,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     handleEditBoard(boardObj) {
-      dispatch(editBoards(reorderBoards(/*boardObj*/)));
-      dispatch(putEditedBoard(/*boardObj*/))
+      dispatch(editBoards(reorderBoards(boardObj)));
+      dispatch(putEditedBoard(boardObj))
     },
     handleEditBoardRendered() {
       dispatch(toggleEditBoard());

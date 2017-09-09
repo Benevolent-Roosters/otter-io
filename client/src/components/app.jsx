@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getUserInfo, getBoardsByUser, toggleDrawer, toggleCreateBoard, toggleEditBoard, toggleCreateTicket, toggleEditTicket } from '../redux/actionCreators.js';
-import { Button } from 'react-bootstrap';
+import { getUserInfo, getBoardsByUser, toggleDrawer, toggleCreateBoard, toggleEditBoard, toggleCreatePanel, toggleEditPanel, toggleCreateTicket, toggleEditTicket } from '../redux/actionCreators.js';
 import axios from 'axios';
 import moment from 'moment';
 import CreatePanel from './CreatePanel.jsx';
@@ -13,6 +12,8 @@ import CreateBoard from './CreateBoard.jsx';
 import EditBoard from './EditBoard.jsx';
 import CreateTicket from './CreateTicket.jsx';
 import EditTicket from './EditTicket.jsx';
+import { Button } from 'react-bootstrap';
+import EditPanel from './EditPanel.jsx';
 
 let iconStyle = {
   position: 'absolute',
@@ -59,12 +60,12 @@ class App extends React.Component {
 
   render() {
     return (
-<<<<<<< c8944ea771a73de33163ea1634016f52e0a045c8
       <div>
         <Button bsStyle="primary" onClick={this.props.handleCreateBoardRendered}>Create Board</Button>
         <Button bsStyle="primary" onClick={this.props.handleEditBoardRendered}>Edit Board</Button>
         <Button bsStyle="primary" onClick={this.props.handleCreateTicketRendered}>Create Ticket</Button>
         <Button bsStyle="primary" onClick={this.props.handleEditTicketRendered}>Edit Ticket</Button>
+        <Button bsStyle="primary" onClick={this.props.handleCreatePanelRendered}>Create Panel</Button>
         <Button style={iconStyle}><img src={require('../images/menu.png')} onClick={this.props.handleToggleDrawer}/></Button>
         <SidebarNavigation/>
         <PerformanceDashboard/>
@@ -73,10 +74,10 @@ class App extends React.Component {
         <EditBoard/>
         <CreateTicket/>
         <EditTicket/>
+        <CreatePanel/>
+        <EditPanel/>
+        <Panel/>
       </div>
-=======
-      <CreatePanel />
->>>>>>> further work on CreatePanel
     );
   } 
 }
@@ -92,7 +93,8 @@ const mapStateToProps = (state) => {
     createBoardRendered: state.createBoardRendered,
     editBoardRendered: state.editBoardRendered,
     createTicketRendered: state.createTicketRendered,
-    editTicketRendered: state.editTicketRendered
+    editTicketRendered: state.editTicketRendered,
+    createPanelRendered: state.createPanelRendered
   };
 };
 
@@ -124,6 +126,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     handleEditTicketRendered() {
       dispatch(toggleEditTicket());
+    },
+    handleCreatePanelRendered() {
+      dispatch(toggleCreatePanel());
     }
   };
 };

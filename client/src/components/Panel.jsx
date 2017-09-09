@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getPanelsByBoard } from '../redux/actionCreators.js';
-import { Modal } from 'react-bootstrap';
+import { getPanelsByBoard, getTicketsByPanel, toggleEditPanel } from '../redux/actionCreators.js';
+import { Modal, Button } from 'react-bootstrap';
 import DatePicker from 'material-ui/DatePicker';
 import Ticket from './Ticket.jsx';
 
@@ -16,7 +16,7 @@ const Panel = props => {
                 <h3>Sprint 3</h3>
                 <DatePicker textFieldStyle= {{fontFamily: 'Avenir Next', color: 'white', fontSize: '20px'}} hintText={'Select a Due Date'} /**defaultDate={/**props.currentPanel.dueDate}**/></DatePicker>
               </div>
-              <img style={{float: 'right'}} src={require('../images/calendar-interface-symbol-tool.png')}/>
+                <Button bsStyle="primary" style={{float: 'right'}} onClick={props.handleEditPanelRendered}>Edit Panel</Button>
             </div>
           </Modal.Title>
         </Modal.Header>
@@ -43,6 +43,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     handleGetTicketsByPanel(panelId) {
       dispatch(getTicketsByPanel(panelId));
+    },
+    handleEditPanelRendered() {
+      dispatch(toggleEditPanel());
     }
   };
 };  

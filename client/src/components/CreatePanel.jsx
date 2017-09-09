@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { postCreatedPanel } from '../redux/actionCreators.js';
+import { postCreatedPanel, toggleCreatePanel } from '../redux/actionCreators.js';
 import axios from 'axios';
 import { Modal, Form, FormGroup, ControlLabel, Col, FormControl, Button } from 'react-bootstrap';
 import DatePicker from 'material-ui/DatePicker';
@@ -24,14 +24,14 @@ class CreatePanel extends React.Component {
 
   handleDateChange(e, date) {
     this.setState({
-      dueDate: moment(date).format().slice(0,10)
+      due_date: moment(date).format().slice(0,10)
     });
   }
 
   render() {
     return (
       <div>
-        <Modal.Dialog>
+        <Modal show={this.props.createPanelRendered}>
           <Modal.Header style={{backgroundColor: '#7ED321'}}>
             <Modal.Title> Create A Panel </Modal.Title>
           </Modal.Header>
@@ -56,10 +56,10 @@ class CreatePanel extends React.Component {
             </Form>
           </Modal.Body>
           <Modal.Footer>
-            <Button>Cancel</Button>
+            <Button onClick={this.props.handleCreatePanelRendered}>Cancel</Button>
             <Button bsStyle="primary" onClick={() => {this.props.handleSetPanels()}}>Submit</Button>
           </Modal.Footer>
-        </Modal.Dialog>
+        </Modal>
       </div>
     );
   }
@@ -68,7 +68,8 @@ class CreatePanel extends React.Component {
 const mapStateToProps = state => {
   return {
     userId: state.user.userid, //double check what userid key actually is named
-    currentBoardId: state.currentBoard.boardid //double check what userid key actually is named
+    currentBoardId: state.currentBoard.boardid, //double check what userid key actually is named
+    createPanelRendered: state.createPanelRendered 
   };
 };
 
@@ -76,6 +77,9 @@ const mapDispatchToProps = dispatch => {
   return {
     handleSetPanels(newPanel) {
       dispatch(postCreatedPanel(newPanel));
+    },
+    handleCreatePanelRendered() {
+      dispatch(toggleCreatePanel());
     }
   };
 };
