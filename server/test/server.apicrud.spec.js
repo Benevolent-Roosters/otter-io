@@ -11,7 +11,7 @@ describe('CRUD API', function () {
   beforeEach(function (done) {
     authenticated = request(app);
     agent = request.agent(app);
-    knex('knex_migrations_lock').where('is_locked', '0').del()
+    knex('knex_migrations_lock').where('is_locked', '1').del()
       .then(() => {
         dbUtils.rollbackMigrate(done);
       });
@@ -19,7 +19,7 @@ describe('CRUD API', function () {
 
   // Resets database back to original settings
   afterEach(function (done) {
-    knex('knex_migrations_lock').where('is_locked', '0').del()
+    knex('knex_migrations_lock').where('is_locked', '1').del()
       .then(() => {
         dbUtils.rollback(done);
       });

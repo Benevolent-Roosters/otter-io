@@ -1,16 +1,19 @@
 const expect = require('chai').expect;
 const dbUtils = require('../../db/lib/utils.js');
-const models = require('../../db/models');
 const knex = require('knex')(require('../../knexfile'));
+const dbhelper = require('../../db/helpers.js');
 
-xdescribe('User', () => {
+describe('User', () => {
   beforeEach(function (done) {
-    dbUtils.rollbackMigrate(done);
+    knex('knex_migrations_lock').where('is_locked', '1').del()
+      .then(() => {
+        dbUtils.rollbackMigrate(done);
+      });
   });
 
   // Resets database back to original settings
   afterEach(function (done) {
-    knex('knex_migrations_lock').where('is_locked', '0').del()
+    knex('knex_migrations_lock').where('is_locked', '1').del()
       .then(() => {
         dbUtils.rollback(done);
       });
@@ -18,10 +21,10 @@ xdescribe('User', () => {
 
   describe('createUser()', () => {
     it('Should exist', () => {
-      expect(models.User.createUser).to.exist;
+      expect(dbhelper.createUser).to.exist;
     });
     it('Should be a function', () => {
-      expect(models.User.createUser).to.be.a('function');
+      expect(dbhelper.createUser).to.be.a('function');
     });
     it('Should create a user if it doesnt exist in the database', (done) => {
       var profileInfo = {
@@ -30,41 +33,46 @@ xdescribe('User', () => {
         oauth_id: '12345',
         email: 'baseball@aol.com'
       };
-      return models.User.createUser(profileInfo)
+      dbhelper.createUser(profileInfo)
         .then((user) => {
           expect(user).to.exist;
-          expect(user.length).to.equal(1);
-          expect(user[0].get('github_handle')).to.equal('dummyuser');
-          expect(user[0].get('profile_photo')).to.equal('http://www.mypic.com');
-          expect(user[0].get('oauth_id')).to.equal('12345');
-          expect(user[0].get('email')).to.equal('baseball@aol.com');
-          expect(user[0].get('lastboard_id')).to.be(null);
+          expect(user['github_handle']).to.equal('dummyuser');
+          expect(user['profile_photo']).to.equal('http://www.mypic.com');
+          expect(user['oauth_id']).to.equal('12345');
+          expect(user['email']).to.equal('baseball@aol.com');
+          expect(user['lastboard_id']).to.equal(undefined);
           done();
         })
         .error((err) => done(err));
     });
-    it('Should reject if passed in duplicate github_handle', () => {
+    it('Should reject if passed in duplicate github_handle', (done) => {
       var profileInfo = {
         github_handle: 'stevepkuo',
         profile_photo: 'http://www.mypic.com',
         oauth_id: '12345',
         email: 'baseball@aol.com'
       };
-      return expect(models.User.createUser(profileInfo)).to.be.rejected;
-    });
-    it('Should reject if passed in undefined', () => {
-      return expect(models.User.createUser(undefined)).to.be.rejected;
-    });
-    it('Should reject if passed in null', () => {
-      return expect(models.User.createUser(null)).to.be.rejected;
+      dbhelper.createUser(profileInfo)
+        .then((result) => {
+          expect('not thrown').to.equal('thrown error');
+          done();
+        })
+        .catch((err) => {
+          expect('thrown error').to.equal('thrown error');
+          done();
+        })
+        .error((err) => {
+          expect('thrown error').to.equal('thrown error');
+          done();
+        });
     });
   });
   describe('updateUserById()', () => {
     it('Should exist', () => {
-      expect(models.User.updateUserById).to.exist;
+      expect(dbhelper.updateUserById).to.exist;
     });
     it('Should be a function', () => {
-      expect(models.User.updateUserById).to.be.a('function');
+      expect(dbhelper.updateUserById).to.be.a('function');
     });
     it('Should update a user if it already exist in the database', (done) => {
       var profileInfo = {
@@ -73,85 +81,90 @@ xdescribe('User', () => {
         oauth_id: '12345',
         email: 'baseball@aol.com'
       };
-      return models.User.updateUserById('stevepkuo', profileInfo)
+      dbhelper.updateUserById(1, profileInfo)
         .then((user) => {
           expect(user).to.exist;
-          expect(user.length).to.equal(1);
-          expect(user[0].get('github_handle')).to.equal('stevepkuo');
-          expect(user[0].get('profile_photo')).to.equal('http://www.mypic.com');
-          expect(user[0].get('oauth_id')).to.equal('12345');
-          expect(user[0].get('email')).to.equal('baseball@aol.com');
-          expect(user[0].get('lastboard_id')).to.be(null);
+          expect(user['github_handle']).to.equal('stevepkuo');
+          expect(user['profile_photo']).to.equal('http://www.mypic.com');
+          expect(user['oauth_id']).to.equal('12345');
+          expect(user['email']).to.equal('baseball@aol.com');
+          expect(user['lastboard_id']).to.equal(null);
           done();
+        })
+        .catch((err) => {
+          done(err);
         })
         .error((err) => done(err));
     });
-    it('Should reject if passed in new profile', () => {
+    it('Should reject if passed in new profile', (done) => {
       var profileInfo = {
         github_handle: 'dummyuser',
         profile_photo: 'http://www.mypic.com',
         oauth_id: '12345',
         email: 'baseball@aol.com'
       };
-      return expect(models.User.updateUserById('dummyuser', profileInfo)).to.be.rejected;
-    });
-    it('Should reject if passed in undefined', () => {
-      return expect(models.User.updateUserById(undefined, {})).to.be.rejected;
-    });
-    it('Should reject if passed in null', () => {
-      return expect(models.User.updateUserById(null, {})).to.be.rejected;
+      dbhelper.updateUserById(10, profileInfo)
+        .then((result) => {
+          expect('not thrown').to.equal('thrown error');
+          done();
+        })
+        .catch((err) => {
+          expect('thrown error').to.equal('thrown error');
+          done();
+        })
+        .error((err) => {
+          expect('thrown error').to.equal('thrown error');
+          done();
+        });
     });
   });
   describe('getBoardsByUser()', () => {
     it('Should exist', () => {
-      expect(models.Board.getBoardsByUser).to.exist;
+      expect(dbhelper.getBoardsByUser).to.exist;
     });
     it('Should be a function', () => {
-      expect(models.Board.getBoardsByUser).to.be.a('function');
+      expect(dbhelper.getBoardsByUser).to.be.a('function');
     });
     it('Should return board linked to user', (done) => {
-      return models.Board.getBoardsByUser(1)
+      dbhelper.getBoardsByUser(1)
         .then((boards) => {
           expect(boards).to.exist;
           expect(boards.length).to.equal(1);
-          expect(boards[0].get('board_name')).to.equal('testboard');
-          expect(boards[0].get('repo_name')).to.equal('thesis');
-          expect(boards[0].get('repo_url')).to.equal('https://github.com/Benevolent-Roosters/thesis');
-          expect(boards[0].get('owner_id')).to.equal(1);
+          expect(boards[0]['board_name']).to.equal('testboard');
+          expect(boards[0]['repo_name']).to.equal('thesis');
+          expect(boards[0]['repo_url']).to.equal('https://github.com/Benevolent-Roosters/thesis');
+          expect(boards[0]['owner_id']).to.equal(1);
           done();
         })
+        .catch((err) => {
+          done(err);
+        })
         .error((err) => done(err));
-    });
-    it('Should reject if passed in undefined', () => {
-      return expect(models.Board.getBoardsByUser(undefined)).to.be.rejected;
-    });
-    it('Should reject if passed in null', () => {
-      return expect(models.Board.getBoardsByUser(null)).to.be.rejected;
     });
   });
   describe('addUserToBoard()', () => {
     it('Should exist', () => {
-      expect(models.Board.addUserToBoard).to.exist;
+      expect(dbhelper.addUserToBoard).to.exist;
     });
     it('Should be a function', () => {
-      expect(models.Board.addUserToBoard).to.be.a('function');
+      expect(dbhelper.addUserToBoard).to.be.a('function');
     });
     it('Should return board linked to user', (done) => {
-      return models.Board.addUserToBoard(1, 2)
+      dbhelper.addUserToBoard(1, 2)
+        .then((confirmation) => {
+          return dbhelper.getBoardsByUser(1);
+        })
         .then((boards) => {
           expect(boards).to.exist;
           expect(boards.length).to.equal(2);
-          expect(boards[0].get('board_name')).to.equal('testboard');
-          expect(boards[1].get('board_name')).to.equal('testboard2');
+          expect(boards[0]['board_name']).to.equal('testboard');
+          expect(boards[1]['board_name']).to.equal('testboard2');
           done();
         })
+        .catch((err) => {
+          done(err);
+        })
         .error((err) => done(err));
-    });
-    it('Should reject if passed in undefined', () => {
-      return expect(models.Board.addUserToBoard(undefined, 2)).to.be.rejected;
-    });
-    it('Should reject if passed in null', () => {
-      return expect(models.Board.addUserToBoard(null, 2)).to.be.rejected;
     });
   });
 

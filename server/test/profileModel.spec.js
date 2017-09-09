@@ -1,21 +1,28 @@
 const expect = require('chai').expect;
 const User = require('../../db/models/users.js');
 const dbUtils = require('../../db/lib/utils.js');
+const knex = require('knex')(require('../../knexfile'));
 
 describe('User model tests', function () {
   // Deletes all tables, creates new tables, and seeds tables with test data
   beforeEach(function (done) {
-    dbUtils.rollbackMigrate(done);
+    knex('knex_migrations_lock').where('is_locked', '1').del()
+      .then(() => {
+        dbUtils.rollbackMigrate(done);
+      });
   });
 
   // Resets database back to original settings
   afterEach(function (done) {
-    dbUtils.rollback(done);
+    knex('knex_migrations_lock').where('is_locked', '1').del()
+      .then(() => {
+        dbUtils.rollback(done);
+      });
   });
   it('Should be able to retrieve test data', function (done) {
     User.forge().fetchAll()
       .then(function (results) {
-        expect(results.length).to.equal(2);
+        expect(results.length).to.equal(3);
         expect(results.at(0).get('id')).to.equal(1);
         done();
       })
