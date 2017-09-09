@@ -8,7 +8,7 @@ import Ticket from './Ticket.jsx';
 const Panel = props => {
   return (
     <div>
-      <Modal show={true} bsSize="small" aria-labelledby="contained-modal-title-sm">
+      <Modal.Dialog bsSize="small" aria-labelledby="contained-modal-title-sm">
         <Modal.Header style={{backgroundColor: '#7ED321'}}>
           <Modal.Title style={{color: 'white'}}>
             <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginRight: '20px'}}>
@@ -22,7 +22,7 @@ const Panel = props => {
         </Modal.Header>
         <Modal.Body>
           </Modal.Body>
-      </Modal>
+      </Modal.Dialog>
     </div>
   );
 };
