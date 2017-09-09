@@ -2,6 +2,8 @@
 const express = require('express');
 const router = express.Router();
 const BoardController = require('../controllers').Boards;
+const PanelController = require('../controllers').Panels;
+const TicketController = require('../controllers').Tickets;
 const middleware = require('../middleware');
 
 router.route('/')
@@ -31,5 +33,29 @@ router.route('/boards/:id/members')
   .get(middleware.auth.verifyBoardMemberElse401, BoardController.getUsersByBoard) //only if member of board
   .post(middleware.auth.verifyBoardOwnerElse401, BoardController.addMember); //only if owner of board
 //  .delete(middleware.auth.verifyBoardOwnerElse401, BoardController.delmember) //only if owner of board
+
+//Request to join a board
+//router.route('/boards/:id/requestjoin')
+//Leave a board
+//router.route('/boards/:id/leave') //only if member of board
+
+router.route('/panels')
+  .get(PanelController.getBoardPanels) //only if member of board
+  .post(PanelController.createBoardPanel) //only if owner of board
+  .put(PanelController.updatePanel); //only if owner of board
+
+router.route('/panels/:id')
+  .get(PanelController.getOnePanel); //only if member of board
+//  .delete(PanelController.deleteOne) //only if owner of board
+//  //also delete all of panel's tickets???
+
+router.route('/tickets')
+  .get(TicketController.getPanelTickets) //only if member of board
+  .post(TicketController.createPanelTicket) //only if member of board
+  .put(TicketController.updateTicket); //only if member of board
+
+router.route('/tickets/:id')
+  .get(TicketController.getOneTicket); //only if member of board
+//  .delete(TicketController.deleteOne) //only if owner of board
 
 module.exports = router;
