@@ -28,6 +28,10 @@
     "file-loader": "^0.11.2",
     "grunt-pg": "https://github.com/watsoncj/grunt-pg.git",
     "knex": "^0.12.9",
+<<<<<<< c8944ea771a73de33163ea1634016f52e0a045c8
+=======
+    "knex-cli": "^1.0.2",
+>>>>>>> further work on CreatePanel
     "material-ui": "^0.19.1",
     "moment": "^2.18.1",
     "morgan": "^1.8.1",

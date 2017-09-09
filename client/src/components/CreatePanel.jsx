@@ -2,16 +2,71 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { postCreatedPanel } from '../redux/actionCreators.js';
 import axios from 'axios';
-import { Modal } from 'react-bootstrap';
+import { Modal, Form, FormGroup, ControlLabel, Col, FormControl, Button } from 'react-bootstrap';
+import DatePicker from 'material-ui/DatePicker';
+import moment from 'moment';
 
-const CreatePanel = props => {
-  return (
-    <div>
-      <Modal.Dialog>
-        <Modal.Header>
-          <Modal.Title> Edit Panel </Modal.Title>
-        </Modal.Header>
-  );
+class CreatePanel extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      panelName: '',
+      dueDate: '',
+      display: true
+    }
+  }
+
+  handleNameChange(e) {
+    this.setState({
+      panelName: e.target.value
+    });
+  }
+
+  handleDateChange(e, date) {
+    this.setState({
+      dueDate: moment(date).format().slice(0,10)
+    });
+  }
+
+  handleSubmit() {
+    axios.post('/api/panels', {})
+  }
+
+  render() {
+    return (
+      <div>
+        <Modal.Dialog>
+          <Modal.Header style={{backgroundColor: '#7ED321'}}>
+            <Modal.Title> Create A Panel </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form horizontal>
+              <FormGroup>
+                <Col componentClass={ControlLabel} sm={2}>
+                  Panel Name
+                </Col>
+                <Col sm={10}>
+                  <FormControl onChange={this.handleNameChange.bind(this)} placeholder="Panel name" />
+                </Col>
+              </FormGroup>
+              <FormGroup>
+                <Col componentClass={ControlLabel} sm={2}>
+                  Due Date
+                </Col>
+                <Col sm={10}>
+                  <DatePicker onChange={this.handleDateChange.bind(this)} hintText="Pick a due date" />
+                </Col>
+              </FormGroup>
+            </Form>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button>Cancel</Button>
+            <Button bsStyle="primary" onClick={this.handleSubmit.bind(this)}>Submit</Button>
+          </Modal.Footer>
+        </Modal.Dialog>
+      </div>
+    );
+  }
 };
 
 const mapStateToProps = state => {

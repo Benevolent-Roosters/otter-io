@@ -4,6 +4,7 @@ import { getUserInfo, getBoardsByUser, toggleDrawer, toggleCreateBoard, toggleEd
 import { Button } from 'react-bootstrap';
 import axios from 'axios';
 import moment from 'moment';
+import CreatePanel from './CreatePanel.jsx';
 import Board from './Board.jsx';
 import SidebarNavigation from './SidebarNav.jsx';
 import PerformanceDashboard from './PerformanceDashboard.jsx';
@@ -19,6 +20,7 @@ let iconStyle = {
   left: '20px',
   backgroundColor: 'white'
 };
+
 
 class App extends React.Component {
   constructor(props) {
@@ -57,6 +59,7 @@ class App extends React.Component {
 
   render() {
     return (
+<<<<<<< c8944ea771a73de33163ea1634016f52e0a045c8
       <div>
         <Button bsStyle="primary" onClick={this.props.handleCreateBoardRendered}>Create Board</Button>
         <Button bsStyle="primary" onClick={this.props.handleEditBoardRendered}>Edit Board</Button>
@@ -71,6 +74,9 @@ class App extends React.Component {
         <CreateTicket/>
         <EditTicket/>
       </div>
+=======
+      <CreatePanel />
+>>>>>>> further work on CreatePanel
     );
   } 
 }
