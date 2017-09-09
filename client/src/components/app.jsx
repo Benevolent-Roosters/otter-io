@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getUserInfo, getBoardsByUser, toggleDrawer, toggleCreateBoard, toggleEditBoard } from '../redux/actionCreators.js';
+import { getUserInfo, getBoardsByUser, toggleDrawer, toggleCreateBoard, toggleEditBoard, toggleCreateTicket, toggleEditTicket } from '../redux/actionCreators.js';
+import { Button } from 'react-bootstrap';
 import axios from 'axios';
 import moment from 'moment';
 import Board from './Board.jsx';
@@ -9,7 +10,8 @@ import PerformanceDashboard from './PerformanceDashboard.jsx';
 import Panel from './Panel.jsx';
 import CreateBoard from './CreateBoard.jsx';
 import EditBoard from './EditBoard.jsx';
-import { Button } from 'react-bootstrap';
+import CreateTicket from './CreateTicket.jsx';
+import EditTicket from './EditTicket.jsx';
 
 let iconStyle = {
   position: 'absolute',
@@ -58,12 +60,16 @@ class App extends React.Component {
       <div>
         <Button bsStyle="primary" onClick={this.props.handleCreateBoardRendered}>Create Board</Button>
         <Button bsStyle="primary" onClick={this.props.handleEditBoardRendered}>Edit Board</Button>
+        <Button bsStyle="primary" onClick={this.props.handleCreateTicketRendered}>Create Ticket</Button>
+        <Button bsStyle="primary" onClick={this.props.handleEditTicketRendered}>Edit Ticket</Button>
         <Button style={iconStyle}><img src={require('../images/menu.png')} onClick={this.props.handleToggleDrawer}/></Button>
         <SidebarNavigation/>
         <PerformanceDashboard/>
         <Board/>
         <CreateBoard/>
         <EditBoard/>
+        <CreateTicket/>
+        <EditTicket/>
       </div>
     );
   } 
@@ -78,7 +84,9 @@ const mapStateToProps = (state) => {
     currentBoard: state.currentBoard,
     currentPanel: state.currentPanel,
     createBoardRendered: state.createBoardRendered,
-    editBoardRendered: state.editBoardRendered
+    editBoardRendered: state.editBoardRendered,
+    createTicketRendered: state.createTicketRendered,
+    editTicketRendered: state.editTicketRendered
   };
 };
 
@@ -104,6 +112,12 @@ const mapDispatchToProps = (dispatch) => {
     },
     handleEditBoardRendered() {
       dispatch(toggleEditBoard());
+    },
+    handleCreateTicketRendered() {
+      dispatch(toggleCreateTicket());
+    },
+    handleEditTicketRendered() {
+      dispatch(toggleEditTicket());
     }
   };
 };

@@ -1,4 +1,4 @@
-import { SET_USER, SET_CURRENT_BOARD, SET_CURRENT_PANEL, SET_BOARDS, SET_PANELS, SET_TICKETS, EDIT_CURRENT_BOARD, EDIT_BOARDS, EDIT_PANELS, EDIT_CURRENT_PANEL, EDIT_TICKETS, EDIT_CURRENT_TICKET, TOGGLE_DRAWER, TOGGLE_CREATE_BOARD, TOGGLE_EDIT_BOARD } from './actions';
+import { SET_USER, SET_CURRENT_BOARD, SET_CURRENT_PANEL, SET_BOARDS, SET_PANELS, SET_TICKETS, EDIT_CURRENT_BOARD, EDIT_BOARDS, EDIT_PANELS, EDIT_CURRENT_PANEL, EDIT_TICKETS, EDIT_CURRENT_TICKET, TOGGLE_DRAWER, TOGGLE_CREATE_BOARD, TOGGLE_EDIT_BOARD, TOGGLE_CREATE_TICKET, TOGGLE_EDIT_TICKET } from './actions';
 import axios from 'axios';
 
 
@@ -61,6 +61,14 @@ export function toggleCreateBoard() {
 
 export function toggleEditBoard() {
   return {type: TOGGLE_EDIT_BOARD};
+}
+
+export function toggleCreateTicket() {
+  return {type: TOGGLE_CREATE_TICKET};
+}
+
+export function toggleEditTicket() {
+  return {type: TOGGLE_EDIT_TICKET};
 }
 /** Upon Login, perform asynchronous Axios request to get user information and 
   **/
