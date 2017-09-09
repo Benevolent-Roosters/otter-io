@@ -2,11 +2,23 @@ const dbhelper = require('../../db/helpers.js');
 const helper = require('./helper');
 
 module.exports.getBoardPanels = (req, res) => {
-  if (helper.checkUndefined(req.params.board_id)) {
+  //req.body.board_id used to be req.params.board_id but axios GET can only get it into req.body
+  if (helper.checkUndefined(req.body.board_id)) {
     res.status(400).send('one of parameters from client is undefined');
+    return;
   }
-  var board_id = req.params.board_id;
-  dbhelper.getPanelsByBoard(board_id)
+  var board_id = req.body.board_id;
+  //check if member of board_id
+  helper.checkIfMemberOfBoardId(req.user.id, board_id)
+    .then(boolean => {
+      if (!boolean) {
+        res.status(401).send();
+        throw 'exit';
+      }
+    })
+    .then(() => {
+      return dbhelper.getPanelsByBoard(board_id);
+    })
     .then(panels => {
       if (!panels) {
         throw 'cant get panels for board';
@@ -14,21 +26,33 @@ module.exports.getBoardPanels = (req, res) => {
       res.status(200).send(panels);
     })
     .catch(err => {
-      // This code indicates an outside service (the database) did not respond in time
-      res.status(500).send(JSON.stringify(err));
+      if (err !== 'exit') {
+        // This code indicates an outside service (the database) did not respond in time
+        res.status(500).send(JSON.stringify(err));
+      }
     });
 };
 
 module.exports.createBoardPanel = (req, res) => {
   if (helper.checkUndefined(req.body.name, req.body.due_date, req.body.board_id)) {
     res.status(400).send('one of parameters from client is undefined');
+    return;
   }
   var panelObj = {
     name: req.body.name,
     due_date: req.body.due_date,
     board_id: req.body.board_id
   };
-  dbhelper.createPanel(panelObj)
+  helper.checkIfOwnerOfBoardId(req.user.id, req.body.board_id)
+    .then(boolean => {
+      if (!boolean) {
+        res.status(401).send();
+        throw 'exit';
+      }
+    })
+    .then(() => {
+      return dbhelper.createPanel(panelObj);
+    })
     .then(result => {
       if (!result) {
         throw 'cant create panel';
@@ -36,16 +60,28 @@ module.exports.createBoardPanel = (req, res) => {
       res.status(201).send(result);
     })
     .catch(err => {
-      res.status(500).send(JSON.stringify(err));
+      if (err !== 'exit') {
+        res.status(500).send(JSON.stringify(err));
+      }
     });
 };
 
 module.exports.getOnePanel = (req, res) => {
   if (helper.checkUndefined(req.params.id)) {
     res.status(400).send('one of parameters from client is undefined');
+    return;
   }
   var panelId = req.params.id;
-  dbhelper.getPanelById(panelId)
+  helper.checkIfMemberOfPanelId(req.user.id, panelId)
+    .then(boolean => {
+      if (!boolean) {
+        res.status(401).send();
+        throw 'exit';
+      }
+    })
+    .then(() => {
+      return dbhelper.getPanelById(panelId);
+    })
     .then(panel => {
       if (!panel) {
         throw 'cant get panel by id';
@@ -53,13 +89,16 @@ module.exports.getOnePanel = (req, res) => {
       res.status(200).send(panel);
     })
     .catch((err) => {
-      res.status(500).send(JSON.stringify(err));
+      if (err !== 'exit') {
+        res.status(500).send(JSON.stringify(err)); 
+      }
     });
 };
 
 module.exports.updatePanel = (req, res) => {
   if (helper.checkUndefined(req.body)) {
     res.status(400).send('one of parameters from client is undefined');
+    return;
   }
   var panelObj = req.body;
   var validKeys = {
@@ -72,21 +111,34 @@ module.exports.updatePanel = (req, res) => {
     if (panelObj.hasOwnProperty(key)) {
       if (!(key in validKeys)) {
         res.status(400).send(`${key} not a valid field`);
+        return;
       }
     }
   }
   var panelId = panelObj.id;
   if (!panelId) {
     res.status(400).send(`Update panel object ${JSON.stringify(panelId)} doesnt have id field`);
+    return;
   }
-  dbhelper.updatePanelById(panelId, panelObj)
+  helper.checkIfOwnerOfBoardId(req.user.id, req.body.board_id)
+    .then(boolean => {
+      if (!boolean) {
+        res.status(401).send();
+        throw 'exit';
+      }
+    })
+    .then(() => {
+      return dbhelper.updatePanelById(panelId, panelObj);
+    })
     .then((panel) => {
       if (!panel) {
         throw 'cant update panel by id';
       }
-      res.sendStatus(201);
+      res.status(201).send(panel);
     })
     .catch((err) => {
-      res.status(500).send(JSON.stringify(err));
+      if (err !== 'exit') {
+        res.status(500).send(JSON.stringify(err));
+      }
     });
 };

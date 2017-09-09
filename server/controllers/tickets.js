@@ -3,10 +3,11 @@ const dbhelper = require('../../db/helpers.js');
 const helper = require('./helper');
 
 module.exports.getPanelTickets = (req, res) => {
-  if (helper.checkUndefined(req.params.panel_id)) {
+  if (helper.checkUndefined(req.body.panel_id)) {
     res.status(400).send('one of parameters from client is undefined');
   }
-  var panelId = req.params.panel_id;
+  //req.body.panel_id used to be req.params.panel_id but axios GET can only put in req.body
+  var panelId = req.body.panel_id;
   dbhelper.getTicketsByPanel(panelId)
     .then(tickets => {
       if (!tickets) {
@@ -76,6 +77,7 @@ module.exports.getOneTicket = (req, res) => {
 module.exports.updateTicket = (req, res) => {
   if (helper.checkUndefined(req.body)) {
     res.status(400).send('one of parameters from client is undefined');
+    return;
   }
   var ticketObj = req.body;
   var validKeys = {
@@ -94,19 +96,21 @@ module.exports.updateTicket = (req, res) => {
     if (ticketObj.hasOwnProperty(key)) {
       if (!(key in validKeys)) {
         res.status(400).send(`${key} not a valid field`);
+        return;
       }
     }
   }
   var ticketlId = ticketObj.id;
   if (!ticketId) {
     res.status(400).send(`Update panel object ${JSON.stringify(ticketlId)} doesnt have id field`);
+    return;
   }
   dbhelper.updateTicketById(ticketId, ticketObj)
     .then((ticket) => {
       if (!ticket) {
         throw 'cant update ticket by id';
       }
-      res.sendStatus(201);
+      res.status(201).send(ticket);
     })
     .catch(err => {
       res.status(500).send(JSON.stringify(err));
@@ -116,6 +120,7 @@ module.exports.updateTicket = (req, res) => {
 module.exports.deleteOne = (req, res) => {
   if (helper.checkUndefined(req.params.id)) {
     res.status(400).send('one of parameters from client is undefined');
+    return;
   }
   models.Ticket.where({ id: req.params.id }).fetch()
     .then(ticket => {

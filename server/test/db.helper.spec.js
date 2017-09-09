@@ -168,4 +168,6 @@ describe('User', () => {
     });
   });
 
+  //add user to board twice and it should fail the second time because it is redundant
+
 });

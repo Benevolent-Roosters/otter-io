@@ -5,7 +5,7 @@ const router = express.Router();
 
 //this is for testing purposes only to set up fake user session
 if (process.env.NODE_ENV === 'test') {
-  var fakeUser = {
+  var fakeUser1 = {
     'id': 1,
     'email': null,
     'github_handle': 'stevepkuo',
@@ -13,11 +13,41 @@ if (process.env.NODE_ENV === 'test') {
     'oauth_id': '14355395',
     'lastboard_id': null
   };
+  var fakeUser2 = {
+    'id': 2,
+    'email': null,
+    'github_handle': 'stevepkuo2',
+    'profile_photo': 'https://avatars0.githubusercontent.com/u/14355396?v=5',
+    'oauth_id': '14355396',
+    'lastboard_id': null
+  };
+  var fakeUser3 = {
+    'id': 3,
+    'email': null,
+    'github_handle': 'dsc03',
+    'profile_photo': 'https://avatars0.githubusercontent.com/u/25214199?v=4',
+    'oauth_id': '25214199',
+    'lastboard_id': null
+  };
   router.use(middleware.auth.fakemiddleware);
   router.route('/auth/fake')
     .get((req, res) => {
       req.session = req.session || {};  
-      req.session.user_tmp = fakeUser;
+      req.session.user_tmp = fakeUser1;
+      //res.redirect('/');
+      res.status(200).send();
+    });
+  router.route('/auth/fake2')
+    .get((req, res) => {
+      req.session = req.session || {};  
+      req.session.user_tmp = fakeUser2;
+      //res.redirect('/');
+      res.status(200).send();
+    });
+  router.route('/auth/fake3')
+    .get((req, res) => {
+      req.session = req.session || {};  
+      req.session.user_tmp = fakeUser3;
       //res.redirect('/');
       res.status(200).send();
     });

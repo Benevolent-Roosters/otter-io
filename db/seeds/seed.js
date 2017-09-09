@@ -260,6 +260,16 @@ exports.seed = function (knex, Promise) {
       console.log('ERROR! Could not create ticket seed: ', err);
     })
 
+    .then((ticket) => {
+      return models.User.where({ github_handle: 'dsc03' }).fetch();
+    })
+    .then((user) => {
+      return user.memberOfBoards().attach(3);
+    })
+    .error(err => {
+      console.log('ERROR! Could not link board3 to user3: ', err);
+    })
+
     .catch((user = 'ok', board = 'ok', panel = 'ok', ticket = 'ok') => {
       console.log(`There is a situation... user: ${user}, board: ${board}, panel: ${panel}, ticket: ${ticket}`);
     });

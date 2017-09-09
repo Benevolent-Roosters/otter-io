@@ -3,10 +3,12 @@ const dbhelper = require('../../db/helpers.js');
 const helper = require('./helper');
 
 module.exports.getUserOwnedBoards = (req, res) => {
-  if (helper.checkUndefined(req.params.owner_id)) {
+  if (helper.checkUndefined(req.body.owner_id)) {
     res.status(400).send('one of parameters from client is undefined');
+    return;
   }
-  models.Board.where({ owner_id: req.params.owner_id }).fetch()
+  //req.body.owner_id used to be req.params.owner_id but axios GET can only get it into req.body
+  models.Board.where({ owner_id: req.body.owner_id }).fetch()
     .then(boards => {
       if (!boards) {
         throw 'cant get boards that user owns';
@@ -34,8 +36,13 @@ module.exports.getMyBoards = (req, res) => {
 };
 
 module.exports.createMyBoard = (req, res) => {
-  if (helper.checkUndefined(req.body.board_name, req.body.repo_name, req.body.repo_url)) {
+  if (helper.checkUndefined(req.body.board_name, req.body.repo_name, req.body.repo_url, req.body.owner_id)) {
     res.status(400).send('one of parameters from client is undefined');
+    return;
+  }
+  if (parseInt(req.body.owner_id) !== req.user.id) {
+    res.status(400).send('owner_id field from client doesnt match actual logged in user');
+    return;
   }
   var boardObj = {
     board_name: req.body.board_name,
@@ -66,6 +73,7 @@ module.exports.createMyBoard = (req, res) => {
 module.exports.getOneBoard = (req, res) => {
   if (helper.checkUndefined(req.params.id)) {
     res.status(400).send('one of parameters from client is undefined');
+    return;
   }
   var boardId = req.params.id;
   dbhelper.getBoardById(boardId)
@@ -83,6 +91,7 @@ module.exports.getOneBoard = (req, res) => {
 module.exports.updateBoard = (req, res) => {
   if (helper.checkUndefined(req.body)) {
     res.status(400).send('one of parameters from client is undefined');
+    return;
   }
   var updateBoardObj = req.body;
   var validKeys = {
@@ -96,19 +105,21 @@ module.exports.updateBoard = (req, res) => {
     if (updateBoardObj.hasOwnProperty(key)) {
       if (!(key in validKeys)) {
         res.status(400).send(`${key} not a valid field`);
+        return;
       }
     }
   }
   var boardId = updateBoardObj.id;
   if (!boardId) {
     res.status(400).send(`Update board object ${JSON.stringify(updateBoardObj)} doesnt have id field`);
+    return;
   }
   dbhelper.updateBoardById(boardId, updateBoardObj)
     .then((board) => {
       if (!board) {
         throw 'could not update board obj';
       }
-      res.sendStatus(201);
+      res.status(201).send(board);
     })
     .catch((err) => {
       res.status(500).send(JSON.stringify(err));
@@ -118,6 +129,7 @@ module.exports.updateBoard = (req, res) => {
 module.exports.getUsersByBoard = (req, res) => {
   if (helper.checkUndefined(req.params.id)) {
     res.status(400).send('one of parameters from client is undefined');
+    return;
   }
   var boardId = req.params.id;
   dbhelper.getUsersByBoard(boardId)
@@ -125,7 +137,7 @@ module.exports.getUsersByBoard = (req, res) => {
       if (!users) {
         throw 'couldnt get users for board';
       }
-      res.sendStatus(200);
+      res.status(200).send(users);
     })
     .catch((err) => {
       res.status(500).send(JSON.stringify(err));
@@ -135,6 +147,7 @@ module.exports.getUsersByBoard = (req, res) => {
 module.exports.addMember = (req, res) => {
   if (helper.checkUndefined(req.params.id, req.body.user_id)) {
     res.status(400).send('one of parameters from client is undefined');
+    return;
   }
   var userId = req.body.user_id;
   var boardId = req.params.id;
