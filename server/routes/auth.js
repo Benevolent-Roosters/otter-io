@@ -53,7 +53,7 @@ router.route('/logout')
 router.get('/auth/github', middleware.passport.authenticate('github'));
 
 router.get('/auth/github/callback', middleware.passport.authenticate('github', {
-  successRedirect: '/profile',
+  successRedirect: '/',
   failureRedirect: '/login'
 }));
 

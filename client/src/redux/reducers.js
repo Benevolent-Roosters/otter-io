@@ -1,7 +1,8 @@
-import { SET_USER, SET_CURRENT_BOARD, SET_BOARDS, SET_PANELS, SET_TICKETS, EDIT_CURRENT_BOARD, EDIT_BOARDS, EDIT_PANELS, EDIT_CURRENT_PANEL, EDIT_TICKETS, EDIT_CURRENT_TICKET } from './actions';
+import { SET_USER, SET_CURRENT_BOARD, SET_BOARDS, SET_PANELS, SET_CURRENT_PANEL, SET_TICKETS, EDIT_CURRENT_BOARD, EDIT_BOARDS, EDIT_PANELS, EDIT_CURRENT_PANEL, EDIT_TICKETS, EDIT_CURRENT_TICKET, TOGGLE_DRAWER, TOGGLE_CREATE_BOARD, TOGGLE_EDIT_BOARD } from './actions';
 
 const defaultState = {
   user: {
+    id: 0
   },
   boards: [],
   panels: [],
@@ -11,7 +12,10 @@ const defaultState = {
   currentTicket: {
   },
   currentPanel: {
-  }
+  },
+  drawerToggled: false,
+  createBoardRendered: false,
+  editBoardRendered: false
 };
 
 const rootReducer = (state = defaultState, action) => {
@@ -40,6 +44,12 @@ const rootReducer = (state = defaultState, action) => {
       return reduceEditTickets(state, action);
     case EDIT_CURRENT_TICKET:
       return reduceEditCurrentTicket(state, action);
+    case TOGGLE_DRAWER:
+      return reduceToggleDrawer(state);
+    case TOGGLE_CREATE_BOARD:
+      return reduceToggleCreateBoard(state);
+    case TOGGLE_EDIT_BOARD:
+      return reduceToggleEditBoard(state);
     default:
       return state;
   }
@@ -69,4 +79,13 @@ const reduceEditTickets = (state, action) => Object.assign({}, state, {tickets: 
 
 const reduceEditCurrentTicket = (state, action) => Object.assign({}, state, {currentTicket: action.value});
 
+const reduceToggleDrawer = (state) => Object.assign({}, state, {drawerToggled: !state.drawerToggled});
+
+const reduceToggleCreateBoard = (state) => Object.assign({}, state, {createBoardRendered: !state.createBoardRendered});
+
+const reduceToggleEditBoard = (state) => Object.assign({}, state, {editBoardRendered: !state.editBoardRendered});
+
 export default rootReducer;
+
+
+

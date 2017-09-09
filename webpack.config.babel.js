@@ -9,7 +9,7 @@ const config = {
   },
   module: {
     rules: [
-      { test: /\.(js|jsx)$/,
+      { test: /\.(js|jsx|svg)$/,
         include: path.join(__dirname, 'client/src'),
         exclude: ['node_modules'],
         use: [
@@ -19,6 +19,16 @@ const config = {
             }
           }
         ]
+      },
+      {
+        test: /\.css$/, loader: 'style-loader!css-loader'
+      },
+      {
+        test: /\.(jpg|png|svg)$/,
+        loader: 'url-loader',
+        options: {
+          limit: 25000,
+        }
       }
     ]
   }

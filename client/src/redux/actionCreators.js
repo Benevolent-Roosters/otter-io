@@ -1,4 +1,4 @@
-import { SET_USER, SET_CURRENT_BOARD, SET_BOARDS, SET_PANELS, SET_TICKETS, EDIT_CURRENT_BOARD, EDIT_BOARDS, EDIT_PANELS, EDIT_CURRENT_PANEL, EDIT_TICKETS, EDIT_CURRENT_TICKET } from './actions';
+import { SET_USER, SET_CURRENT_BOARD, SET_CURRENT_PANEL, SET_BOARDS, SET_PANELS, SET_TICKETS, EDIT_CURRENT_BOARD, EDIT_BOARDS, EDIT_PANELS, EDIT_CURRENT_PANEL, EDIT_TICKETS, EDIT_CURRENT_TICKET, TOGGLE_DRAWER, TOGGLE_CREATE_BOARD, TOGGLE_EDIT_BOARD } from './actions';
 import axios from 'axios';
 
 
@@ -51,6 +51,17 @@ export function editCurrentTicket(ticketObj) {
   return {type: EDIT_CURRENT_TICKET, value: ticketObj};
 }
 
+export function toggleDrawer() {
+  return {type: TOGGLE_DRAWER};
+}
+
+export function toggleCreateBoard() {
+  return {type: TOGGLE_CREATE_BOARD};
+}
+
+export function toggleEditBoard() {
+  return {type: TOGGLE_EDIT_BOARD};
+}
 /** Upon Login, perform asynchronous Axios request to get user information and 
   **/
 export function getUserInfo() {
@@ -68,9 +79,9 @@ export function getUserInfo() {
 }
 
 /** Use the loggedin user's Github handle to retrieve their boards **/
-export function getBoardsByUser(userGitHandle) {
+export function getBoardsByUser() { //userid
   return (dispatch) => {
-    axios.get('/api/boards', {github_handle: userGitHandle})
+    axios.get('/api/boards') //{user_id: userid}
 
       //set Boards state
       .then((response) => {
@@ -117,13 +128,13 @@ export function getTicketsByPanel(panelId) {
 
 /** Save the newly created board to the database & then retrieve all boards associated with a user **/
 //TODO: Edit param names based on React CreateBoard form inputs obj
-export function postCreatedBoard(newBoard, userGithubHandle, userid) {
+export function postCreatedBoard(newBoard) {
   return (dispatch => {
 
     /** store the new board info and current userid (as owner) in the database **/
-    axios.post('/api/boards', {board: newBoard, owner_id: userid})
+    axios.post('/api/boards', newBoard) //owner_id: userid
       .then(() => {
-        return getBoardsByUser(userGithubHandle);
+        return getBoardsByUser();
       })
     /** Add new board info to board and currentBoard state ONLY if it successfully saved **/
       .then(response => {
@@ -139,9 +150,9 @@ export function postCreatedBoard(newBoard, userGithubHandle, userid) {
 
 /** Upon creation a panel, save the panel to the database and then retrieve all panels associated with the board and set the currentpanel to the newly created one **/
 //TODO: Edit param names based on React CreatePanel form inputs obj
-export function postCreatedPanel(newPanel, boardid, userid) {
+export function postCreatedPanel(newPanel, boardid) {
   return (dispatch => {
-    axios.post('/api/panels', {panel: newPanel, userid: userid})
+    axios.post('/api/panels', newPanel) // userid: userid
       .then(() => {
         return getPanelsByBoard(boardid);
       })
@@ -154,9 +165,9 @@ export function postCreatedPanel(newPanel, boardid, userid) {
 
 /** Upon creation of a ticket, save the ticket to the database and then retrieve all tickets associated with all panels currently in state  **/
 //TODO: Edit param names based on React CreateTicket form inputs obj
-export function postCreatedTicket(newTicket, boardid, panelid, userid) {
+export function postCreatedTicket(newTicket, panelid) {
   return (dispatch => {
-    axios.post('/api/tickets', {ticket: newTicket, panelid: panelid, userid: userid})
+    axios.post('/api/tickets', newTicket) //panelid: panelid, userid: userid
       .then(() => {
         return getTicketsByPanel(panelid);
       })

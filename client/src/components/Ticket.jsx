@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { getTicketsByPanel } from '../redux/actionCreators.js';
 
 const Ticket = props => {

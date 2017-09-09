@@ -1,40 +1,96 @@
 import React from 'react';
-import { putEditedBoard, editBoards } from '../redux/actionCreators.js';
+import { putEditedBoard, editBoards, toggleEditBoard } from '../redux/actionCreators.js';
 import { connect } from 'react-redux';
+import { Modal, Form, FormGroup, FormControl, Button, ControlLabel, Grid, Col, Row } from 'react-bootstrap';
 
-const EditBoard = (props) => {
+let buttonStyle = {marginTop: '15px', marginRight: '15px'};
+
+class EditBoard extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      board_name: '',
+      repo_url: '',
+      owner_id: this.props.owner_id
+    };
+  }
 
   reorderBoards(editedBoard) {
     let idx;
-    for (let i = 0; i < props.boards.length; i++) {
-      if (editedBoard.boardId === props.boards[i].boardId) {
+    for (let i = 0; i < this.props.boards.length; i++) {
+      if (editedBoard.boardId === this.props.boards[i].boardId) {
         idx = i;
         break;
       }
     }
-    return props.boards.slice(0, idx).concat(editedBoard).concat(props.boards.slice(idx + 1));
+    return this.props.boards.slice(0, idx).concat(editedBoard).concat(this.props.boards.slice(idx + 1));
+  }
+
+  handleInputChange(event) {
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+
+    this.setState({
+      [name]: value
+    });
   }
 
   render() {
-     return (
-      <div>This is EditBoard</div>
-    )
+    return (
+      <div>
+        <Grid>
+          <Col sm={12}>
+            <Row>
+              <Modal show={this.props.editBoardRendered ? true : false}>
+                <Modal.Header bsSize='large' style={{backgroundColor: '#7ED321'}}>
+                  <Modal.Title style={{color: 'white'}}>Edit Board</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    <Form horizontal>
+                      <FormGroup>
+                        <Col componentClass={ControlLabel} sm={4}>Board Name</Col>
+                        <Col sm={8}>
+                        <FormControl name='board_name' bsSize="large" type="text" value={this.state.board_name} placeholder={'Board name'} onChange={this.handleInputChange.bind(this)}></FormControl>
+                        </Col>
+                      </FormGroup>
+                      <FormGroup>
+                        <Col componentClass={ControlLabel} sm={4}>Github Repo URL</Col>
+                        <Col sm={8}>
+                        <FormControl name='repo_url' bsSize="large" type="text" value={this.state.repo_url} placeholder={'Github Repo'} onChange={ this.handleInputChange.bind(this)}></FormControl>
+                        </Col>
+                      </FormGroup>
+                      <Button style={buttonStyle} bsStyle="default" onClick={this.props.handleEditBoardRendered}>Cancel</Button>
+                      <Button style={buttonStyle} bsStyle="primary" type="button" onClick={() => this.props.handleEditBoard(this.state)}>Update</Button>
+                    </Form>
+                  </Modal.Body>
+                </Modal>
+                </Row>
+              </Col>
+            </Grid>
+      </div>
+    );
   }
-
-};
+}
 
 const mapStateToProps = (state) => {
   return {
     'boards': state.boards,
-    'currentBoard': state.currentBoard
+    'currentBoard': state.currentBoard,
+    'editBoardRendered': state.editBoardRendered,
+    'owner_id': state.user.id
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    handleEditBoard(event) {
+    handleEditBoard(boardObj) {
       dispatch(editBoards(reorderBoards(/*boardObj*/)));
       dispatch(putEditedBoard(/*boardObj*/))
+    },
+    handleEditBoardRendered() {
+      dispatch(toggleEditBoard());
     }
   };
 };
