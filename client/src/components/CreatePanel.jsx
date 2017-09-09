@@ -10,15 +10,15 @@ class CreatePanel extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      panelName: '',
-      dueDate: '',
-      display: true
+      name: '',
+      due_date: '',
+      board_id: this.props.currentBoardId
     }
   }
 
   handleNameChange(e) {
     this.setState({
-      panelName: e.target.value
+      name: e.target.value
     });
   }
 
@@ -26,10 +26,6 @@ class CreatePanel extends React.Component {
     this.setState({
       dueDate: moment(date).format().slice(0,10)
     });
-  }
-
-  handleSubmit() {
-    axios.post('/api/panels', {})
   }
 
   render() {
@@ -61,7 +57,7 @@ class CreatePanel extends React.Component {
           </Modal.Body>
           <Modal.Footer>
             <Button>Cancel</Button>
-            <Button bsStyle="primary" onClick={this.handleSubmit.bind(this)}>Submit</Button>
+            <Button bsStyle="primary" onClick={() => {this.props.handleSetPanels()}}>Submit</Button>
           </Modal.Footer>
         </Modal.Dialog>
       </div>
@@ -78,8 +74,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    handleSetPanels(newPanel, boardid, userid) {
-      dispatch(postCreatedPanel(newPanel, boardid, userid));
+    handleSetPanels(newPanel) {
+      dispatch(postCreatedPanel(newPanel));
     }
   };
 };
