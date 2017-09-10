@@ -6,16 +6,27 @@ import { Carousel, Button } from 'react-bootstrap';
 import Slider from 'react-slick';
 import PrevArrow from 'react-slick';
 
+
 const Board = (props) => {
+  // let boardPanels = props.handleGetPanelsByBoard(props.panels);
+  let settings = {
+    slidesToShow: 3,
+    slidesToScroll: 1,
+    speed: 500,
+    infinite: false,
+    centerMode: true,
+    focusOnSelect: true,
+    draggable: false
+    /*currentSlide: props.currentPanel*/
+  }
   return (
-      <Slider arrow={true} centerMode={true} dots={true} infinite={true} speed={500} slidesToShow={2} slidesToScroll={1} focusOnSelect={true}>
-        <div><h3>1</h3></div>
-        <div><h3>2</h3></div>
-        <div><h3>3</h3></div>
-        <div><h3>4</h3></div>
-        <div><h3>5</h3></div>
-        <div><h3>6</h3></div>
-        <div><h3>7</h3></div>
+      <Slider {...settings}>
+        <div><Panel /></div>
+        <div><Panel /></div>
+        <div><Panel /></div>
+        <div><Panel /></div>
+        <div><Panel /></div>
+        <div><Panel /></div>
       </Slider>
   );
 };
@@ -24,7 +35,8 @@ const Board = (props) => {
 const mapStateToProps = (state) => {
   return {
     'currentBoard': state.currentBoard,
-    'panels': state.panels
+    'panels': state.panels,
+    currentPanel: state.currentPanel
   };
 };
 

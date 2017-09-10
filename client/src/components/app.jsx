@@ -1,9 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getUserInfo, getBoardsByUser, toggleDrawer, toggleCreateBoard, toggleEditBoard, toggleCreateTicket, toggleEditTicket } from '../redux/actionCreators.js';
-import { Button } from 'react-bootstrap';
+import { getUserInfo, getBoardsByUser, toggleDrawer, toggleCreateBoard, toggleEditBoard, toggleCreateTicket, toggleEditTicket, } from '../redux/actionCreators.js';
+
 import axios from 'axios';
 import moment from 'moment';
+import CreatePanel from './CreatePanel.jsx';
 import Board from './Board.jsx';
 import SidebarNavigation from './SidebarNav.jsx';
 import PerformanceDashboard from './PerformanceDashboard.jsx';
@@ -12,6 +13,8 @@ import CreateBoard from './CreateBoard.jsx';
 import EditBoard from './EditBoard.jsx';
 import CreateTicket from './CreateTicket.jsx';
 import EditTicket from './EditTicket.jsx';
+import { Button } from 'react-bootstrap';
+import EditPanel from './EditPanel.jsx';
 
 let iconStyle = {
   position: 'absolute',
@@ -19,6 +22,7 @@ let iconStyle = {
   left: '20px',
   backgroundColor: 'white'
 };
+
 
 class App extends React.Component {
   constructor(props) {
@@ -62,6 +66,7 @@ class App extends React.Component {
         <Button bsStyle="primary" onClick={this.props.handleEditBoardRendered}>Edit Board</Button>
         <Button bsStyle="primary" onClick={this.props.handleCreateTicketRendered}>Create Ticket</Button>
         <Button bsStyle="primary" onClick={this.props.handleEditTicketRendered}>Edit Ticket</Button>
+        <Button bsStyle="primary" onClick={this.props.handleCreatePanelRendered}>Create Panel</Button>
         <Button style={iconStyle}><img src={require('../images/menu.png')} onClick={this.props.handleToggleDrawer}/></Button>
         <SidebarNavigation/>
         <PerformanceDashboard/>
@@ -70,6 +75,8 @@ class App extends React.Component {
         <EditBoard/>
         <CreateTicket/>
         <EditTicket/>
+        <CreatePanel/>
+        <EditPanel/>
       </div>
     );
   } 
@@ -86,7 +93,8 @@ const mapStateToProps = (state) => {
     createBoardRendered: state.createBoardRendered,
     editBoardRendered: state.editBoardRendered,
     createTicketRendered: state.createTicketRendered,
-    editTicketRendered: state.editTicketRendered
+    editTicketRendered: state.editTicketRendered,
+    createPanelRendered: state.createPanelRendered
   };
 };
 
@@ -118,9 +126,12 @@ const mapDispatchToProps = (dispatch) => {
     },
     handleEditTicketRendered() {
       dispatch(toggleEditTicket());
+    },
+    handleCreatePanelRendered() {
+      dispatch(toggleCreatePanel());
     }
   };
 };
 
 export var UnwrappedApp = App;
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(App); 

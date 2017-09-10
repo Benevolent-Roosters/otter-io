@@ -4,7 +4,7 @@
     "connection": {
       "database": "thesis",
       "user": "postgres",
-      "password": "postgres",
+      "password": "MPCTE3TYFC",
       "host": "localhost",
       "port": 5432
     },

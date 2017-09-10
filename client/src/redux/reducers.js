@@ -1,4 +1,4 @@
-import { SET_USER, SET_CURRENT_BOARD, SET_BOARDS, SET_PANELS, SET_CURRENT_PANEL, SET_TICKETS, EDIT_CURRENT_BOARD, EDIT_BOARDS, EDIT_PANELS, EDIT_CURRENT_PANEL, EDIT_TICKETS, EDIT_CURRENT_TICKET, TOGGLE_DRAWER, TOGGLE_CREATE_BOARD, TOGGLE_EDIT_BOARD, TOGGLE_CREATE_TICKET, TOGGLE_EDIT_TICKET } from './actions';
+import { SET_USER, SET_CURRENT_BOARD, SET_BOARDS, SET_PANELS, SET_CURRENT_PANEL, SET_TICKETS, EDIT_CURRENT_BOARD, EDIT_BOARDS, EDIT_PANELS, EDIT_CURRENT_PANEL, EDIT_TICKETS, EDIT_CURRENT_TICKET, TOGGLE_DRAWER, TOGGLE_CREATE_BOARD, TOGGLE_EDIT_BOARD, TOGGLE_CREATE_TICKET, TOGGLE_EDIT_TICKET, TOGGLE_EDIT_PANEL, TOGGLE_CREATE_PANEL } from './actions';
 
 const defaultState = {
   user: {
@@ -17,7 +17,9 @@ const defaultState = {
   createBoardRendered: false,
   editBoardRendered: false,
   createTicketRendered: false,
-  editTicketRendered: false
+  editTicketRendered: false,
+  createPanelRendered: false,
+  editPanelRendered: false
 };
 
 const rootReducer = (state = defaultState, action) => {
@@ -56,6 +58,10 @@ const rootReducer = (state = defaultState, action) => {
       return reduceToggleCreateTicket(state);
     case TOGGLE_EDIT_TICKET:
       return reduceToggleEditTicket(state);
+    case TOGGLE_CREATE_PANEL:
+      return reduceToggleCreatePanel(state);
+    case TOGGLE_EDIT_PANEL:
+      return reduceToggleEditPanel(state);
     default:
       return state;
   }
@@ -95,7 +101,8 @@ const reduceToggleCreateTicket = (state) => Object.assign({}, state, {createTick
 
 const reduceToggleEditTicket = (state) => Object.assign({}, state, {editTicketRendered: !state.editTicketRendered});
 
+const reduceToggleCreatePanel = (state) => Object.assign({}, state, {createPanelRendered: !state.createPanelRendered});
+
+const reduceToggleEditPanel = (state) => Object.assign({}, state, {editPanelRendered: !state.editPanelRendered});
+
 export default rootReducer;
-
-
-
