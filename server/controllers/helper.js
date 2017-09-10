@@ -12,7 +12,7 @@ module.exports.checkUndefined = (...args) => {
 };
 
 module.exports.checkIfMemberOfBoardId = (userId, boardId) => {
-  return dbhelper.getUsersByBoard(boardId)
+  return dbhelper.getUsersByBoard(parseInt(boardId))
     .then(users => {
       if (!users) {
         throw users;
@@ -28,7 +28,7 @@ module.exports.checkIfMemberOfBoardId = (userId, boardId) => {
 };
 
 module.exports.checkIfOwnerOfBoardId = (userId, boardId) => {
-  return dbhelper.getBoardById(boardId)
+  return dbhelper.getBoardById(parseInt(boardId))
     .then(board => {
       if (!board) {
         throw board;

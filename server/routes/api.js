@@ -50,12 +50,12 @@ router.route('/panels/:id')
 //  //also delete all of panel's tickets???
 
 router.route('/tickets')
-  .get(TicketController.getPanelTickets) //only if member of board
-  .post(TicketController.createPanelTicket) //only if member of board
-  .put(TicketController.updateTicket); //only if member of board
+  .get(middleware.auth.verifyPanelMemberElse401, TicketController.getPanelTickets) //only if member of board
+  .post(middleware.auth.verifyPanelMemberElse401, TicketController.createPanelTicket) //only if member of board
+  .put(middleware.auth.verifyPanelMemberElse401, TicketController.updateTicket); //only if member of board
 
 router.route('/tickets/:id')
-  .get(TicketController.getOneTicket); //only if member of board
-//  .delete(TicketController.deleteOne) //only if owner of board
+  .get(middleware.auth.verifyTicketMemberElse401, TicketController.getOneTicket); //only if member of board
+//  .delete(middleware.auth.verifyTicketMemberElse401, TicketController.deleteOne) //only if owner of board
 
 module.exports = router;

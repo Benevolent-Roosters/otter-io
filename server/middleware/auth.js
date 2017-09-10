@@ -3,6 +3,7 @@ const RedisStore = require('connect-redis')(session);
 const redisClient = require('redis').createClient();
 const models = require('../../db/models');
 const dbhelper = require('../../db/helpers.js');
+const helper = require('../controllers/helper');
 
 //for testing purposes to set up a fake login session
 module.exports.fakemiddleware = (req, res, next) => {
@@ -33,7 +34,7 @@ module.exports.verifyBoardMemberElse401 = (req, res, next) => {
   if (!req.params && !req.body) {
     res.status(400).send('board id couldnt be found in request from client');
   }
-  if (!req.params.id) {
+  if (!req.params || !req.params.id) {
     boardid = parseInt(req.body.id);
   } else {
     boardid = parseInt(req.params.id);
@@ -46,7 +47,7 @@ module.exports.verifyBoardMemberElse401 = (req, res, next) => {
   // })
 
   //see whether the boardid shows up under any of the users boards
-  dbhelper.getBoardsByUser(userId)
+  dbhelper.getBoardsByUser(parseInt(userId))
     .then(boards => {
       if (!boards) {
         throw 'user doesnt have any boards';
@@ -76,14 +77,14 @@ module.exports.verifyBoardOwnerElse401 = (req, res, next) => {
   if (!req.params && !req.body) {
     res.status(400).send('board id couldnt be found in request from client');
   }
-  if (!req.params.id) {
+  if (!req.params || !req.params.id) {
     boardid = parseInt(req.body.id);
   } else {
     boardid = parseInt(req.params.id);
   }
   var userId = req.user.id;
   //see whether the boardid's shows up under any of the users boards
-  dbhelper.getBoardById(boardid)
+  dbhelper.getBoardById(parseInt(boardid))
     .then(function(board) {
       if (!board) {
         throw board;
@@ -92,6 +93,70 @@ module.exports.verifyBoardOwnerElse401 = (req, res, next) => {
     })
     .then(ownsBoard => {
       if (!ownsBoard) {
+        res.status(401).send();
+      } else {
+        return next();
+      }
+    })
+    .error(err => {
+      res.status(500).send();
+    })
+    .catch(err => {
+      res.status(404).send(JSON.stringify(err));
+    });
+};
+
+//to be used as middleware auth before performing any TICKET CRUD api routes
+module.exports.verifyPanelMemberElse401 = (req, res, next) => {
+  var panelid;
+  if (!req.params && !req.body) {
+    res.status(400).send('panel id couldnt be found in request from client');
+  }
+  if (!req.params || !req.params.id) {
+    panelid = parseInt(req.body.panel_id);
+  } else {
+    panelid = parseInt(req.params.id);
+  }
+  var userId = req.user.id;
+
+  //see whether the user belongs to panelid's board
+  helper.checkIfMemberOfPanelId(userId, panelid)
+    .then(boolean => {
+      if (!boolean) {
+        res.status(401).send();
+      } else {
+        return next();
+      }
+    })
+    .error(err => {
+      res.status(500).send();
+    })
+    .catch(err => {
+      res.status(404).send(JSON.stringify(err));
+    });
+};
+
+module.exports.verifyTicketMemberElse401 = (req, res, next) => {
+  var ticketid;
+  if (!req.params && !req.body) {
+    res.status(400).send('ticket id couldnt be found in request from client');
+  }
+  if (!req.params || !req.params.id) {
+    ticketid = parseInt(req.body.id);
+  } else {
+    ticketid = parseInt(req.params.id);
+  }
+  var userId = req.user.id;
+  //see whether the ticketid's shows up under any of the users boards
+  dbhelper.getTicketById(parseInt(ticketid))
+    .then((ticket) => {
+      if (!ticket) {
+        throw ticket;
+      }
+      return helper.checkIfMemberOfBoardId(userId, ticket.board_id);
+    })
+    .then(boardmember => {
+      if (!boardmember) {
         res.status(401).send();
       } else {
         return next();

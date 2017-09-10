@@ -118,7 +118,7 @@ export function getBoardsByUser() { //userid
 //TODO: set current panel by looking at dates and sorting panels appropriately
 export function getPanelsByBoard(boardid) {
   return (dispatch) => {
-    axios.get('/api/panels', {board_id: boardid})
+    axios.get('/api/panels', {data: {board_id: boardid}})
       .then((response) => {
         dispatch(setPanels(response.body));
         return response.body;
@@ -133,7 +133,7 @@ export function getPanelsByBoard(boardid) {
 //TODO: sorting tickets in order of completion, followed by urgency
 export function getTicketsByPanel(panelId) {
   return dispatch => {
-    axios.get('/api/tickets', {panel_id: panelId})
+    axios.get('/api/tickets', {data: {panel_id: panelId}})
       .then(response => {
         dispatch(setTickets(response.body));
         return response.body;

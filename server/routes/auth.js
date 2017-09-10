@@ -1,5 +1,7 @@
 const express = require('express');
 const middleware = require('../middleware');
+const dbhelper = require('../../db/helpers.js');
+const helper = require('../controllers/helper');
 
 const router = express.Router();
 
@@ -68,10 +70,63 @@ router.route('/signup')
     res.render('signup.ejs', { message: req.flash('signupMessage') });
   });
 
-/** ROUTE USED TO RETRIEVE AND SEND USER DATA BACK TO CLIENT **/
+/** ROUTE USED TO RETRIEVE AND UPDATE USER DATA AND SEND BACK TO CLIENT **/
 router.route('/profile')
-  .get(middleware.auth.verify, (req, res) => {
-    res.send(req.user);
+  .get(middleware.auth.verifyElse401, (req, res) => {
+    dbhelper.getUserById(parseInt(req.user.id))
+      .then(user => {
+        if (!user) {
+          throw user;
+        }
+        res.status(200).send(user);
+      })
+      .catch((err) => {
+        res.status(500).send(JSON.stringify(err));
+      });
+  })
+  .put(middleware.auth.verifyElse401, (req, res) => {
+    if (helper.checkUndefined(req.body)) {
+      console.log('stuff happened');
+      res.status(400).send('one of parameters from client is undefined');
+      return;
+    }
+    var userObj = req.body;
+    var validKeys = {
+      'id': true,
+      'email': true,
+      'github_handle': true,
+      'profile_photo': true,
+      'oauth_id': true,
+      'lastboard_id': true
+    };
+    for (var key in userObj) {
+      if (userObj.hasOwnProperty(key)) {
+        if (!(key in validKeys)) {
+          res.status(400).send(`${key} not a valid field`);
+          return;
+        }
+      }
+    }
+    var userId = userObj.id;
+    if (!userId) {
+      res.status(400).send(`Update user object ${JSON.stringify(userId)} doesnt have id field`);
+      return;
+    }
+    if (parseInt(req.body.id) !== req.user.id) {
+      res.status(400).send('id field from client doesnt match actual logged in user');
+      return;
+    }
+    dbhelper.updateUserById(parseInt(userId), userObj)
+      .then(user => {
+        if (!user) {
+          throw user;
+        }
+        res.status(201).send(user);
+      })
+      .catch((err) => {
+        res.status(500).send(JSON.stringify(err));
+      });
+
   });
 
 router.route('/logout')
