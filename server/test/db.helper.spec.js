@@ -74,7 +74,7 @@ describe('User', () => {
     it('Should be a function', () => {
       expect(dbhelper.updateUserById).to.be.a('function');
     });
-    it('Should update a user if it already exist in the database', (done) => {
+    it('Should update a user if it already exists in the database', (done) => {
       var profileInfo = {
         github_handle: 'stevepkuo',
         profile_photo: 'http://www.mypic.com',
@@ -118,6 +118,43 @@ describe('User', () => {
         });
     });
   });
+  describe('getUserById()', () => {
+    it('Should exist', () => {
+      expect(dbhelper.getUserById).to.exist;
+    });
+    it('Should be a function', () => {
+      expect(dbhelper.getUserById).to.be.a('function');
+    });
+    it('Should return user if it exists in database', (done) => {
+      dbhelper.getUserById(1)
+        .then((user) => {
+          expect(user).to.exist;
+          expect(user['github_handle']).to.equal('stevepkuo');
+          expect(user['profile_photo']).to.equal('https://avatars0.githubusercontent.com/u/14355395?v=4');
+          expect(user['oauth_id']).to.equal('14355395');
+          done();
+        })
+        .catch((err) => {
+          done(err);
+        })
+        .error((err) => done(err));
+    });
+    it('Should reject if passed a user that does not exist', (done) => {
+      dbhelper.getUserById(9)
+        .then((result) => {
+          expect('not thrown').to.equal('thrown error');
+          done();
+        })
+        .catch((err) => {
+          expect('thrown error').to.equal('thrown error');
+          done();
+        })
+        .error((err) => {
+          expect('thrown error').to.equal('thrown error');
+          done();
+        });
+    });
+  });
   describe('getBoardsByUser()', () => {
     it('Should exist', () => {
       expect(dbhelper.getBoardsByUser).to.exist;
@@ -125,7 +162,7 @@ describe('User', () => {
     it('Should be a function', () => {
       expect(dbhelper.getBoardsByUser).to.be.a('function');
     });
-    it('Should return board linked to user', (done) => {
+    it('Should return boards linked to user', (done) => {
       dbhelper.getBoardsByUser(1)
         .then((boards) => {
           expect(boards).to.exist;
@@ -159,6 +196,27 @@ describe('User', () => {
           expect(boards.length).to.equal(2);
           expect(boards[0]['board_name']).to.equal('testboard');
           expect(boards[1]['board_name']).to.equal('testboard2');
+          done();
+        })
+        .catch((err) => {
+          done(err);
+        })
+        .error((err) => done(err));
+    });
+  });
+  describe('getUsersByBoard()', () => {
+    it('Should exist', () => {
+      expect(dbhelper.getUsersByBoard).to.exist;
+    });
+    it('Should be a function', () => {
+      expect(dbhelper.getUsersByBoard).to.be.a('function');
+    });
+    it('Should return users linked to board', (done) => {
+      dbhelper.getUsersByBoard(1)
+        .then((users) => {
+          expect(users).to.exist;
+          expect(users.length).to.equal(1);
+          expect(users[0]['github_handle']).to.equal('stevepkuo');
           done();
         })
         .catch((err) => {
