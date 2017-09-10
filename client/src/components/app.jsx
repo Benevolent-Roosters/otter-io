@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getUserInfo, getBoardsByUser, toggleDrawer, toggleCreateBoard, toggleEditBoard, toggleCreatePanel, toggleEditPanel, toggleCreateTicket, toggleEditTicket } from '../redux/actionCreators.js';
+import { getUserInfo, getBoardsByUser, toggleDrawer, toggleCreateBoard, toggleEditBoard, toggleCreateTicket, toggleEditTicket, } from '../redux/actionCreators.js';
+
 import axios from 'axios';
 import moment from 'moment';
 import CreatePanel from './CreatePanel.jsx';
@@ -76,7 +77,6 @@ class App extends React.Component {
         <EditTicket/>
         <CreatePanel/>
         <EditPanel/>
-        <Panel/>
       </div>
     );
   } 

@@ -68,7 +68,10 @@ class EditPanel extends React.Component {
           </Modal.Body>
           <Modal.Footer>
             <Button onClick={this.props.handleEditPanelRendered}>Cancel</Button>
-            <Button bsStyle="primary" onClick={() => {this.props.handleEditPanel(this.reorderPanels.bind(this), this.state)}}>Submit</Button>
+            <Button bsStyle="primary" onClick={() => {
+              this.props.handleEditPanel(this.reorderPanels.bind(this), this.state);
+              this.props.handleEditPanelRendered();
+            }}>Submit</Button>
           </Modal.Footer>
         </Modal>
       </div>

@@ -33,7 +33,7 @@ class CreatePanel extends React.Component {
       <div>
         <Modal show={this.props.createPanelRendered}>
           <Modal.Header style={{backgroundColor: '#7ED321'}}>
-            <Modal.Title> Create A Panel </Modal.Title>
+            <Modal.Title style={{color: 'white'}}> Create A Panel </Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Form horizontal>

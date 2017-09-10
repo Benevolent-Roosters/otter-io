@@ -1,7 +1,7 @@
 import React from 'react';
-import { getTicketsByPanel, toggleCreateTicket } from '../redux/actionCreators.js';
+import { getTicketsByPanel, toggleCreateTicket, postCreatedTicket } from '../redux/actionCreators.js';
 import { connect } from 'react-redux';
-import { Modal, Form, FormGroup, FormControl, Button, ControlLabel, Grid, Col, Row, SplitButton, MenuItem } from 'react-bootstrap';
+import { Modal, Form, FormGroup, FormControl, Button, ControlLabel, Grid, Col, Row, DropdownButton, MenuItem, ButtonToolbar } from 'react-bootstrap';
 
 let buttonStyle = {marginTop: '15px', marginRight: '15px'};
 let dropDownStyle = {marginTop: '15px'};
@@ -23,17 +23,49 @@ class CreateTicket extends React.Component {
     };
   }
 
-  handleInputChange(event) {
+  handleTitleChange(event) {
     const target = event.target;
     const value = target.value;
     const name = target.name;
 
     this.setState({
-      [name]: value
+      title: event.target.value
     });
   }
 
+  handleDescriptionChange(event) {
+    this.setState({
+      description: event.target.value
+    })
+  }
+
+  handleSelectAssignee(eventKey) {
+    this.setState({
+      assignee_id: eventKey
+    });
+  }
+
+  handleSelectType(eventKey) {
+    let types = ['Bug', 'Feature', 'Cleanup'];
+    this.setState({
+      type: types[eventKey - 1]
+    });
+  }
+
+  handleSelectPriority(eventKey) {
+    this.setState({
+      priority: eventKey
+    });
+  }
+
+  handleSelectPanel(eventKey) {
+    this.setState({
+      panel_id: eventKey
+    })
+  }
+
   render() {
+    /*NOTE: Once we hook everything together, MenuItem will be created by mapping over the store's users, ticket types, ticket priorities, and store's panels */
     return (
       <div>
         <Grid>
@@ -48,48 +80,41 @@ class CreateTicket extends React.Component {
                       <FormGroup>
                         <Col componentClass={ControlLabel} sm={4}>Ticket Title</Col>
                         <Col sm={8}>
-                        <FormControl name='Ticket Title' bsSize="large" type="text" value={this.state.title} placeholder={'Ticket Title'} onChange={this.handleInputChange.bind(this)}></FormControl>
+                        <FormControl name='Ticket Title' bsSize="large" type="text" value={this.state.title} placeholder={'Ticket Title'} onChange={this.handleTitleChange.bind(this)}></FormControl>
                         </Col>
                       </FormGroup>
                       <FormGroup>
                         <Col componentClass={ControlLabel} sm={4}>Ticket Description</Col>
                         <Col sm={8}>
-                        <FormControl name='Ticket Description' bsSize="large" type="textarea" value={this.state.description} placeholder={'What needs to be done?'} onChange={this.handleInputChange.bind(this)}></FormControl>
+                        <FormControl name='Ticket Description' bsSize="large" type="textarea" value={this.state.description} placeholder={'What needs to be done?'} onChange={this.handleDescriptionChange.bind(this)}></FormControl>
                         </Col>
                       </FormGroup>
-                      
-                      <Col sm={2}>
-                      <SplitButton title="Ticket Assignee" pullRight id="split-button-pull-right">
-                        <MenuItem eventKey="1">Action</MenuItem>
-                        <MenuItem eventKey="2">Another action</MenuItem>
-                        <MenuItem eventKey="3">Something else here</MenuItem>
-                      </SplitButton>
-                      </Col>
+                       
+                      <ButtonToolbar>
+                        <DropdownButton title="Ticket Assignee" pullRight id="split-button-pull-right">
+                          <MenuItem eventKey="1" onSelect={(eventKey) => this.handleSelectAssignee(eventKey)}>{'Brendan'}</MenuItem>
+                          <MenuItem eventKey="2" onSelect={(eventKey) => this.handleSelectAssignee(eventKey)}>{'Brendan'}</MenuItem>
+                          <MenuItem eventKey="3" onSelect={(eventKey) => this.handleSelectAssignee(eventKey)}>{'Seriously, give it to Brendan'}</MenuItem>
+                        </DropdownButton>
+                        
+                        <DropdownButton title="Ticket Type" pullRight id="split-button-pull-right">
+                          <MenuItem eventKey="1" onSelect={(eventKey) => this.handleSelectType(eventKey)}>{'Bug'}</MenuItem>
+                          <MenuItem eventKey="2" onSelect={(eventKey) => this.handleSelectType(eventKey)}>{'Feature'}</MenuItem>
+                          <MenuItem eventKey="3" onSelect={(eventKey) => this.handleSelectType(eventKey)}>{'Cleanup'}</MenuItem>
+                        </DropdownButton>
 
-                      <Col sm={2}>
-                      <SplitButton title="Ticket Type" pullRight id="split-button-pull-right">
-                        <MenuItem eventKey="1">Action</MenuItem>
-                        <MenuItem eventKey="2">Another action</MenuItem>
-                        <MenuItem eventKey="3">Something else here</MenuItem>
-                      </SplitButton>
-                      </Col>
-
-                      <Col sm={2}>
-                      <SplitButton title="Priority Level" pullRight id="split-button-pull-right">
-                        <MenuItem eventKey="1">Action</MenuItem>
-                        <MenuItem eventKey="2">Another action</MenuItem>
-                        <MenuItem eventKey="3">Something else here</MenuItem>
-                      </SplitButton>
-                      </Col>
-
-                      <Col sm={2}>
-                      <SplitButton title="Ticket Panel" pullRight id="split-button-pull-right">
-                        <MenuItem eventKey="1">Action</MenuItem>
-                        <MenuItem eventKey="2">Another action</MenuItem>
-                        <MenuItem eventKey="3">Something else here</MenuItem>
-                      </SplitButton>
-                      </Col>
-                      
+                        <DropdownButton title="Priority Level" pullRight id="split-button-pull-right">
+                          <MenuItem eventKey="1" onSelect={(eventKey) => this.handleSelectPriority(eventKey)}>{'Priority 1'}</MenuItem>
+                          <MenuItem eventKey="2" onSelect={(eventKey) => this.handleSelectPriority(eventKey)}>{'Priority 2'}</MenuItem>
+                          <MenuItem eventKey="3" onSelect={(eventKey) => this.handleSelectPriority(eventKey)}>{'Priority 3'}</MenuItem>
+                        </DropdownButton>
+                        
+                        <DropdownButton title="Ticket Panel" pullRight id="split-button-pull-right">
+                          <MenuItem eventKey="1" onSelect={(eventKey) => this.handleSelectPanel(eventKey)}>{'This one'}</MenuItem>
+                          <MenuItem eventKey="2" onSelect={(eventKey) => this.handleSelectPanel(eventKey)}>{'That one'}</MenuItem>
+                          <MenuItem eventKey="3" onSelect={(eventKey) => this.handleSelectPanel(eventKey)}>{'That other one'}</MenuItem>
+                        </DropdownButton>
+                      </ButtonToolbar>
                       <Button style={buttonStyle} bsStyle="default" onClick={this.props.handleCreateTicketRendered}>Cancel</Button>
                       <Button style={buttonStyle} bsStyle="primary" type="button" onClick={() => this.props.handleSetTickets(this.state)}>Create</Button>
                     </Form>
@@ -116,7 +141,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    handleSetTickets(newTickets) {
+    handleSetTickets(newTicket) {
       dispatch(postCreatedTicket(newTicket));
     },
     handleCreateTicketRendered() {
