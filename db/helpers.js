@@ -35,7 +35,7 @@ module.exports.createUser = function(data) {
     .fetch()
     .then((user) => {
       if (user) {
-        throw 'duplicateUser';
+        throw 'duplicate user';
       }
       return User.forge(data).save();
     })
@@ -54,7 +54,7 @@ module.exports.getUserById = function(userId) {
     .fetch()
     .then(user => {
       if (!user) {
-        throw 'invalidUser';
+        throw 'invalid user';
       }
       return user.toJSON();
     })
@@ -69,7 +69,7 @@ module.exports.updateUserById = function(userId, data) {
     .fetch()
     .then(user => {
       if (!user) {
-        throw 'invalidUser';
+        throw 'invalid user';
       }
       return user.save(data);
     })
@@ -88,17 +88,17 @@ module.exports.addUserToBoard = function(userId, boardId) {
     .fetch()
     .then(board => {
       if (!board) {
-        throw 'invalidBoard';
+        throw 'invalid board';
       }
       return User.forge({id: userId}).fetch({withRelated: ['memberOfBoards']});
     })
     .then(user => {
       if (!user) {
-        throw 'invalidUser';
+        throw 'invalid user';
       }
       let boardIds = user.related('memberOfBoards').toJSON().map(membership => membership.id);
       if (boardIds.includes(boardId)) {
-        throw 'duplicateMembership';
+        throw 'duplicate membership';
       }
       return user.memberOfBoards().attach(boardId);
     })
@@ -106,13 +106,13 @@ module.exports.addUserToBoard = function(userId, boardId) {
       return result.toJSON();
     })
     .catch(situation => {
-      if (situation === 'invalidBoard') {
+      if (situation === 'invalid board') {
         console.log(`There is a situation: board ID ${boardId} doesn't exist!`);
       }
-      if (situation === 'invalidUser') {
+      if (situation === 'invalid user') {
         console.log(`There is a situation: user ID ${userId} doesn't exist!`);
       }
-      if (situation === 'duplicateMembership') {
+      if (situation === 'duplicate membership') {
         console.log(`There is a situation: user ID ${userId} already belongs to board ID ${boardId}!`);
       }
       throw situation;
@@ -124,7 +124,7 @@ module.exports.getUsersByBoard = function(boardId) {
     .fetch()
     .then(board => {
       if (!board) {
-        throw 'invalidBoard';
+        throw 'invalid board';
       }
       return board.related('users').fetch();
     })
@@ -143,7 +143,7 @@ module.exports.getBoardsByUser = function(userId) {
     .fetch()
     .then(user => {
       if (!user) {
-        throw 'invalidUser';
+        throw 'invalid user';
       }
       return user.related('memberOfBoards').fetch();
     })
@@ -161,7 +161,7 @@ module.exports.createBoard = function(data) {
     .fetch()
     .then((board) => {
       if (board) {
-        throw 'duplicate';
+        throw 'duplicate board';
       }
       return Board.forge(data).save();
     })
@@ -180,7 +180,7 @@ module.exports.getBoardById = function(boardId) {
     .fetch()
     .then(board => {
       if (!board) {
-        throw 'invalidBoard';
+        throw 'invalid board';
       }
       return board.toJSON();
     })
@@ -195,7 +195,7 @@ module.exports.updateBoardById = function(boardId, data) {
     .fetch()
     .then(board => {
       if (!board) {
-        throw 'invalidBoard';
+        throw 'invalid board';
       }
       return board.save(data);
     })
@@ -214,11 +214,11 @@ module.exports.createPanel = function(data) {
     .fetch({withRelated: ['panels']})
     .then(board => {
       if (!board) {
-        throw 'invalidBoard';
+        throw 'invalid board';
       }
       let panelNames = board.related('panels').toJSON().map(panel => panel.name);
       if (panelNames.includes(data.name)) {
-        throw 'duplicatePanel';
+        throw 'duplicate panel';
       }
       return Panel.forge(data).save();
     })
@@ -227,10 +227,10 @@ module.exports.createPanel = function(data) {
       return panel.toJSON();
     })
     .catch(situation => {
-      if (situation === 'invalidBoard') {
+      if (situation === 'invalid board') {
         console.log(`There is a situation: board ID ${data.board_id} doesn't exist!`);
       }
-      if (situation === 'duplicatePanel') {
+      if (situation === 'duplicate panel') {
         console.log(`There is a situation: panel ${data.name} already exists on this board!`);
       }
       throw situation;
@@ -242,7 +242,7 @@ module.exports.getPanelById = function(panelId) {
     .fetch()
     .then(panel => {
       if (!panel) {
-        throw 'invalidPanel'; 
+        throw 'invalid panel'; 
       }
       return panel.toJSON();
     })
@@ -257,7 +257,7 @@ module.exports.getPanelsByBoard = function(boardId) {
     .fetch({withRelated: ['panels']})
     .then(board => {
       if (!board) {
-        throw 'invalidBoard';
+        throw 'invalid board';
       }
       return board.related('panels').toJSON();
     })
@@ -272,7 +272,7 @@ module.exports.updatePanelById = function(panelId, data) {
     .fetch()
     .then(panel => {
       if (!panel) {
-        throw 'invalidPanel';
+        throw 'invalid panel';
       }
       return panel.save(data);
     })
@@ -291,11 +291,11 @@ module.exports.createTicket = function(data) {
     .fetch({withRelated: 'tickets'})
     .then(panel => {
       if (!panel) {
-        throw 'invalidPanel';
+        throw 'invalid panel';
       }
       let ticketTitles = panel.related('tickets').toJSON().map(ticket => ticket.title);
       if (ticketTitles.includes(data.title)) {
-        throw 'duplicateTicket';
+        throw 'duplicate ticket';
       }
       return Ticket.forge(data).save();
     })
@@ -304,10 +304,10 @@ module.exports.createTicket = function(data) {
       return ticket.toJSON();
     })
     .catch(situation => {
-      if (situation === 'invalidPanel') {
+      if (situation === 'invalid panel') {
         console.log(`There is a situation: panel ID ${data.panel_id}`);
       }
-      if (situation === 'duplicateTicket') {
+      if (situation === 'duplicate ticket') {
         console.log(`There is a situation: ticket ${data.title} already exists on this panel!`);
       }
       throw situation;
@@ -319,7 +319,7 @@ module.exports.getTicketById = function(ticketId) {
     .fetch()
     .then(ticket => {
       if (!ticket) {
-        throw 'invalidTicket';
+        throw 'invalid ticket';
       }
       return ticket.toJSON();
     })
@@ -334,7 +334,7 @@ module.exports.getTicketsByUser = function(userId) {
     .fetch({withRelated: [{ assignedTickets: function(query) { query.orderBy('status', 'DESC').orderBy('priority', 'DESC'); }}]})
     .then((user) => {
       if (!user) {
-        throw 'invalidUser';
+        throw 'invalid user';
       }
       return user.related('assignedTickets').toJSON();
     })
@@ -349,7 +349,7 @@ module.exports.getTicketsByPanel = function(panelId) {
     .fetch({withRelated: [{ tickets: function(query) { query.orderBy('status', 'DESC').orderBy('priority', 'DESC'); }}]})
     .then((panel) => {
       if (!panel) {
-        throw 'invalidPanel';
+        throw 'invalid panel';
       }
       return panel.related('tickets').toJSON();
     })
@@ -364,7 +364,7 @@ module.exports.updateTicketById = function(ticketId, data) {
     .fetch()
     .then(ticket => {
       if (!ticket) {
-        throw 'invalidTicket';
+        throw 'invalid ticket';
       }
       return ticket.save(data);
     })
