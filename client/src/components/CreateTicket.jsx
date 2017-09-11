@@ -41,27 +41,26 @@ class CreateTicket extends React.Component {
 
   handleSelectAssignee(eventKey) {
     this.setState({
-      assignee_id: eventKey
+      assignee_id: eventKey.currentTarget.textContent
     });
   }
 
   handleSelectType(eventKey) {
-    let types = ['Bug', 'Feature', 'Cleanup'];
     this.setState({
-      type: types[eventKey - 1]
+      type: eventKey.currentTarget.textContent
     });
   }
 
   handleSelectPriority(eventKey) {
     this.setState({
-      priority: eventKey
+      priority: eventKey.currentTarget.textContent
     });
   }
 
   handleSelectPanel(eventKey) {
     this.setState({
-      panel_id: eventKey
-    })
+      panel_id: eventKey.currentTarget.textContent
+    });
   }
 
   render() {
@@ -86,33 +85,33 @@ class CreateTicket extends React.Component {
                       <FormGroup>
                         <Col componentClass={ControlLabel} sm={4}>Ticket Description</Col>
                         <Col sm={8}>
-                        <FormControl name='Ticket Description' bsSize="large" type="textarea" value={this.state.description} placeholder={'What needs to be done?'} onChange={this.handleDescriptionChange.bind(this)}></FormControl>
+                        <FormControl name='Ticket Description' componentClass="textarea" bsSize="large" value={this.state.description} placeholder={'What needs to be done?'} onChange={this.handleDescriptionChange.bind(this)}></FormControl>
                         </Col>
                       </FormGroup>
                        
                       <ButtonToolbar>
-                        <DropdownButton title="Ticket Assignee" pullRight id="split-button-pull-right">
-                          <MenuItem eventKey="1" onSelect={(eventKey) => this.handleSelectAssignee(eventKey)}>{'Brendan'}</MenuItem>
-                          <MenuItem eventKey="2" onSelect={(eventKey) => this.handleSelectAssignee(eventKey)}>{'Brendan'}</MenuItem>
-                          <MenuItem eventKey="3" onSelect={(eventKey) => this.handleSelectAssignee(eventKey)}>{'Seriously, give it to Brendan'}</MenuItem>
+                        <DropdownButton title={this.state.assignee_id ? this.state.assignee_id : 'Who should do this?'} pullRight id="split-button-pull-right">
+                          <MenuItem eventKey="1" onClick={this.handleSelectAssignee.bind(this)}>{'Brendan'}</MenuItem>
+                          <MenuItem eventKey="2" onClick={this.handleSelectAssignee.bind(this)}>{'Brendan'}</MenuItem>
+                          <MenuItem eventKey="3" onClick={this.handleSelectAssignee.bind(this)}>{'Seriously, give it to Brendan'}</MenuItem>
                         </DropdownButton>
                         
-                        <DropdownButton title="Ticket Type" pullRight id="split-button-pull-right">
-                          <MenuItem eventKey="1" onSelect={(eventKey) => this.handleSelectType(eventKey)}>{'Bug'}</MenuItem>
-                          <MenuItem eventKey="2" onSelect={(eventKey) => this.handleSelectType(eventKey)}>{'Feature'}</MenuItem>
-                          <MenuItem eventKey="3" onSelect={(eventKey) => this.handleSelectType(eventKey)}>{'Cleanup'}</MenuItem>
+                        <DropdownButton title={this.state.type ? this.state.type : 'Specify that type of ticket'} pullRight id="split-button-pull-right">
+                          <MenuItem eventKey="1" onClick={this.handleSelectType.bind(this)}>{'Bug'}</MenuItem>
+                          <MenuItem eventKey="2" onClick={this.handleSelectType.bind(this)}>{'Feature'}</MenuItem>
+                          <MenuItem eventKey="3" onClick={this.handleSelectType.bind(this)}>{'DevOps'}</MenuItem>
                         </DropdownButton>
 
-                        <DropdownButton title="Priority Level" pullRight id="split-button-pull-right">
-                          <MenuItem eventKey="1" onSelect={(eventKey) => this.handleSelectPriority(eventKey)}>{'Priority 1'}</MenuItem>
-                          <MenuItem eventKey="2" onSelect={(eventKey) => this.handleSelectPriority(eventKey)}>{'Priority 2'}</MenuItem>
-                          <MenuItem eventKey="3" onSelect={(eventKey) => this.handleSelectPriority(eventKey)}>{'Priority 3'}</MenuItem>
+                        <DropdownButton title={this.state.priority ? this.state.priority : 'How important is this?'} pullRight id="split-button-pull-right">
+                          <MenuItem eventKey="1" onClick={this.handleSelectPriority.bind(this)}>{'Priority 1'}</MenuItem>
+                          <MenuItem eventKey="2" onClick={this.handleSelectPriority.bind(this)}>{'Priority 2'}</MenuItem>
+                          <MenuItem eventKey="3" onClick={this.handleSelectPriority.bind(this)}>{'Priority 3'}</MenuItem>
                         </DropdownButton>
                         
-                        <DropdownButton title="Ticket Panel" pullRight id="split-button-pull-right">
-                          <MenuItem eventKey="1" onSelect={(eventKey) => this.handleSelectPanel(eventKey)}>{'This one'}</MenuItem>
-                          <MenuItem eventKey="2" onSelect={(eventKey) => this.handleSelectPanel(eventKey)}>{'That one'}</MenuItem>
-                          <MenuItem eventKey="3" onSelect={(eventKey) => this.handleSelectPanel(eventKey)}>{'That other one'}</MenuItem>
+                        <DropdownButton title={this.state.panel_id ? this.state.panel_id : 'What Panel is this ticket for?' } pullRight id="split-button-pull-right">
+                          <MenuItem eventKey="1" onClick={this.handleSelectPanel.bind(this)}>{'This one'}</MenuItem>
+                          <MenuItem eventKey="2" onClick={this.handleSelectPanel.bind(this)}>{'That one'}</MenuItem>
+                          <MenuItem eventKey="3" onClick={this.handleSelectPanel.bind(this)}>{'That other one'}</MenuItem>
                         </DropdownButton>
                       </ButtonToolbar>
                       <Button style={buttonStyle} bsStyle="default" onClick={this.props.handleCreateTicketRendered}>Cancel</Button>
