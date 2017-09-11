@@ -57,7 +57,7 @@ class CreatePanel extends React.Component {
           </Modal.Body>
           <Modal.Footer>
             <Button onClick={this.props.handleCreatePanelRendered}>Cancel</Button>
-            <Button bsStyle="primary" onClick={() => {this.props.handleSetPanels()}}>Submit</Button>
+            <Button bsStyle="primary" onClick={() => this.props.handleSetPanels(this.state)}>Submit</Button>
           </Modal.Footer>
         </Modal>
       </div>
