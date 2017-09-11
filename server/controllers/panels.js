@@ -17,7 +17,7 @@ module.exports.getBoardPanels = (req, res) => {
       }
     })
     .then(() => {
-      return dbhelper.getPanelsByBoard(board_id);
+      return dbhelper.getPanelsByBoard(parseInt(board_id));
     })
     .then(panels => {
       if (!panels) {
@@ -53,11 +53,11 @@ module.exports.createBoardPanel = (req, res) => {
     .then(() => {
       return dbhelper.createPanel(panelObj);
     })
-    .then(result => {
-      if (!result) {
+    .then(panel => {
+      if (!panel) {
         throw 'cant create panel';
       }
-      res.status(201).send(result);
+      res.status(201).send(panel);
     })
     .catch(err => {
       if (err !== 'exit') {
@@ -80,7 +80,7 @@ module.exports.getOnePanel = (req, res) => {
       }
     })
     .then(() => {
-      return dbhelper.getPanelById(panelId);
+      return dbhelper.getPanelById(parseInt(panelId));
     })
     .then(panel => {
       if (!panel) {
@@ -128,7 +128,7 @@ module.exports.updatePanel = (req, res) => {
       }
     })
     .then(() => {
-      return dbhelper.updatePanelById(panelId, panelObj);
+      return dbhelper.updatePanelById(parseInt(panelId), panelObj);
     })
     .then((panel) => {
       if (!panel) {
