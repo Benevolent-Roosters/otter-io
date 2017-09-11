@@ -62,7 +62,6 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <Button bsStyle="primary" onClick={this.props.handleCreateBoardRendered}>Create Board</Button>
         <Button bsStyle="primary" onClick={this.props.handleEditBoardRendered}>Edit Board</Button>
         <Button bsStyle="primary" onClick={this.props.handleCreateTicketRendered}>Create Ticket</Button>
         <Button bsStyle="primary" onClick={this.props.handleEditTicketRendered}>Edit Ticket</Button>
@@ -114,9 +113,6 @@ const mapDispatchToProps = (dispatch) => {
     },
     handleToggleDrawer() {
       dispatch(toggleDrawer());
-    },
-    handleCreateBoardRendered() {
-      dispatch(toggleCreateBoard());
     },
     handleEditBoardRendered() {
       dispatch(toggleEditBoard());
