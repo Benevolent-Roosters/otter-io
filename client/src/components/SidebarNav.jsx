@@ -1,7 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { setCurrentBoard, toggleDrawer } from '../redux/actionCreators';
+import { setCurrentBoard, toggleDrawer, toggleCreateBoard } from '../redux/actionCreators';
 import { GridList, GridTile, Drawer } from 'material-ui';
+import { Thumbnail, Image, Button } from 'react-bootstrap';
 
 let counter = 0; 
 
@@ -22,21 +23,61 @@ const styles = {
     color: 'blue'
   },
   gridList: {
-    height: 650,
-    overflowY: 'auto',
+    marginTop: '25px',
+    marginBottom: '25px'
   },
+
+  tiles: {
+    backgroundColor: getRandomColor()
+  },
+
+  profileImage: {
+    display: 'block',
+    margin: '0 auto', 
+    marginTop: '15px', 
+    marginLeft: '15px', 
+    marginRight: '15px',
+    backgroundColor: 'rgba(0, 0, 0, 0)',
+    border: '0px',
+    borderRadius: '0px'
+  },
+
+  createBoardImage: {
+    display: 'block',
+    height: 'auto',
+    maxWidth: '100%',
+    marginTop: '15px',
+    marginRight: 'auto',
+    marginLeft: 'auto',
+    position: 'absolute',
+    bottom: '50px',
+    left: '64.5px',
+    backgroundColor: 'rgba(0, 0, 0, 0)',
+    border: '0px',
+    borderRadius: '0px'
+  },
+
+  createBoardButton: {
+    display: 'block',
+    margin: '0 auto'
+  }
 };
 
 const SidebarNavigation = (props) => {
   return (
     <div>
-      <Drawer docked={false} open={props.drawerToggled} onRequestChange={(open) => props.handleToggledDrawer(open)}>
-        <h3>@dsc03</h3>
-        <GridList cols={1} style={styles.gridList}>
-          <GridTile key={counter++} title={'that good pep'}><img src={require('../images/menu.png')}/></GridTile>
-          <GridTile key={counter++} title={'Cheese Pizza'}><img src={require('../images/menu.png')}/></GridTile>
-          <GridTile key={counter++} title={'akshidgf'}><img src={require('../images/menu.png')}/></GridTile>
+      <Drawer containerStyle={{backgroundColor: '#ffffff'}} docked={false} open={props.drawerToggled} onRequestChange={(open) => props.handleToggledDrawer(open)}>
+        <Thumbnail href="#" style={styles.profileImage} src={require('../images/business-person-silhouette-wearing-tie.png')} />
+
+        <h3 style={{textAlign: 'center', marginBottom: '15px'}}>@dsc03</h3>
+
+        <Button style={styles.createBoardButton} bsSize='large' bsStyle='primary' onClick={(open) => {props.handleToggledDrawer(open); props.handleCreateBoardRendered();}}>Create Board</Button>
+
+        <GridList style={styles.gridList} cols={1} padding={15}>
+          {props.boards.map((board) => 
+            <GridTile style={{marginLeft: '15px', marginRight: '15px', backgroundColor: getRandomColor()}} key={board.id} title={board.board_name}> </GridTile>)}
         </GridList>
+
       </Drawer>
     </div>
   );
@@ -59,6 +100,9 @@ const mapDispatchToProps = (dispatch) => {
     }, 
     handleToggledDrawer(open) {
       dispatch(toggleDrawer(open));
+    },
+    handleCreateBoardRendered() {
+      dispatch(toggleCreateBoard());
     }
   };
 };

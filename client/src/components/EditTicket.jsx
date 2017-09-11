@@ -112,7 +112,7 @@ handleTitleChange(event) {
                         </FormControl>
                       </FormGroup>
                       <Button style={buttonStyle} bsStyle="default" onClick={this.props.handleEditTicketRendered}>Cancel</Button>
-                      <Button style={buttonStyle} bsStyle="primary" type="button" onClick={() => this.props.handleSetTickets(this.state)}>Create</Button>
+                      <Button style={buttonStyle} bsStyle="primary" type="button" onClick={() => this.props.handleEditCurrentTicket(this.state)}>Create</Button>
                     </Form>
                   </Modal.Body>
                 </Modal>
@@ -136,8 +136,9 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    handleEditCurrentTicket(event) {
-      dispatch(editCurrentTicket(/**ticketObj from event **/));
+    handleEditCurrentTicket(ticketObj) {
+      dispatch(putEditedTicket(ticketObj))
+      dispatch(editCurrentTicket(ticketObj));
     },
     handleEditTicketRendered(tickets) {
       dispatch(toggleEditTicket(tickets));

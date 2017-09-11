@@ -4,10 +4,42 @@ const defaultState = {
   user: {
     id: 0
   },
-  boards: [],
+  boards: [ 
+    { id: 1,
+      board_name: 'benev roosters',
+      repo_name: 'thesis3',
+      repo_url: 'https://github.com/Benevolent-Roosters/thesis3',
+      owner_id: 3,
+      _pivot_user_id: 3,
+      _pivot_board_id: 3 },
+
+    { id: 2,
+      board_name: 'cool kids',
+      repo_name: 'thesis3',
+      repo_url: 'https://github.com/Benevolent-Roosters/thesis3',
+      owner_id: 3,
+      _pivot_user_id: 3,
+      _pivot_board_id: 3 },
+
+    { id: 3,
+      board_name: 'show us the mulla',
+      repo_name: 'thesis3',
+      repo_url: 'https://github.com/Benevolent-Roosters/thesis3',
+      owner_id: 3,
+      _pivot_user_id: 3,
+      _pivot_board_id: 3 }
+  ],
+
   panels: [],
   tickets: [],
   currentBoard: {
+    id: 1,
+    board_name: 'benev roosters',
+    repo_name: 'thesis3',
+    repo_url: 'https://github.com/Benevolent-Roosters/thesis3',
+    owner_id: 3,
+    _pivot_user_id: 3,
+    _pivot_board_id: 3
   },
   currentTicket: {
   },
