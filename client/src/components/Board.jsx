@@ -16,17 +16,22 @@ const Board = (props) => {
     infinite: false,
     centerMode: true,
     focusOnSelect: true,
-    draggable: false
+    draggable: false,
+    initialSlide: 3
     /*currentSlide: props.currentPanel*/
+  }
+
+  let panelStyle = {
+    height: '650px'
   }
   return (
       <Slider {...settings}>
-        <div><Panel /></div>
-        <div><Panel /></div>
-        <div><Panel /></div>
-        <div><Panel /></div>
-        <div><Panel /></div>
-        <div><Panel /></div>
+        <div><Panel style={panelStyle}/></div>
+        <div><Panel style={panelStyle}/></div>
+        <div><Panel style={panelStyle}/></div>
+        <div><Panel style={panelStyle}/></div>
+        <div><Panel style={panelStyle}/></div>
+        <div><Panel style={panelStyle}/></div>
       </Slider>
   );
 };

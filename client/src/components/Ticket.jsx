@@ -23,7 +23,6 @@ class Ticket extends React.Component {
   }
 
   handleHover() {
-    console.log('in handleHover');
     this.setState({
       hovered: !this.state.hovered
     });

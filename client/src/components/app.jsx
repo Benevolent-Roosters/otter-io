@@ -60,7 +60,13 @@ class App extends React.Component {
   }
 
   render() {
+    let boardStyle = {
+      width: '100%',
+      height: '750px',
+
+    }
     return (
+      <div>
       <div>
         <Button bsStyle="primary" onClick={this.props.handleCreateBoardRendered}>Create Board</Button>
         <Button bsStyle="primary" onClick={this.props.handleEditBoardRendered}>Edit Board</Button>
@@ -70,7 +76,6 @@ class App extends React.Component {
         <Button style={iconStyle}><img src={require('../images/menu.png')} onClick={this.props.handleToggleDrawer}/></Button>
         <SidebarNavigation/>
         <PerformanceDashboard/>
-        <Board/>
         <CreateBoard/>
         <EditBoard/>
         <CreateTicket/>
@@ -78,6 +83,7 @@ class App extends React.Component {
         <CreatePanel/>
         <EditPanel/>
       </div>
+        <div style={{width: window.innerWidth - 100 }}><Board style={boardStyle}/></div></div>
     );
   } 
 }
