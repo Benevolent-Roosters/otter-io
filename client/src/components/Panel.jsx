@@ -8,16 +8,11 @@ import { Panel as BootstrapPanel } from 'react-bootstrap';
 
 const Panel = props => {
   return (
-    <BootstrapPanel header="Sprint X">
+    <BootstrapPanel header={props.panelInfo.name}>
       <Button bsStyle="primary" onClick={props.handleEditPanelRendered}>Edit Panel</Button>
-      <ListGroup fill>
-        <ListGroupItem>Ticket 1 goes here</ListGroupItem>
-        <ListGroupItem>Ticket 2 goes here</ListGroupItem>
-        <ListGroupItem>Ticket 3 goes here</ListGroupItem>
-        <ListGroupItem>Ticket 4 goes here</ListGroupItem>
-        <ListGroupItem>Ticket 5 goes here</ListGroupItem>
-        <ListGroupItem><Ticket/></ListGroupItem>
-      </ListGroup>
+      {props.tickets.map(ticket =>
+        ticket.panel_id === props.panelInfo.id ? <ListGroupItem><Ticket ticketInfo={ticket} /></ListGroupItem> : ''
+      )}
     </BootstrapPanel>
   );
 };

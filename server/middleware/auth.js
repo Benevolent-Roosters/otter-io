@@ -109,13 +109,13 @@ module.exports.verifyBoardOwnerElse401 = (req, res, next) => {
 //to be used as middleware auth before performing any TICKET CRUD api routes
 module.exports.verifyPanelMemberElse401 = (req, res, next) => {
   var panelid;
-  if (!req.params && !req.body) {
+  if (!req.query && !req.body) {
     res.status(400).send('panel id couldnt be found in request from client');
   }
-  if (!req.params || !req.params.id) {
+  if (!req.params || !req.query.panel_id) {
     panelid = parseInt(req.body.panel_id);
   } else {
-    panelid = parseInt(req.params.id);
+    panelid = parseInt(req.query.panel_id);
   }
   var userId = req.user.id;
 

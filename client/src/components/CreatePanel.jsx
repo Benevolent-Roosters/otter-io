@@ -13,18 +13,20 @@ class CreatePanel extends React.Component {
       name: '',
       due_date: '',
       board_id: this.props.currentBoardId
-    }
+    };
   }
 
   handleNameChange(e) {
     this.setState({
-      name: e.target.value
+      name: e.target.value,
+      board_id: this.props.currentBoardId
     });
   }
 
   handleDateChange(e, date) {
     this.setState({
-      due_date: moment(date).format().slice(0,10)
+      due_date: moment(date).format().slice(0,10),
+      board_id: this.props.currentBoardId
     });
   }
 
@@ -57,7 +59,7 @@ class CreatePanel extends React.Component {
           </Modal.Body>
           <Modal.Footer>
             <Button onClick={this.props.handleCreatePanelRendered}>Cancel</Button>
-            <Button bsStyle="primary" onClick={() => this.props.handleSetPanels(this.state)}>Submit</Button>
+            <Button bsStyle="primary" onClick={() => {console.log(this.state); this.props.handleSetPanels(this.state); this.props.handleCreatePanelRendered();}}>Submit</Button>
           </Modal.Footer>
         </Modal>
       </div>
@@ -68,7 +70,7 @@ class CreatePanel extends React.Component {
 const mapStateToProps = state => {
   return {
     userId: state.user.userid, //double check what userid key actually is named
-    currentBoardId: state.currentBoard.boardid, //double check what userid key actually is named
+    currentBoardId: state.currentBoard.id, //double check what userid key actually is named
     createPanelRendered: state.createPanelRendered 
   };
 };

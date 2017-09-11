@@ -82,12 +82,12 @@ export function toggleEditPanel() {
 
 /** Upon Login, perform asynchronous Axios request to get user information and 
   **/
-export function getUserInfo() {
+export function getUserInfo(callback) {
   return (dispatch) => {
     axios.get('/profile')
       .then((response) => {
-        dispatch(setUser(response.body));
-        return response.body;
+        dispatch(setUser(response.data));
+        callback(response.data);
       })
 
       .catch((error) => {
@@ -97,15 +97,15 @@ export function getUserInfo() {
 }
 
 /** Use the loggedin user's Github handle to retrieve their boards **/
-export function getBoardsByUser() { //userid
+export function getBoardsByUser(callback) { //userid
   return (dispatch) => {
     axios.get('/api/boards') //{user_id: userid}
 
       //set Boards state
       .then((response) => {
-        dispatch(setBoards(response.body));
-        dispatch(setCurrentBoard(response.body[response.body.length - 1])); //set current state to most recently created Board
-        return response.body[response.body.length - 1]; //return value so that you can chain this to setPanels
+        dispatch(setBoards(response.data));
+        dispatch(setCurrentBoard(response.data[response.data.length - 1])); //set current state to most recently created Board
+        callback(response.data[response.data.length - 1]); //return value so that you can chain this to setPanels
       })
 
       .catch((error) => {
@@ -116,14 +116,14 @@ export function getBoardsByUser() { //userid
 
 /** Grab the selected board (or, in the case of login, grab the most recently created board) and return all the panels associated with it  **/
 //TODO: set current panel by looking at dates and sorting panels appropriately
-export function getPanelsByBoard(boardid) {
+export function getPanelsByBoard(boardid, callback) {
   return (dispatch) => {
-    axios.get('/api/panels', {data: {board_id: boardid}})
+    axios.get('/api/panels', {params: {board_id: boardid}})
       .then((response) => {
-        dispatch(setPanels(response.body));
-        return response.body;
+        dispatch(setPanels(response.data));
+        callback(response.data);
       })
-      .catch((response) => {
+      .catch((error) => {
         console.log('ERROR ON GETPANELSBYBOARD:', error);
       });
   };
@@ -133,10 +133,10 @@ export function getPanelsByBoard(boardid) {
 //TODO: sorting tickets in order of completion, followed by urgency
 export function getTicketsByPanel(panelId) {
   return dispatch => {
-    axios.get('/api/tickets', {data: {panel_id: panelId}})
+    axios.get('/api/tickets', {params: {panel_id: panelId}})
       .then(response => {
-        dispatch(setTickets(response.body));
-        return response.body;
+        dispatch(setTickets(response.data));
+        return response.data;
       })
       .catch(err => {
         console.log('Error in getTicketsByPanel: ', err);
@@ -148,16 +148,12 @@ export function getTicketsByPanel(panelId) {
 //TODO: Edit param names based on React CreateBoard form inputs obj
 export function postCreatedBoard(newBoard) {
   return (dispatch => {
-
     /** store the new board info and current userid (as owner) in the database **/
     axios.post('/api/boards', newBoard) //owner_id: userid
-      .then(() => {
-        return getBoardsByUser();
-      })
     /** Add new board info to board and currentBoard state ONLY if it successfully saved **/
       .then(response => {
-        dispatch(setBoards(response));
-        dispatch(setCurrentBoard(response[response.length - 1])); //set current state to most recently created Board
+        dispatch(setBoards(response.data));
+        dispatch(setCurrentBoard(response.data)); //set current state to most recently created Board
       })
       
       .catch(error => {
@@ -171,12 +167,13 @@ export function postCreatedBoard(newBoard) {
 export function postCreatedPanel(newPanel, boardid) {
   return (dispatch => {
     axios.post('/api/panels', newPanel) // userid: userid
-      .then(() => {
-        return getPanelsByBoard(boardid);
-      })
       .then(response => {
-        dispatch(setPanels(response));
-        dispatch(setCurrentPanel(response[response.length - 1])); //new panel is now current
+        dispatch(setPanels(response.data));
+        dispatch(setCurrentPanel(response.data)); //new panel is now current
+      })
+
+      .catch(error => {
+        console.log('ERROR ON CREATEPANEL:', error);
       });
   });
 }
@@ -186,11 +183,8 @@ export function postCreatedPanel(newPanel, boardid) {
 export function postCreatedTicket(newTicket, panelid) {
   return (dispatch => {
     axios.post('/api/tickets', newTicket) //panelid: panelid, userid: userid
-      .then(() => {
-        return getTicketsByPanel(panelid);
-      })
       .then(response => {
-        dispatch(setTickets(response)); 
+        dispatch(setTickets(response.data)); 
         //no need to set current ticket upon creation
       });
   });

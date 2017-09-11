@@ -19,19 +19,16 @@ const Board = (props) => {
     draggable: false,
     initialSlide: 3
     /*currentSlide: props.currentPanel*/
-  }
+  };
 
   let panelStyle = {
     height: '650px'
-  }
+  };
+
   return (
       <Slider {...settings}>
-        <div><Panel style={panelStyle}/></div>
-        <div><Panel style={panelStyle}/></div>
-        <div><Panel style={panelStyle}/></div>
-        <div><Panel style={panelStyle}/></div>
-        <div><Panel style={panelStyle}/></div>
-        <div><Panel style={panelStyle}/></div>
+        {props.panels.map(panel => 
+         <div><Panel panelInfo={panel} key={panel.id} style={panelStyle}/></div>)}
       </Slider>
   );
 };

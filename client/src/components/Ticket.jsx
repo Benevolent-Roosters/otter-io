@@ -112,11 +112,11 @@ class Ticket extends React.Component {
       <BootstrapPanel 
         onMouseEnter={this.handleHover.bind(this)}
         onMouseLeave={this.handleHover.bind(this)}
-        bsStyle={this.state.priority === 0 ? 'info' : (this.state.priority === 1) ? 'warning' : 'danger'}
-        header= {<div style={ticketHeaderAndFooter}><div> <img src={(this.state.type === 'devOps' ? require('../images/devOps-circle.png') : (this.state.type === 'bug') ? require('../images/bug-circle.png') : require('../images/feature-circle.png'))}/></div> <h4 style={ticketTextStyle}>{this.state.title}</h4>
+        bsStyle={this.props.ticketInfo.priority === 1 ? 'info' : (this.props.ticketInfo.priority === 2) ? 'warning' : 'danger'}
+        header= {<div style={ticketHeaderAndFooter}><div> <img src={(this.props.ticketInfo.type === 'devOps' ? require('../images/devOps-circle.png') : (this.props.ticketInfo.type === 'bug') ? require('../images/bug-circle.png') : require('../images/feature-circle.png'))}/></div> <h4 style={ticketTextStyle}>{this.props.ticketInfo.title}</h4>
         </div>}
-        footer={<div style={ticketHeaderAndFooter}><div> <img src={(this.state.type === 'not started' ? require('../images/notstarted-circle.png') : (this.state.type === 'in progress') ? require('../images/inprogress-circle.png') : require('../images/circle-done.png'))}/></div> <h6 style={ticketTextStyle}>{this.state.assignee}</h6></div>}>
-        {this.state.description}
+        footer={<div style={ticketHeaderAndFooter}><div> <img src={(this.props.ticketInfo.status === 'not started' ? require('../images/notstarted-circle.png') : (this.props.ticketInfo.status === 'in progress') ? require('../images/inprogress-circle.png') : require('../images/circle-done.png'))}/></div> <h6 style={ticketTextStyle}>{this.props.ticketInfo.assignee}</h6></div>}>
+        {this.props.ticketInfo.description}
       </BootstrapPanel>
     );
   }

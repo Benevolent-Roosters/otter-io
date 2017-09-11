@@ -3,12 +3,13 @@ const dbhelper = require('../../db/helpers.js');
 const helper = require('./helper');
 
 module.exports.getPanelTickets = (req, res) => {
-  if (helper.checkUndefined(req.body.panel_id)) {
+  console.log(req.query);
+  if (helper.checkUndefined(req.query.panel_id)) {
     res.status(400).send('one of parameters from client is undefined');
     return;
   }
   //req.body.panel_id used to be req.params.panel_id but axios GET can only put in req.body
-  var panelId = req.body.panel_id;
+  var panelId = req.query.panel_id;
   dbhelper.getTicketsByPanel(parseInt(panelId))
     .then(tickets => {
       if (!tickets) {
