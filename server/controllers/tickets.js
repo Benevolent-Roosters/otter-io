@@ -5,10 +5,11 @@ const helper = require('./helper');
 module.exports.getPanelTickets = (req, res) => {
   if (helper.checkUndefined(req.body.panel_id)) {
     res.status(400).send('one of parameters from client is undefined');
+    return;
   }
   //req.body.panel_id used to be req.params.panel_id but axios GET can only put in req.body
   var panelId = req.body.panel_id;
-  dbhelper.getTicketsByPanel(panelId)
+  dbhelper.getTicketsByPanel(parseInt(panelId))
     .then(tickets => {
       if (!tickets) {
         throw 'cant get tickets by panel id';
@@ -28,11 +29,17 @@ module.exports.createPanelTicket = (req, res) => {
     req.body.status,
     req.body.priority,
     req.body.type,
+    req.body.creator_id,
     req.body.assignee_id,
     req.body.board_id,
     req.body.panel_id
   )) {
     res.status(400).send('one of parameters from client is undefined');
+    return;
+  }
+  if (parseInt(req.body.creator_id) !== req.user.id) {
+    res.status(400).send('owner_id field from client doesnt match actual logged in user');
+    return;
   }
   var ticketObj = {
     title: req.body.title,
@@ -46,11 +53,11 @@ module.exports.createPanelTicket = (req, res) => {
     panel_id: req.body.panel_id
   };
   dbhelper.createTicket(ticketObj)
-    .then(result => {
-      if (!result) {
+    .then(ticket => {
+      if (!ticket) {
         throw 'cant create ticket';
       }
-      res.status(201).send(result);
+      res.status(201).send(ticket);
     })
     .catch(err => {
       res.status(500).send(JSON.stringify(err));
@@ -60,9 +67,10 @@ module.exports.createPanelTicket = (req, res) => {
 module.exports.getOneTicket = (req, res) => {
   if (helper.checkUndefined(req.params.id)) {
     res.status(400).send('one of parameters from client is undefined');
+    return;
   }
   var ticketId = req.params.id;
-  dbhelper.getTicketById(ticketId)
+  dbhelper.getTicketById(parseInt(ticketId))
     .then(ticket => {
       if (!ticket) {
         throw 'cant get ticket by id';
@@ -100,12 +108,12 @@ module.exports.updateTicket = (req, res) => {
       }
     }
   }
-  var ticketlId = ticketObj.id;
+  var ticketId = ticketObj.id;
   if (!ticketId) {
-    res.status(400).send(`Update panel object ${JSON.stringify(ticketlId)} doesnt have id field`);
+    res.status(400).send(`Update panel object ${JSON.stringify(ticketId)} doesnt have id field`);
     return;
   }
-  dbhelper.updateTicketById(ticketId, ticketObj)
+  dbhelper.updateTicketById(parseInt(ticketId), ticketObj)
     .then((ticket) => {
       if (!ticket) {
         throw 'cant update ticket by id';

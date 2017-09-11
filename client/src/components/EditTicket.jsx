@@ -41,27 +41,26 @@ handleTitleChange(event) {
 
   handleSelectAssignee(eventKey) {
     this.setState({
-      assignee_id: eventKey
+      assignee_id: eventKey.currentTarget.textContent
     });
   }
 
   handleSelectType(eventKey) {
-    let types = ['Bug', 'Feature', 'Cleanup'];
     this.setState({
-      type: types[eventKey - 1]
+      type: eventKey.currentTarget.textContent
     });
   }
 
   handleSelectPriority(eventKey) {
     this.setState({
-      priority: eventKey
+      priority: eventKey.currentTarget.textContent
     });
   }
 
   handleSelectPanel(eventKey) {
     this.setState({
-      panel_id: eventKey
-    })
+      panel_id: eventKey.currentTarget.textContent
+    });
   }
 
   render() {
@@ -76,43 +75,46 @@ handleTitleChange(event) {
                   <Modal.Title style={{color: 'white'}}>Edit Ticket</Modal.Title>
                   </Modal.Header>
                   <Modal.Body>
-                    <Form horizontal>
-                      <FormGroup>
-                        <Col componentClass={ControlLabel} sm={4}>Ticket Title</Col>
-                        <Col sm={8}>
-                        <FormControl name='Ticket Title' bsSize="large" type="text" value={this.state.title} placeholder={'Ticket Title'} onChange={this.handleTitleChange.bind(this)}></FormControl>
-                        </Col>
-                      </FormGroup>
-                      <FormGroup>
-                        <Col componentClass={ControlLabel} sm={4}>Ticket Description</Col>
-                        <Col sm={8}>
-                        <FormControl name='Ticket Description' bsSize="large" type="textarea" value={this.state.description} placeholder={'What needs to be done?'} onChange={this.handleDescriptionChange.bind(this)}></FormControl>
-                        </Col>
-                      </FormGroup>
-                      <FormGroup>
-                        <FormControl componentClass="select" placeholder="Assignee">
-                          <option value="select">Brendan</option>
-                          <option value="other">Brendan</option>
-                          <option value="final">Seriously, give it to Brendan</option>
-                        </FormControl>
-                        <FormControl componentClass="select" placeholder="Ticket Type">
-                          <option value="select">Bug</option>
-                          <option value="other">Feature</option>
-                          <option value="final">Cleanup</option>
-                        </FormControl>
-                        <FormControl componentClass="select" placeholder="Priority Level">
-                          <option value="select">1</option>
-                          <option value="other">2</option>
-                          <option value="final">3</option>
-                        </FormControl>
-                        <FormControl componentClass="select" placeholder="Panel">
-                          <option value="select">This one</option>
-                          <option value="other">That one</option>
-                          <option value="final">The other one</option>
-                        </FormControl>
-                      </FormGroup>
-                      <Button style={buttonStyle} bsStyle="default" onClick={this.props.handleEditTicketRendered}>Cancel</Button>
-                      <Button style={buttonStyle} bsStyle="primary" type="button" onClick={() => this.props.handleSetTickets(this.state)}>Create</Button>
+                      <Form horizontal>
+                          <FormGroup>
+                            <Col componentClass={ControlLabel} sm={4}>Ticket Title</Col>
+                            <Col sm={8}>
+                            <FormControl name='Ticket Title' bsSize="large" type="text" value={this.state.title} placeholder={'Ticket Title'} onChange={this.handleTitleChange.bind(this)}></FormControl>
+                            </Col>
+                          </FormGroup>
+                          <FormGroup>
+                            <Col componentClass={ControlLabel} sm={4}>Ticket Description</Col>
+                            <Col sm={8}>
+                            <FormControl name='Ticket Description' componentClass="textarea" bsSize="large" value={this.state.description} placeholder={'What needs to be done?'} onChange={this.handleDescriptionChange.bind(this)}></FormControl>
+                            </Col>
+                          </FormGroup>
+                      <ButtonToolbar>
+                      <DropdownButton title={this.state.assignee_id ? this.state.assignee_id : 'Who should do this?'} pullRight id="split-button-pull-right">
+                        <MenuItem eventKey="1" onClick={this.handleSelectAssignee.bind(this)}>{'Brendan'}</MenuItem>
+                        <MenuItem eventKey="2" onClick={this.handleSelectAssignee.bind(this)}>{'Brendan'}</MenuItem>
+                        <MenuItem eventKey="3" onClick={this.handleSelectAssignee.bind(this)}>{'Seriously, give it to Brendan'}</MenuItem>
+                      </DropdownButton>
+                      
+                      <DropdownButton title={this.state.type ? this.state.type : 'Specify that type of ticket'} pullRight id="split-button-pull-right">
+                        <MenuItem eventKey="1" onClick={this.handleSelectType.bind(this)}>{'Bug'}</MenuItem>
+                        <MenuItem eventKey="2" onClick={this.handleSelectType.bind(this)}>{'Feature'}</MenuItem>
+                        <MenuItem eventKey="3" onClick={this.handleSelectType.bind(this)}>{'DevOps'}</MenuItem>
+                      </DropdownButton>
+
+                      <DropdownButton title={this.state.priority ? this.state.priority : 'How important is this?'} pullRight id="split-button-pull-right">
+                        <MenuItem eventKey="1" onClick={this.handleSelectPriority.bind(this)}>{'Priority 1'}</MenuItem>
+                        <MenuItem eventKey="2" onClick={this.handleSelectPriority.bind(this)}>{'Priority 2'}</MenuItem>
+                        <MenuItem eventKey="3" onClick={this.handleSelectPriority.bind(this)}>{'Priority 3'}</MenuItem>
+                      </DropdownButton>
+                      
+                      <DropdownButton title={this.state.panel_id ? this.state.panel_id : 'What Panel is this ticket for?' } pullRight id="split-button-pull-right">
+                        <MenuItem eventKey="1" onClick={this.handleSelectPanel.bind(this)}>{'This one'}</MenuItem>
+                        <MenuItem eventKey="2" onClick={this.handleSelectPanel.bind(this)}>{'That one'}</MenuItem>
+                        <MenuItem eventKey="3" onClick={this.handleSelectPanel.bind(this)}>{'That other one'}</MenuItem>
+                      </DropdownButton>
+                    </ButtonToolbar>
+                    <Button style={buttonStyle} bsStyle="default" onClick={this.props.handleEditTicketRendered}>Cancel</Button>
+                    <Button style={buttonStyle} bsStyle="primary" type="button" onClick={() => this.props.handleEditCurrentTicket(this.state)}>Create</Button>
                     </Form>
                   </Modal.Body>
                 </Modal>
@@ -136,8 +138,9 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    handleEditCurrentTicket(event) {
-      dispatch(editCurrentTicket(/**ticketObj from event **/));
+    handleEditCurrentTicket(ticketObj) {
+      dispatch(putEditedTicket(ticketObj))
+      dispatch(editCurrentTicket(ticketObj));
     },
     handleEditTicketRendered(tickets) {
       dispatch(toggleEditTicket(tickets));

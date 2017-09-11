@@ -23,7 +23,7 @@ module.exports.getUserOwnedBoards = (req, res) => {
 
 module.exports.getMyBoards = (req, res) => {
   var userId = req.user.id;
-  dbhelper.getBoardsByUser(userId)
+  dbhelper.getBoardsByUser(parseInt(userId))
     .then(boards => {
       if (!boards) {
         throw 'user doesnt have any boards';
@@ -57,7 +57,7 @@ module.exports.createMyBoard = (req, res) => {
         throw 'could not create board';
       }
       createdBoard = result;
-      return dbhelper.addUserToBoard(req.user.id, result.id);
+      return dbhelper.addUserToBoard(parseInt(req.user.id), parseInt(result.id));
     })
     .then(result => {
       if (!result) {
@@ -76,7 +76,7 @@ module.exports.getOneBoard = (req, res) => {
     return;
   }
   var boardId = req.params.id;
-  dbhelper.getBoardById(boardId)
+  dbhelper.getBoardById(parseInt(boardId))
     .then(board => {
       if (!board) {
         throw 'could not get board';
@@ -114,7 +114,7 @@ module.exports.updateBoard = (req, res) => {
     res.status(400).send(`Update board object ${JSON.stringify(updateBoardObj)} doesnt have id field`);
     return;
   }
-  dbhelper.updateBoardById(boardId, updateBoardObj)
+  dbhelper.updateBoardById(parseInt(boardId), updateBoardObj)
     .then((board) => {
       if (!board) {
         throw 'could not update board obj';
@@ -132,7 +132,7 @@ module.exports.getUsersByBoard = (req, res) => {
     return;
   }
   var boardId = req.params.id;
-  dbhelper.getUsersByBoard(boardId)
+  dbhelper.getUsersByBoard(parseInt(boardId))
     .then((users) => {
       if (!users) {
         throw 'couldnt get users for board';
@@ -151,7 +151,7 @@ module.exports.addMember = (req, res) => {
   }
   var userId = req.body.user_id;
   var boardId = req.params.id;
-  dbhelper.addUserToBoard(userId, boardId)
+  dbhelper.addUserToBoard(parseInt(userId), parseInt(boardId))
     .then(member => {
       if (!member) {
         throw 'couldnt add user to board';

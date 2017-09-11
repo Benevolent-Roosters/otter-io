@@ -7,7 +7,7 @@ exports.seed = function (knex, Promise) {
     .then( () => models.User.where({github_handle: 'stevepkuo'}).fetch())
     .then((user) => {
       if (user) {  
-        throw user;
+        throw 'duplicate user stevepkuo';
       }
       return models.User.forge({
         github_handle: 'stevepkuo',
@@ -15,13 +15,10 @@ exports.seed = function (knex, Promise) {
         oauth_id: '14355395'
       }).save();
     })
-    .error(err => {
-      console.log('ERROR! Could not create user seed: ', err);
-    })
     .then( () => models.Board.where({board_name: 'testboard'}).fetch())
-    .then(board => {
+    .then((board) => {
       if (board) {
-        throw board;
+        throw 'duplicate board testboard';
       }
       return models.Board.forge({
         board_name: 'testboard',
@@ -30,13 +27,16 @@ exports.seed = function (knex, Promise) {
         owner_id: 1
       }).save();
     })
-    .error(err => {
-      console.log('ERROR! Could not create board seed: ', err);
+    .then( () => {
+      return models.User.where({github_handle: 'stevepkuo'}).fetch();
+    })
+    .then((user) => {
+      return user.memberOfBoards().attach(1);
     })
     .then( () => models.Panel.where({name: 'testpanel'}).fetch())
-    .then(panel => {
+    .then((panel) => {
       if (panel) {
-        throw panel;
+        throw 'duplicate panel testpanel';
       }
       return models.Panel.forge({
         name: 'testpanel',
@@ -44,13 +44,10 @@ exports.seed = function (knex, Promise) {
         board_id: 1
       }).save();
     })
-    .error(err => {
-      console.log('ERROR! Could not create panel seed: ', err);
-    })
     .then( () => models.Ticket.where({title: 'testticket'}).fetch())
     .then((ticket) => {
       if (ticket) {
-        throw ticket;
+        throw 'duplicate ticket testticket';
       }
       return models.Ticket.forge({
         title: 'testticket',
@@ -65,17 +62,12 @@ exports.seed = function (knex, Promise) {
         panel_id: 1
       }).save();
     })
-    .error(err => {
-      console.log('ERROR! Could not create ticket seed: ', err);
+    .then( () => {
+      return models.User.where({github_handle: 'stevepkuo2'}).fetch();
     })
-
-
-    .then(() => {
-      return models.User.where({ github_handle: 'stevepkuo2' }).fetch();
-    })
-    .then((profile) => {
-      if (profile) {
-        throw profile;
+    .then((user) => {
+      if (user) {
+        throw 'duplicate user stevepkuo2';
       }
       return models.User.forge({
         github_handle: 'stevepkuo2',
@@ -83,18 +75,13 @@ exports.seed = function (knex, Promise) {
         oauth_id: '14355396'
       }).save();
     })
-    .error(err => {
-      console.error('ERROR: failed to create profile');
-      throw err;
-    })
- 
-    .then((user) => {
-      return models.Board.where({ board_name: 'testboard2' })
+    .then( () => {
+      return models.Board.where({board_name: 'testboard2'})
         .fetch();
     })
-    .then(board => {
+    .then((board) => {
       if (board) {
-        throw board;
+        throw 'duplicate board testboard2';
       }
       return models.Board.forge({
         board_name: 'testboard2',
@@ -103,27 +90,12 @@ exports.seed = function (knex, Promise) {
         owner_id: 2
       }).save();
     })
-    .error(err => {
-      console.log('ERROR! Could not create board: ', err);
-    })
-
-    // .then( (board) => knex('boards_users').insert([{user_id: 1, board_id: 1}]))
-    .then((board) => {
-      return models.User.where({ github_handle: 'stevepkuo' }).fetch();
+    .then( () => {
+      return models.User.where({github_handle: 'dsc03'}).fetch();
     })
     .then((user) => {
-      return user.memberOfBoards().attach(1);
-    })
-    .error(err => {
-      console.log('ERROR! Could not link board1 to user1: ', err);
-    })
-
-    .then(() => {
-      return models.User.where({ github_handle: 'dsc03' }).fetch();
-    })
-    .then((profile) => {
-      if (profile) {
-        throw profile;
+      if (user) {
+        throw 'duplicate user dsc03';
       }
       return models.User.forge({
         github_handle: 'dsc03',
@@ -131,15 +103,11 @@ exports.seed = function (knex, Promise) {
         oauth_id: '25214199'
       }).save();
     })
-    .error(err => {
-      console.error('ERROR: failed to create profile');
-      throw err;
-    })
     .then((user) => {
-      return models.Board.where({ board_name: 'testboard3' })
+      return models.Board.where({board_name: 'testboard3'})
         .fetch();
     })
-    .then(board => {
+    .then((board) => {
       if (board) {
         throw board;
       }
@@ -150,13 +118,16 @@ exports.seed = function (knex, Promise) {
         owner_id: 3
       }).save();
     })
-    .error(err => {
-      console.log('ERROR! Could not create board: ', err);
+    .then( () => {
+      return models.User.where({github_handle: 'dsc03'}).fetch();
     })
-    .then( (board) => models.Panel.where({name: 'testpanel3A'}).fetch())
-    .then(panel => {
+    .then((user) => {
+      return user.memberOfBoards().attach(3);
+    })
+    .then( () => models.Panel.where({name: 'testpanel3A'}).fetch())
+    .then((panel) => {
       if (panel) {
-        throw panel;
+        throw 'duplicate panel testpanel3A';
       }
       return models.Panel.forge({
         name: 'testpanel3A',
@@ -164,13 +135,10 @@ exports.seed = function (knex, Promise) {
         board_id: 3
       }).save();
     })
-    .error(err => {
-      console.log('ERROR! Could not create panel seed: ', err);
-    })
-    .then( (panel) => models.Panel.where({name: 'testpanel3B'}).fetch())
-    .then(panel => {
+    .then( () => models.Panel.where({name: 'testpanel3B'}).fetch())
+    .then((panel) => {
       if (panel) {
-        throw panel;
+        throw 'duplicate panel testpanel3B';
       }
       return models.Panel.forge({
         name: 'testpanel3B',
@@ -178,13 +146,10 @@ exports.seed = function (knex, Promise) {
         board_id: 3
       }).save();
     })
-    .error(err => {
-      console.log('ERROR! Could not create panel seed: ', err);
-    })
-    .then( (panel) => models.Panel.where({name: 'testpanel3C'}).fetch())
-    .then(panel => {
+    .then( () => models.Panel.where({name: 'testpanel3C'}).fetch())
+    .then((panel) => {
       if (panel) {
-        throw panel;
+        throw 'duplicate panel testpanel3C';
       }
       return models.Panel.forge({
         name: 'testpanel3C',
@@ -192,14 +157,10 @@ exports.seed = function (knex, Promise) {
         board_id: 3
       }).save();
     })
-    .error(err => {
-      console.log('ERROR! Could not create panel seed: ', err);
-    })
-
-    .then((panel) => models.Ticket.where({title: 'testticket3A'}).fetch())
+    .then( () => models.Ticket.where({title: 'testticket3A'}).fetch())
     .then((ticket) => {
       if (ticket) {
-        throw ticket;
+        throw 'duplicate ticket testticket3A';
       }
       return models.Ticket.forge({
         title: 'testticket3A',
@@ -214,13 +175,10 @@ exports.seed = function (knex, Promise) {
         panel_id: 3
       }).save();
     })
-    .error(err => {
-      console.log('ERROR! Could not create ticket seed: ', err);
-    })
-    .then((ticket) => models.Ticket.where({title: 'testticket3B'}).fetch())
+    .then( () => models.Ticket.where({title: 'testticket3B'}).fetch())
     .then((ticket) => {
       if (ticket) {
-        throw ticket;
+        throw 'duplicate ticket testticket3B';
       }
       return models.Ticket.forge({
         title: 'testticket3B',
@@ -235,13 +193,10 @@ exports.seed = function (knex, Promise) {
         panel_id: 3
       }).save();
     })
-    .error(err => {
-      console.log('ERROR! Could not create ticket seed: ', err);
-    })
-    .then((ticket) => models.Ticket.where({title: 'testticket3C'}).fetch())
+    .then( () => models.Ticket.where({title: 'testticket3C'}).fetch())
     .then((ticket) => {
       if (ticket) {
-        throw ticket;
+        throw 'duplicate ticket testticket3C';
       }
       return models.Ticket.forge({
         title: 'testticket3C',
@@ -256,21 +211,7 @@ exports.seed = function (knex, Promise) {
         panel_id: 3
       }).save();
     })
-    .error(err => {
-      console.log('ERROR! Could not create ticket seed: ', err);
-    })
-
-    .then((ticket) => {
-      return models.User.where({ github_handle: 'dsc03' }).fetch();
-    })
-    .then((user) => {
-      return user.memberOfBoards().attach(3);
-    })
-    .error(err => {
-      console.log('ERROR! Could not link board3 to user3: ', err);
-    })
-
-    .catch((user = 'ok', board = 'ok', panel = 'ok', ticket = 'ok') => {
-      console.log(`There is a situation... user: ${user}, board: ${board}, panel: ${panel}, ticket: ${ticket}`);
+    .catch((situation) => {
+      console.log('There is a situation: ', situation);
     });
 };

@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getUserInfo, getBoardsByUser, toggleDrawer, toggleCreateBoard, toggleEditBoard, toggleCreateTicket, toggleEditTicket, } from '../redux/actionCreators.js';
+import { getUserInfo, getBoardsByUser, toggleDrawer, toggleCreateBoard, toggleEditBoard, toggleCreateTicket, toggleEditTicket, toggleCreatePanel } from '../redux/actionCreators.js';
 
 import axios from 'axios';
 import moment from 'moment';
@@ -120,9 +120,6 @@ const mapDispatchToProps = (dispatch) => {
     },
     handleToggleDrawer() {
       dispatch(toggleDrawer());
-    },
-    handleCreateBoardRendered() {
-      dispatch(toggleCreateBoard());
     },
     handleEditBoardRendered() {
       dispatch(toggleEditBoard());
