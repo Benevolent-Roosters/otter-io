@@ -51,7 +51,7 @@ exports.up = function (knex, Promise) {
       table.integer('priority').notNullable();
       // TODO: type needs a char limit!
       table.string('type').nullable();
-      table.timestamp('created_at').defaultTo(knex.fn.now());
+      table.timestamps(true, true);
       table.integer('creator_id').references('users.id').onDelete('CASCADE');
       table.integer('assignee_id').references('users.id').onDelete('CASCADE');
       table.integer('panel_id').references('panels.id').onDelete('CASCADE');
