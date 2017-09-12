@@ -2,33 +2,8 @@ import { SET_USER, SET_CURRENT_BOARD, SET_BOARDS, SET_PANELS, SET_CURRENT_PANEL,
 
 const defaultState = {
   user: {
-    id: 0
   },
-  boards: [ 
-    { id: 1,
-      board_name: 'benev roosters',
-      repo_name: 'thesis3',
-      repo_url: 'https://github.com/Benevolent-Roosters/thesis3',
-      owner_id: 3,
-      _pivot_user_id: 3,
-      _pivot_board_id: 3 },
-
-    { id: 2,
-      board_name: 'cool kids',
-      repo_name: 'thesis3',
-      repo_url: 'https://github.com/Benevolent-Roosters/thesis3',
-      owner_id: 3,
-      _pivot_user_id: 3,
-      _pivot_board_id: 3 },
-
-    { id: 3,
-      board_name: 'show us the mulla',
-      repo_name: 'thesis3',
-      repo_url: 'https://github.com/Benevolent-Roosters/thesis3',
-      owner_id: 3,
-      _pivot_user_id: 3,
-      _pivot_board_id: 3 }
-  ],
+  boards: [],
 
   panels: [],
   tickets: [],
@@ -105,11 +80,11 @@ const reduceSetCurrentBoard = (state, action) => Object.assign({}, state, {curre
 
 const reduceSetCurrentPanel = (state, action) => Object.assign({}, state, {currentPanel: action.value});
 
-const reduceSetBoards = (state, action) => Object.assign({}, state, {boards: boards.concat(action.value)});
+const reduceSetBoards = (state, action) => Object.assign({}, state, {boards: state.boards.concat(action.value)});
 
-const reduceSetPanels = (state, action) => Object.assign({}, state, {panels: panels.concat(action.value)});
+const reduceSetPanels = (state, action) => Object.assign({}, state, {panels: state.panels.concat(action.value)});
 
-const reduceSetTickets = (state, action) => Object.assign({}, state, {tickets: tickets.concat(action.value)});
+const reduceSetTickets = (state, action) => Object.assign({}, state, {tickets: state.tickets.concat(action.value)});
 
 const reduceEditBoards = (state, action) => Object.assign({}, state, {boards: action.value});
 

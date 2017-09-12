@@ -22,7 +22,8 @@ class CreateBoard extends React.Component {
     const name = target.name;
 
     this.setState({
-      [name]: value
+      [name]: value,
+      owner_id: this.props.owner_id
     });
   }
 
@@ -51,7 +52,7 @@ class CreateBoard extends React.Component {
                         </Col>
                       </FormGroup>
                       <Button style={buttonStyle} bsStyle="default" onClick={this.props.handleCreateBoardRendered}>Cancel</Button>
-                      <Button style={buttonStyle} bsStyle="primary" type="button" onClick={() => this.props.handleSetAndPostCreatedBoard(this.state)}>Create</Button>
+                      <Button style={buttonStyle} bsStyle="primary" type="button" onClick={() => {this.props.handleSetAndPostCreatedBoard(this.state); this.props.handleCreateBoardRendered();}}>Create</Button>
                     </Form>
                   </Modal.Body>
                 </Modal>

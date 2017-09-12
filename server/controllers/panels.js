@@ -3,11 +3,11 @@ const helper = require('./helper');
 
 module.exports.getBoardPanels = (req, res) => {
   //req.body.board_id used to be req.params.board_id but axios GET can only get it into req.body
-  if (helper.checkUndefined(req.body.board_id)) {
+  if (helper.checkUndefined(req.query.board_id)) {
     res.status(400).send('one of parameters from client is undefined');
     return;
   }
-  var board_id = req.body.board_id;
+  var board_id = req.query.board_id;
   //check if member of board_id
   helper.checkIfMemberOfBoardId(req.user.id, board_id)
     .then(boolean => {
@@ -34,6 +34,7 @@ module.exports.getBoardPanels = (req, res) => {
 };
 
 module.exports.createBoardPanel = (req, res) => {
+
   if (helper.checkUndefined(req.body.name, req.body.due_date, req.body.board_id)) {
     res.status(400).send('one of parameters from client is undefined');
     return;

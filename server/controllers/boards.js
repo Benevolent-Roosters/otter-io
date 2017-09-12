@@ -36,7 +36,8 @@ module.exports.getMyBoards = (req, res) => {
 };
 
 module.exports.createMyBoard = (req, res) => {
-  if (helper.checkUndefined(req.body.board_name, req.body.repo_name, req.body.repo_url, req.body.owner_id)) {
+  console.log(req.body);
+  if (helper.checkUndefined(req.body.board_name, req.body.repo_url, req.body.owner_id)) {
     res.status(400).send('one of parameters from client is undefined');
     return;
   }
@@ -46,7 +47,6 @@ module.exports.createMyBoard = (req, res) => {
   }
   var boardObj = {
     board_name: req.body.board_name,
-    repo_name: req.body.repo_name,
     repo_url: req.body.repo_url,
     owner_id: req.user.id
   };

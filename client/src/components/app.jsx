@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getUserInfo, getBoardsByUser, toggleDrawer, toggleCreateBoard, toggleEditBoard, toggleCreateTicket, toggleEditTicket, toggleCreatePanel } from '../redux/actionCreators.js';
+import { getUserInfo, getBoardsByUser, getPanelsByBoard, getTicketsByPanel, setCurrentPanel, setCurrentBoard, toggleDrawer, toggleCreateBoard, toggleEditBoard, toggleCreateTicket, toggleEditTicket, toggleCreatePanel } from '../redux/actionCreators.js';
 
 import axios from 'axios';
 import moment from 'moment';
@@ -29,24 +29,21 @@ class App extends React.Component {
     super(props);
   }
   
-  // componentWillMount() {
-  //   this.props.handleGetUser()
-  //     .then(user => {
-  //       return this.props.handleSetBoards();
-  //     })
+  componentWillMount() {
+    var context = this;
+    this.props.handleGetUser(function(userInfo) {
+      context.props.handleSetBoards(function() {
+        context.props.handleSetPanels(context.props.currentBoard.id, function(panels) {
+          for (let panel of panels) {
+            context.props.handleSetTickets(panel.id);
+          }
+          let closestIndex = context.findCurrentPanel(panels);
+          context.props.handleSetCurrentPanel(panels[closestIndex]);    
+        });
+      });
+    });
+  }
 
-  //     .then (boards => {
-  //       return this.props.handleSetPanels(boards[0].id);
-  //     })
-
-  //     .then(panels => {
-  //       for (let panel of panels) {
-  //         this.props.handleSetTickets(panel.id);
-  //       }
-  //       let closestIndex = this.findCurrentPanel(panels);
-  //       this.props.handleSetCurrentPanel(panels[closestIndex]);    
-  //     });
-  // }
 
   findCurrentPanel(panels) {
     let dueDates = panels.map(panel => panel.due_date.slice(0, 10));
@@ -68,7 +65,6 @@ class App extends React.Component {
     return (
       <div>
       <div>
-        <Button bsStyle="primary" onClick={this.props.handleCreateBoardRendered}>Create Board</Button>
         <Button bsStyle="primary" onClick={this.props.handleEditBoardRendered}>Edit Board</Button>
         <Button bsStyle="primary" onClick={this.props.handleCreateTicketRendered}>Create Ticket</Button>
         <Button bsStyle="primary" onClick={this.props.handleEditTicketRendered}>Edit Ticket</Button>
@@ -106,14 +102,17 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    handleGetUser() {
-      dispatch(getUserInfo());
+    handleGetUser(callback) {
+      dispatch(getUserInfo(callback));
     },
-    handleSetBoards() {
-      dispatch(getBoardsByUser());
+    handleSetBoards(callback) {
+      dispatch(getBoardsByUser(callback));
     },
-    handleSetPanels(boardid) {
-      dispatch(getPanelsByBoard(boardid));
+    handleSetPanels(boardid, callback) {
+      dispatch(getPanelsByBoard(boardid, callback));
+    },
+    handleSetTickets(panelId) {
+      dispatch(getTicketsByPanel(panelId));
     },
     handleSetCurrentPanel(panel) {
       dispatch(setCurrentPanel(panel));
