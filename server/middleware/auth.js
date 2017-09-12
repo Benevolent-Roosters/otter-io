@@ -29,15 +29,18 @@ module.exports.verifyElse401 = (req, res, next) => {
   res.sendStatus(401);
 };
 
+//to be used as middleware auth before performing BOARD CRUD api croutes
 module.exports.verifyBoardMemberElse401 = (req, res, next) => {
   var boardid;
-  if (!req.params && !req.body) {
+  if (!req.params && !req.body && !req.query) {
     res.status(400).send('board id couldnt be found in request from client');
   }
-  if (!req.params || !req.params.id) {
+  if (req.params && req.params.id) {
+    boardid = parseInt(req.params.id);
+  } else if (req.body && req.body.id) {
     boardid = parseInt(req.body.id);
   } else {
-    boardid = parseInt(req.params.id);
+    boardid = parseInt(req.query.board_id);
   }
   var userId = req.user.id;
 
@@ -72,12 +75,15 @@ module.exports.verifyBoardMemberElse401 = (req, res, next) => {
     });
 };
 
+//to be used as middleware auth before performing BOARD CRUD api croutes
 module.exports.verifyBoardOwnerElse401 = (req, res, next) => {
   var boardid;
   if (!req.params && !req.body) {
     res.status(400).send('board id couldnt be found in request from client');
   }
-  if (!req.params || !req.params.id) {
+  if (req.body && req.body.board_id) {
+    boardid = parseInt(req.body.board_id);
+  } else if (req.body && req.body.id) {
     boardid = parseInt(req.body.id);
   } else {
     boardid = parseInt(req.params.id);
@@ -106,16 +112,18 @@ module.exports.verifyBoardOwnerElse401 = (req, res, next) => {
     });
 };
 
-//to be used as middleware auth before performing any TICKET CRUD api routes
+//to be used as middleware auth before performing a specific GET PANEL apir route or some TICKET CRUD api routes
 module.exports.verifyPanelMemberElse401 = (req, res, next) => {
   var panelid;
-  if (!req.query && !req.body) {
+  if (!req.query && !req.body && !req.params) {
     res.status(400).send('panel id couldnt be found in request from client');
   }
-  if (!req.params || !req.query.panel_id) {
+  if (req.query && req.query.panel_id) {
+    panelid = parseInt(req.query.panel_id);
+  } else if (req.body && req.body.panel_id) {
     panelid = parseInt(req.body.panel_id);
   } else {
-    panelid = parseInt(req.query.panel_id);
+    panelid = parseInt(req.params.id);
   }
   var userId = req.user.id;
 
@@ -136,6 +144,7 @@ module.exports.verifyPanelMemberElse401 = (req, res, next) => {
     });
 };
 
+//to be used as middleware auth before performing GET particular TICKET route
 module.exports.verifyTicketMemberElse401 = (req, res, next) => {
   var ticketid;
   if (!req.params && !req.body) {

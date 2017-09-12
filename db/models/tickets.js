@@ -13,7 +13,7 @@ const Ticket = db.Model.extend({
     return this.belongsTo('User', 'creator_id');
   },
   assignee: function() {
-    return this.belongsTo('User', 'assignee_id');
+    return this.belongsTo('User', 'assignee_handle', 'github_handle');
   }
 });
 

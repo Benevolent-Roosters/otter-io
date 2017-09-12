@@ -3,6 +3,7 @@ config/development.json
 config/production.json
 config/staging.json
 config/test.json
+package-lock.json
 
 # OS X
 .DS_Store

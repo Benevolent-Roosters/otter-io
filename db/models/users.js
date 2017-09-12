@@ -10,7 +10,7 @@ const User = db.Model.extend({
     return this.hasMany('Board', 'owner_id');
   },
   assignedTickets: function() {
-    return this.hasMany('Ticket', 'assignee_id');
+    return this.hasMany('Ticket', 'assignee_handle', 'github_handle');
   },
   createdTickets: function() {
     return this.hasMany('Ticket', 'creator_id');

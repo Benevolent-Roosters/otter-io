@@ -171,8 +171,8 @@ describe('CRUD API authorization', function () {
     agent.get('/auth/fake')
       .then((res) => {
         return agent.get('/api/panels')
-          .send({board_id: 3}); //shows up as req body { board_id: 3 }
-        //.query({board_id: 3}); //shows up as req.query.board_id
+        //.send({board_id: 3}); //shows up as req body { board_id: 3 }
+          .query({board_id: 3}); //shows up as req.query.board_id
       })
       .then((res) => {
         expect(res.status).to.equal(401);
@@ -242,7 +242,7 @@ describe('CRUD API authorization', function () {
     agent.get('/auth/fake')
       .then((res) => {
         return agent.get('/api/tickets')
-          .send({panel_id: 3});
+          .query({panel_id: 3});
       })
       .then((res) => {
         expect(res.status).to.equal(401);
@@ -439,7 +439,6 @@ describe('CRUD API boards', function () {
           .send({
             id: 3,
             board_name: 'rename',
-            repo_name: 'rename',
             repo_url: 'https://github.com/Benevolent-Roosters/rename',
             owner_id: 3
           });
@@ -628,15 +627,17 @@ describe('CRUD API panels', function () {
       });
   });
 
-  it('accepts GET requests to /api/panels showing 3 panels of a particular board', function(done) {
+  it('accepts GET requests to /api/panels showing 3 panels of a particular board and in ascending due date order', function(done) {
     agent.get('/auth/fake3')
       .then((res) => {
         return agent.get('/api/panels')
-          .send({board_id: 3});
+          .query({board_id: 3});
       })
       .then((res) => {
         expect(res.status).to.equal(200);
         expect(res.body.length).to.equal(3);
+        expect(res.body[0].name).to.equal('testpanel3A');
+        expect(res.body[1].name).to.equal('testpanel3B');
         expect(res.body[2].name).to.equal('testpanel3C');
         done();
       })
@@ -655,7 +656,7 @@ describe('CRUD API panels', function () {
       .then((res) => {
         expect(res.status).to.equal(201);
         return agent.get('/api/panels')
-          .send({board_id: 2});
+          .query({board_id: 2});
       })
       .then((res) => {
         expect(res.status).to.equal(200);
@@ -672,7 +673,7 @@ describe('CRUD API panels', function () {
     agent.get('/auth/fake3')
       .then((res) => {
         return agent.post('/api/panels')
-          .send({});
+          .send({board_id: 3});
       })
       .then((res) => {
         expect(res.status).to.equal(400);
@@ -683,7 +684,7 @@ describe('CRUD API panels', function () {
       });
   });
 
-  it('accepts POST requests to /api/panels to create panel in a board that user owns', function(done) {
+  it('accepts POST requests to /api/panels to create panel in a board that user owns. Get panels should return in ascending due_date', function(done) {
     agent.get('/auth/fake3')
       .then((res) => {
         return agent.post('/api/panels')
@@ -693,12 +694,15 @@ describe('CRUD API panels', function () {
         expect(res.status).to.equal(201);
         expect(res.body.name).to.equal('new panel');
         return agent.get('/api/panels')
-          .send({board_id: 3});
+          .query({board_id: 3});
       })
       .then((res) => {
         expect(res.status).to.equal(200);
         expect(res.body.length).to.equal(4);
-        expect(res.body[3].name).to.equal('new panel');
+        expect(res.body[0].name).to.equal('new panel');
+        expect(res.body[1].name).to.equal('testpanel3A');
+        expect(res.body[2].name).to.equal('testpanel3B');
+        expect(res.body[3].name).to.equal('testpanel3C');
         done();
       })
       .catch((err) => {
@@ -740,7 +744,7 @@ describe('CRUD API panels', function () {
         expect(res.status).to.equal(201);
         expect(res.body.name).to.equal('new panel');
         return agent.get('/api/panels')
-          .send({board_id: 2});
+          .query({board_id: 2});
       })
       .then((res) => {
         expect(res.status).to.equal(200);
@@ -767,7 +771,7 @@ describe('CRUD API panels', function () {
       .then((res) => {
         expect(res.status).to.equal(500);
         return agent.get('/api/panels')
-          .send({board_id: 3});
+          .query({board_id: 3});
       })
       .then((res) => {
         expect(res.status).to.equal(200);
@@ -792,9 +796,9 @@ describe('CRUD API panels', function () {
           });
       })
       .then((res) => {
-        expect(res.status).to.equal(500);
+        expect(res.status).to.equal(404);
         return agent.get('/api/panels')
-          .send({board_id: 3});
+          .query({board_id: 3});
       })
       .then((res) => {
         expect(res.status).to.equal(200);
@@ -821,7 +825,7 @@ describe('CRUD API panels', function () {
       .then((res) => {
         expect(res.status).to.equal(201);
         return agent.get('/api/panels')
-          .send({board_id: 1});
+          .query({board_id: 1});
       })
       .then((res) => {
         expect(res.status).to.equal(200);
@@ -855,7 +859,7 @@ describe('CRUD API panels', function () {
         return agent.get('/api/panels/200');
       })
       .then((res) => {
-        expect(res.status).to.equal(500);
+        expect(res.status).to.equal(404);
         done();
       })
       .catch((err) => {
@@ -886,12 +890,11 @@ describe('CRUD API tickets', function () {
     agent.get('/auth/fake3')
       .then((res) => {
         return agent.get('/api/tickets')
-          .send({panel_id: 3});
+          .query({panel_id: 3});
       })
       .then((res) => {
         expect(res.status).to.equal(200);
         expect(res.body.length).to.equal(3);
-        expect(res.body[2].title).to.equal('testticket3A');
         done();
       })
       .catch((err) => {
@@ -904,14 +907,14 @@ describe('CRUD API tickets', function () {
     agent.get('/auth/fake3')
       .then((res) => {
         return agent.get('/api/tickets')
-          .send({panel_id: 3});
+          .query({panel_id: 3});
       })
       .then((res) => {
         expect(res.status).to.equal(200);
         expect(res.body.length).to.equal(3);
-        expect(res.body[0].title).to.equal('testticket3C'); //priority 3
-        expect(res.body[1].title).to.equal('testticket3B'); //priority 2
-        expect(res.body[2].title).to.equal('testticket3A'); //priority 1
+        expect(res.body[0].title).to.equal('testticket3C'); //priority 3, in progress
+        expect(res.body[1].title).to.equal('testticket3B'); //priority 2, in progress
+        expect(res.body[2].title).to.equal('testticket3A'); //priority 2, complete
         done();
       })
       .catch((err) => {
@@ -924,7 +927,7 @@ describe('CRUD API tickets', function () {
     agent.get('/auth/fake3')
       .then((res) => {
         return agent.get('/api/tickets')
-          .send({panel_id: 4});
+          .query({panel_id: 4});
       })
       .then((res) => {
         expect(res.status).to.equal(200);
@@ -940,7 +943,7 @@ describe('CRUD API tickets', function () {
     agent.get('/auth/fake3')
       .then((res) => {
         return agent.get('/api/tickets')
-          .send({panel_id: 200});
+          .query({panel_id: 200});
       })
       .then((res) => {
         expect(res.status).to.equal(404);
@@ -951,7 +954,7 @@ describe('CRUD API tickets', function () {
       });
   });
 
-  it('accepts POST requests to /api/tickets to create ticket in a board that user is member of', function(done) {
+  it('accepts POST requests to /api/tickets to create ticket in a board that user is member of and checks for created_at field', function(done) {
     agent.get('/auth/fake3')
       .then((res) => {
         return agent.post('/api/tickets')
@@ -962,7 +965,7 @@ describe('CRUD API tickets', function () {
             priority: '4',
             type: 'feature',
             creator_id: 3,
-            assignee_id: 3,
+            assignee_handle: 'dsc03',
             board_id: 3,
             panel_id: 3
           });
@@ -970,13 +973,17 @@ describe('CRUD API tickets', function () {
       .then((res) => {
         expect(res.status).to.equal(201);
         expect(res.body.title).to.equal('newticket');
+        expect(!!res.body.created_at).to.equal(true);
         return agent.get('/api/tickets')
-          .send({panel_id: 3});
+          .query({panel_id: 3});
       })
       .then((res) => {
         expect(res.status).to.equal(200);
         expect(res.body.length).to.equal(4);
         expect(res.body[0].title).to.equal('newticket');
+        expect(res.body[1].title).to.equal('testticket3C'); //priority 3, in progress
+        expect(res.body[2].title).to.equal('testticket3B'); //priority 2, in progress
+        expect(res.body[3].title).to.equal('testticket3A'); //priority 2, complete
         done();
       })
       .catch((err) => {
@@ -995,7 +1002,7 @@ describe('CRUD API tickets', function () {
             priority: '1',
             type: 'feature',
             creator_id: 3,
-            assignee_id: 3,
+            assignee_handle: 'dsc03',
             board_id: 3,
             panel_id: 3
           });
@@ -1034,7 +1041,7 @@ describe('CRUD API tickets', function () {
             priority: '1',
             type: 'feature',
             creator_id: 2,
-            assignee_id: 2,
+            assignee_handle: 'stevepkuo2',
             board_id: 2,
             panel_id: 5
           });
@@ -1043,7 +1050,7 @@ describe('CRUD API tickets', function () {
         expect(res.status).to.equal(201);
         expect(res.body.title).to.equal('newticket');
         return agent.get('/api/tickets')
-          .send({panel_id: 5});
+          .query({panel_id: 5});
       })
       .then((res) => {
         expect(res.body.length).to.equal(1);
@@ -1067,7 +1074,7 @@ describe('CRUD API tickets', function () {
             priority: '1',
             type: 'feature',
             creator_id: 3,
-            assignee_id: 3,
+            assignee_handle: 'dsc03',
             board_id: 3,
             panel_id: 3
           });
@@ -1075,7 +1082,7 @@ describe('CRUD API tickets', function () {
       .then((res) => {
         expect(res.status).to.equal(500);
         return agent.get('/api/tickets')
-          .send({panel_id: 3});
+          .query({panel_id: 3});
       })
       .then((res) => {
         expect(res.status).to.equal(200);
@@ -1099,7 +1106,7 @@ describe('CRUD API tickets', function () {
             priority: '1',
             type: 'feature',
             creator_id: 3,
-            assignee_id: 3,
+            assignee_handle: 'dsc03',
             board_id: 3,
             panel_id: 200
           });
@@ -1125,7 +1132,7 @@ describe('CRUD API tickets', function () {
             priority: '2',
             type: 'feature',
             creator_id: 3,
-            assignee_id: 3,
+            assignee_handle: 'dsc03',
             board_id: 3,
             panel_id: 3
           });
@@ -1134,12 +1141,15 @@ describe('CRUD API tickets', function () {
         expect(res.status).to.equal(201);
         expect(res.body.title).to.equal('newticketname');
         return agent.get('/api/tickets')
-          .send({panel_id: 3});
+          .query({panel_id: 3});
       })
       .then((res) => {
         expect(res.status).to.equal(200);
         expect(res.body.length).to.equal(3);
+        expect(res.body[0].title).to.equal('testticket3C'); //priority 3, in progress
         expect(res.body[1].title).to.equal('newticketname');
+        expect(res.body[2].title).to.equal('testticket3B'); //priority 2, in progress
+        expect(res.body[3].title).to.equal('testticket3A'); //priority 2, complete
         done();
       })
       .catch((err) => {

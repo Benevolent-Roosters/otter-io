@@ -2,23 +2,13 @@ const dbhelper = require('../../db/helpers.js');
 const helper = require('./helper');
 
 module.exports.getBoardPanels = (req, res) => {
-  //req.body.board_id used to be req.params.board_id but axios GET can only get it into req.body
+  //req.query.board_id used to be req.params.board_id but axios GET can only get it into req.query
   if (helper.checkUndefined(req.query.board_id)) {
     res.status(400).send('one of parameters from client is undefined');
     return;
   }
   var board_id = req.query.board_id;
-  //check if member of board_id
-  helper.checkIfMemberOfBoardId(req.user.id, board_id)
-    .then(boolean => {
-      if (!boolean) {
-        res.status(401).send();
-        throw 'exit';
-      }
-    })
-    .then(() => {
-      return dbhelper.getPanelsByBoard(parseInt(board_id));
-    })
+  dbhelper.getPanelsByBoard(parseInt(board_id))
     .then(panels => {
       if (!panels) {
         throw 'cant get panels for board';
@@ -34,7 +24,6 @@ module.exports.getBoardPanels = (req, res) => {
 };
 
 module.exports.createBoardPanel = (req, res) => {
-
   if (helper.checkUndefined(req.body.name, req.body.due_date, req.body.board_id)) {
     res.status(400).send('one of parameters from client is undefined');
     return;
@@ -44,16 +33,7 @@ module.exports.createBoardPanel = (req, res) => {
     due_date: req.body.due_date,
     board_id: req.body.board_id
   };
-  helper.checkIfOwnerOfBoardId(req.user.id, req.body.board_id)
-    .then(boolean => {
-      if (!boolean) {
-        res.status(401).send();
-        throw 'exit';
-      }
-    })
-    .then(() => {
-      return dbhelper.createPanel(panelObj);
-    })
+  dbhelper.createPanel(panelObj)
     .then(panel => {
       if (!panel) {
         throw 'cant create panel';
@@ -73,16 +53,7 @@ module.exports.getOnePanel = (req, res) => {
     return;
   }
   var panelId = req.params.id;
-  helper.checkIfMemberOfPanelId(req.user.id, panelId)
-    .then(boolean => {
-      if (!boolean) {
-        res.status(401).send();
-        throw 'exit';
-      }
-    })
-    .then(() => {
-      return dbhelper.getPanelById(parseInt(panelId));
-    })
+  dbhelper.getPanelById(parseInt(panelId))
     .then(panel => {
       if (!panel) {
         throw 'cant get panel by id';
@@ -121,16 +92,7 @@ module.exports.updatePanel = (req, res) => {
     res.status(400).send(`Update panel object ${JSON.stringify(panelId)} doesnt have id field`);
     return;
   }
-  helper.checkIfOwnerOfBoardId(req.user.id, req.body.board_id)
-    .then(boolean => {
-      if (!boolean) {
-        res.status(401).send();
-        throw 'exit';
-      }
-    })
-    .then(() => {
-      return dbhelper.updatePanelById(parseInt(panelId), panelObj);
-    })
+  dbhelper.updatePanelById(parseInt(panelId), panelObj)
     .then((panel) => {
       if (!panel) {
         throw 'cant update panel by id';

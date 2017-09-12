@@ -3,12 +3,12 @@ const dbhelper = require('../../db/helpers.js');
 const helper = require('./helper');
 
 module.exports.getUserOwnedBoards = (req, res) => {
-  if (helper.checkUndefined(req.body.owner_id)) {
+  if (helper.checkUndefined(req.query.owner_id)) {
     res.status(400).send('one of parameters from client is undefined');
     return;
   }
-  //req.body.owner_id used to be req.params.owner_id but axios GET can only get it into req.body
-  models.Board.where({ owner_id: req.body.owner_id }).fetch()
+  //req.query.owner_id used to be req.params.owner_id but axios GET can only get it into req.query
+  models.Board.where({ owner_id: req.query.owner_id }).fetch()
     .then(boards => {
       if (!boards) {
         throw 'cant get boards that user owns';
@@ -36,8 +36,8 @@ module.exports.getMyBoards = (req, res) => {
 };
 
 module.exports.createMyBoard = (req, res) => {
-  console.log(req.body);
-  if (helper.checkUndefined(req.body.board_name, req.body.repo_url, req.body.owner_id)) {
+  //client no longer filling out req.body.repo_name
+  if (helper.checkUndefined(req.body.board_name, /*req.body.repo_name,*/ req.body.repo_url, req.body.owner_id)) {
     res.status(400).send('one of parameters from client is undefined');
     return;
   }
@@ -47,6 +47,7 @@ module.exports.createMyBoard = (req, res) => {
   }
   var boardObj = {
     board_name: req.body.board_name,
+    repo_name: req.body.repo_name,
     repo_url: req.body.repo_url,
     owner_id: req.user.id
   };

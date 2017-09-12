@@ -40,13 +40,13 @@ router.route('/boards/:id/members')
 //router.route('/boards/:id/leave') //only if member of board
 
 router.route('/panels')
-  .get(PanelController.getBoardPanels) //only if member of board
-  .post(PanelController.createBoardPanel) //only if owner of board
-  .put(PanelController.updatePanel); //only if owner of board
+  .get(middleware.auth.verifyBoardMemberElse401, PanelController.getBoardPanels) //only if member of board
+  .post(middleware.auth.verifyBoardOwnerElse401, PanelController.createBoardPanel) //only if owner of board
+  .put(middleware.auth.verifyBoardOwnerElse401, PanelController.updatePanel); //only if owner of board
 
 router.route('/panels/:id')
-  .get(PanelController.getOnePanel); //only if member of board
-//  .delete(PanelController.deleteOne) //only if owner of board
+  .get(middleware.auth.verifyPanelMemberElse401, PanelController.getOnePanel); //only if member of board
+//  .delete(middleware.auth.verifyPanelMemberElse401, PanelController.deleteOne) //only if owner of board
 //  //also delete all of panel's tickets???
 
 router.route('/tickets')

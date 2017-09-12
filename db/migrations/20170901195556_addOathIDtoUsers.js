@@ -2,7 +2,7 @@
 exports.up = function(knex, Promise) {
   return Promise.all([
     knex.schema.table('users', function(table) {
-      table.string('oauth_id', 30).nullable();
+      table.string('oauth_id', 30).nullable().unique();
       table.integer('lastboard_id').references('boards.id').onDelete('CASCADE');
     }),
     knex.schema.dropTableIfExists('auths'),

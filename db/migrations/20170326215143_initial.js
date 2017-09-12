@@ -20,7 +20,7 @@ exports.up = function (knex, Promise) {
     knex.schema.createTableIfNotExists('users', function(table) {
       table.increments('id').unsigned().primary();
       table.string('email', 100).nullable();
-      table.string('github_handle', 100).notNullable();
+      table.string('github_handle', 100).unique().notNullable();
       table.string('profile_photo', 200).nullable();
     }),
     knex.schema.createTableIfNotExists('boards', function(table) {
@@ -50,10 +50,12 @@ exports.up = function (knex, Promise) {
       table.string('status', 20).notNullable();
       table.integer('priority').notNullable();
       // TODO: type needs a char limit!
-      table.string('type').nullable();
+      table.string('type', 20).nullable();
       table.timestamps(true, true);
       table.integer('creator_id').references('users.id').onDelete('CASCADE');
-      table.integer('assignee_id').references('users.id').onDelete('CASCADE');
+      //table.integer('assignee_id').references('users.id').onDelete('CASCADE');
+      //table.string('assignee_handle', 100).notNullable();
+      table.string('assignee_handle').references('users.github_handle').onDelete('CASCADE');
       table.integer('panel_id').references('panels.id').onDelete('CASCADE');
       table.integer('board_id').references('boards.id').onDelete('CASCADE');
     })

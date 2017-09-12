@@ -57,7 +57,7 @@ exports.seed = function (knex, Promise) {
         type: 'feature',
         created_at: knex.fn.now(),
         creator_id: 1,
-        assignee_id: 1,
+        assignee_handle: 'stevepkuo',
         board_id: 1,
         panel_id: 1
       }).save();
@@ -170,7 +170,7 @@ exports.seed = function (knex, Promise) {
         type: 'feature',
         created_at: knex.fn.now(),
         creator_id: 3,
-        assignee_id: 3,
+        assignee_handle: 'dsc03',
         board_id: 3,
         panel_id: 3
       }).save();
@@ -188,7 +188,7 @@ exports.seed = function (knex, Promise) {
         type: 'feature',
         created_at: knex.fn.now(),
         creator_id: 3,
-        assignee_id: 3,
+        assignee_handle: 'dsc03',
         board_id: 3,
         panel_id: 3
       }).save();
@@ -206,7 +206,7 @@ exports.seed = function (knex, Promise) {
         type: 'feature',
         created_at: knex.fn.now(),
         creator_id: 3,
-        assignee_id: 3,
+        assignee_handle: 'dsc03',
         board_id: 3,
         panel_id: 3
       }).save();

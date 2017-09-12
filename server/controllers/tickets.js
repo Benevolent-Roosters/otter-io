@@ -3,12 +3,11 @@ const dbhelper = require('../../db/helpers.js');
 const helper = require('./helper');
 
 module.exports.getPanelTickets = (req, res) => {
-  console.log(req.query);
   if (helper.checkUndefined(req.query.panel_id)) {
     res.status(400).send('one of parameters from client is undefined');
     return;
   }
-  //req.body.panel_id used to be req.params.panel_id but axios GET can only put in req.body
+  //req.query.panel_id used to be req.params.panel_id but axios GET can only put in req.query
   var panelId = req.query.panel_id;
   dbhelper.getTicketsByPanel(parseInt(panelId))
     .then(tickets => {
@@ -31,7 +30,7 @@ module.exports.createPanelTicket = (req, res) => {
     req.body.priority,
     req.body.type,
     req.body.creator_id,
-    req.body.assignee_id,
+    req.body.assignee_handle,
     req.body.board_id,
     req.body.panel_id
   )) {
@@ -49,7 +48,7 @@ module.exports.createPanelTicket = (req, res) => {
     priority: req.body.priority,
     type: req.body.type,
     creator_id: req.user.id,
-    assignee_id: req.body.assignee_id,
+    assignee_handle: req.body.assignee_handle,
     board_id: req.body.board_id,
     panel_id: req.body.panel_id
   };
@@ -97,7 +96,7 @@ module.exports.updateTicket = (req, res) => {
     'priority': true,
     'type': true,
     'creator_id': true,
-    'assignee_id': true,
+    'assignee_handle': true,
     'board_id': true,
     'panel_id': true
   };
