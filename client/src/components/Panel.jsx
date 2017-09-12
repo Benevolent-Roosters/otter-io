@@ -14,7 +14,7 @@ const Panel = props => {
               props.handleCreateTicketRendered(); 
               }} block>Add a Ticket</Button>
       {props.tickets.map(ticket =>
-        ticket.panel_id === props.panelInfo.id ? <Ticket ticketInfo={ticket} /> : ''
+        ticket.panel_id === props.panelInfo.id ? <Ticket panelInfo={props.panelInfo} ticketInfo={ticket} /> : ''
       )}
     </BootstrapPanel>
   );

@@ -17,7 +17,7 @@ class CreateTicket extends React.Component {
       priority: 0,
       type: '',
       creator_id: this.props.userId,
-      assignee_id: this.props.userId,
+      assignee_handle: this.props.userHandle,
       panel_id: this.props.currentPanel.id,
 
       board_id: this.props.currentBoardId
@@ -42,7 +42,7 @@ class CreateTicket extends React.Component {
 
   handleSelectAssignee(eventKey) {
     this.setState({
-      assignee_id: eventKey.currentTarget.textContent
+      assignee_handle: eventKey.currentTarget.textContent
     });
   }
 
@@ -91,16 +91,14 @@ class CreateTicket extends React.Component {
                       </FormGroup>
                        
                       <ButtonToolbar>
-                        <DropdownButton title={this.state.assignee_id ? this.state.assignee_id : 'Who should do this?'} pullRight id="split-button-pull-right">
-                          <MenuItem eventKey="1" onClick={this.handleSelectAssignee.bind(this)}>{3}</MenuItem>
-                          <MenuItem eventKey="2" onClick={this.handleSelectAssignee.bind(this)}>{3}</MenuItem>
-                          <MenuItem eventKey="3" onClick={this.handleSelectAssignee.bind(this)}>{3}</MenuItem>
+                        <DropdownButton title={this.state.assignee_handle ? this.state.assignee_handle : 'Who should do this?'} pullRight id="split-button-pull-right">
+                          <MenuItem eventKey="1" onClick={this.handleSelectAssignee.bind(this)}>{this.props.userHandle}</MenuItem>
                         </DropdownButton>
                         
                         <DropdownButton title={this.state.type ? this.state.type : 'Specify that type of ticket'} pullRight id="split-button-pull-right">
-                          <MenuItem eventKey="1" onClick={this.handleSelectType.bind(this)}>{'Bug'}</MenuItem>
-                          <MenuItem eventKey="2" onClick={this.handleSelectType.bind(this)}>{'Feature'}</MenuItem>
-                          <MenuItem eventKey="3" onClick={this.handleSelectType.bind(this)}>{'DevOps'}</MenuItem>
+                          <MenuItem eventKey="1" onClick={this.handleSelectType.bind(this)}>{'bug'}</MenuItem>
+                          <MenuItem eventKey="2" onClick={this.handleSelectType.bind(this)}>{'feature'}</MenuItem>
+                          <MenuItem eventKey="3" onClick={this.handleSelectType.bind(this)}>{'devops'}</MenuItem>
                         </DropdownButton>
 
                         <DropdownButton title={this.state.priority ? this.state.priority : 'How important is this?'} pullRight id="split-button-pull-right">
@@ -110,9 +108,9 @@ class CreateTicket extends React.Component {
                         </DropdownButton>
 
                         <DropdownButton title={this.state.status ? this.state.status : 'What is the ticket status?'} pullRight id="split-button-pull-right">
-                          <MenuItem eventKey="1" onClick={this.handleSelectStatus.bind(this)}>{'Not Started'}</MenuItem>
-                          <MenuItem eventKey="2" onClick={this.handleSelectStatus.bind(this)}>{'In Progress'}</MenuItem>
-                          <MenuItem eventKey="3" onClick={this.handleSelectStatus.bind(this)}>{'Complete'}</MenuItem>
+                          <MenuItem eventKey="1" onClick={this.handleSelectStatus.bind(this)}>{'not started'}</MenuItem>
+                          <MenuItem eventKey="2" onClick={this.handleSelectStatus.bind(this)}>{'in progress'}</MenuItem>
+                          <MenuItem eventKey="3" onClick={this.handleSelectStatus.bind(this)}>{'complete'}</MenuItem>
                         </DropdownButton>
                         
                       </ButtonToolbar>
@@ -133,6 +131,7 @@ class CreateTicket extends React.Component {
 const mapStateToProps = state => {
   return {
     userId: state.user.id, 
+    userHandle: state.user.github_handle,
     currentBoardId: state.currentBoard.id, 
     currentPanel: state.currentPanel,
     panels: state.panels,

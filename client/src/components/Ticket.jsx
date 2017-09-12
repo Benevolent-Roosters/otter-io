@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getTicketsByPanel, toggleEditTicket, setCurrentTicket } from '../redux/actionCreators.js';
+import { getTicketsByPanel, toggleEditTicket, setCurrentTicket, setCurrentPanel } from '../redux/actionCreators.js';
 import { Panel as BootstrapPanel, NavItem } from 'react-bootstrap';
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
 import '../../../ticketStyle.css';
@@ -91,11 +91,10 @@ class Ticket extends React.Component {
       status: 'done',
       priority: 1,
       type: 'feature',
-      creator_id: this.props.userId,
-      assignee_id: this.props.userId,
-      assignee: 'dsc03',
-      panel_id: this.props.currentPanel,
-      board_id: this.props.currentBoardId,
+      creator_id: this.props.ticketInfo.creator_id,
+      assignee_handle: this.props.ticketInfo.assignee_handle,
+      panel_id: this.props.ticketInfo.panel_id,
+      board_id: this.props.ticketInfo.board_id,
       hovered: false
     }
   }
@@ -122,12 +121,13 @@ class Ticket extends React.Component {
               </h4>
               <div><NavItem eventKey={1} onClick={() => {
                 this.props.handleSetCurrentTicket(this.props.ticketInfo);
+                this.props.handleSetCurrentPanel(this.props.panelInfo);
                 this.props.handleEditTicketRendered();
                 }}>Edit</NavItem>
             </div>
           </div>}
 
-        footer={<div style={ticketHeaderAndFooter}><div> <img src={(this.props.ticketInfo.status === 'not started' ? require('../images/notstarted-circle.png') : (this.props.ticketInfo.status === 'in progress') ? require('../images/inprogress-circle.png') : require('../images/circle-done.png'))}/></div> <h6 style={ticketTextStyle}>{this.props.ticketInfo.assignee}</h6></div>}>
+        footer={<div style={ticketHeaderAndFooter}><div> <img src={(this.props.ticketInfo.status === 'not started' ? require('../images/notstarted-circle.png') : (this.props.ticketInfo.status === 'in progress') ? require('../images/inprogress-circle.png') : require('../images/circle-done.png'))}/></div> <h6 style={ticketTextStyle}>{this.props.ticketInfo.assignee_handle}</h6></div>}>
         {this.props.ticketInfo.description}
       </BootstrapPanel>
     );
@@ -148,6 +148,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     handleSetCurrentTicket(ticketInfo) {
       dispatch(setCurrentTicket(ticketInfo));
+    },
+    handleSetCurrentPanel(panel) {
+      dispatch(setCurrentPanel(panel));
     }
   };
 };

@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { putEditedTicket, handleSetTickets, editCurrentTicket, toggleEditTicket, getTicketsByPanel, editTicket } from '../redux/actionCreators.js';
+import { putEditedTicket, handleSetTickets, editCurrentTicket, toggleEditTicket, getTicketsByPanel, editTicket, emptyTickets } from '../redux/actionCreators.js';
 import { Modal, Form, FormGroup, FormControl, Button, ControlLabel, Grid, Col, Row, DropdownButton, MenuItem, ButtonToolbar } from 'react-bootstrap';
 import axios from 'axios';
 
@@ -19,9 +19,7 @@ class EditTicket extends React.Component {
       type: this.props.currentTicket.type,
       panel_id: this.props.currentPanel.id,
       panel_name: this.props.currentPanel.name,
-      creator_id: this.props.userId,
-      assignee_id: this.props.userId,
-      board_id: this.props.currentBoardId,
+      assignee_handle: this.props.userHandle
     };
   }
 
@@ -39,7 +37,7 @@ class EditTicket extends React.Component {
 
   handleSelectAssignee(eventKey) {
     this.setState({
-      assignee_id: eventKey.currentTarget.textContent
+      assignee_handle: eventKey.currentTarget.textContent
     });
   }
 
@@ -62,7 +60,6 @@ class EditTicket extends React.Component {
   }
 
   handleSelectPanel(eventKey) {
-    debugger;
     this.setState({
       panel_name: eventKey.currentTarget.textContent,
       panel_id: eventKey.currentTarget.id
@@ -80,6 +77,7 @@ class EditTicket extends React.Component {
       // }
 
     if (this.props.panels.length > 0) {
+      this.props.handleEmptyTickets();
       for (let panel of this.props.panels) {
         this.props.handleSetTickets(panel.id);
       }
@@ -89,6 +87,7 @@ class EditTicket extends React.Component {
   render() {
     /*NOTE: Once we hook everything together, MenuItem will be created by mapping over the store's users, ticket types, ticket priorities, and store's panels */
 
+    
     return (
       <div>
         <Grid>
@@ -113,16 +112,14 @@ class EditTicket extends React.Component {
                             </Col>
                           </FormGroup>
                       <ButtonToolbar>
-                      <DropdownButton title={this.state.assignee_id ? this.state.assignee_id : this.props.currentTicket.assignee_id} pullRight id="split-button-pull-right">
-                        <MenuItem eventKey="1" onClick={this.handleSelectAssignee.bind(this)}>{3}</MenuItem>
-                        <MenuItem eventKey="2" onClick={this.handleSelectAssignee.bind(this)}>{3}</MenuItem>
-                        <MenuItem eventKey="3" onClick={this.handleSelectAssignee.bind(this)}>{3}</MenuItem>
+                      <DropdownButton title={this.state.assignee_handle ? this.state.assignee_handle : this.props.currentTicket.assignee_handle} pullRight id="split-button-pull-right">
+                        <MenuItem eventKey="1" onClick={this.handleSelectAssignee.bind(this)}>{this.props.currentTicket.assignee_handle}</MenuItem>
                       </DropdownButton>
                       
                       <DropdownButton title={this.state.type ? this.state.type : this.props.currentTicket.type} pullRight id="split-button-pull-right">
-                        <MenuItem eventKey="1" onClick={this.handleSelectType.bind(this)}>{'Bug'}</MenuItem>
-                        <MenuItem eventKey="2" onClick={this.handleSelectType.bind(this)}>{'Feature'}</MenuItem>
-                        <MenuItem eventKey="3" onClick={this.handleSelectType.bind(this)}>{'DevOps'}</MenuItem>
+                        <MenuItem eventKey="1" onClick={this.handleSelectType.bind(this)}>{'bug'}</MenuItem>
+                        <MenuItem eventKey="2" onClick={this.handleSelectType.bind(this)}>{'feature'}</MenuItem>
+                        <MenuItem eventKey="3" onClick={this.handleSelectType.bind(this)}>{'devops'}</MenuItem>
                       </DropdownButton>
 
                       <DropdownButton title={this.state.priority ? this.state.priority : this.props.currentTicket.priority} pullRight id="split-button-pull-right">
@@ -132,9 +129,9 @@ class EditTicket extends React.Component {
                       </DropdownButton>
 
                       <DropdownButton title={this.state.status ? this.state.status : this.props.currentTicket.status} pullRight id="split-button-pull-right">
-                          <MenuItem eventKey="1" onClick={this.handleSelectStatus.bind(this)}>{'Not Started'}</MenuItem>
-                          <MenuItem eventKey="2" onClick={this.handleSelectStatus.bind(this)}>{'In Progress'}</MenuItem>
-                          <MenuItem eventKey="3" onClick={this.handleSelectStatus.bind(this)}>{'Complete'}</MenuItem>
+                          <MenuItem eventKey="1" onClick={this.handleSelectStatus.bind(this)}>{'not started'}</MenuItem>
+                          <MenuItem eventKey="2" onClick={this.handleSelectStatus.bind(this)}>{'in progress'}</MenuItem>
+                          <MenuItem eventKey="3" onClick={this.handleSelectStatus.bind(this)}>{'complete'}</MenuItem>
                         </DropdownButton>
                       
                       <DropdownButton title={this.state.panel_name ? this.state.panel_name : this.props.currentPanel.name} pullRight id="split-button-pull-right">
@@ -144,9 +141,10 @@ class EditTicket extends React.Component {
                     </ButtonToolbar>
                     <Button style={buttonStyle} bsStyle="default" onClick={this.props.handleEditTicketRendered}>Cancel</Button>
                     <Button style={buttonStyle} bsStyle="primary" type="button" onClick={() => 
-                      {let currentTicket = Object.assign({}, this.state, {creator_id: this.props.userId, board_id: this.props.currentBoardId});
-                      delete currentTicket.panel_name;
-                      this.props.handleEditCurrentTicket(currentTicket); this.handleOnEdit();
+                      {let { panel_name, ...editedTicket} = this.state; 
+                      console.log('HELLO', editedTicket); 
+                      this.props.handleEditCurrentTicket(Object.assign({}, editedTicket, {creator_id:
+                        this.props.userId, board_id: this.props.currentBoardId, id: this.props.currentTicket.id})); this.handleOnEdit();
                       this.props.handleEditTicketRendered();}}>Update</Button>
                     </Form>
                   </Modal.Body>
@@ -161,7 +159,8 @@ class EditTicket extends React.Component {
 
 const mapStateToProps = state => {
   return {
-    userId: state.user.id, //double check what userid key actually is named
+    userId: state.user.id,
+    userHandle: state.user.github_handle, //double check what userid key actually is named
     currentBoardId: state.currentBoard.id, //double check what userid key actually is named,
     currentPanel: state.currentPanel,
     panels: state.panels,
@@ -184,6 +183,9 @@ const mapDispatchToProps = dispatch => {
     },
     handleEditTicket(index, ticket) {
       dispatch(editTicket(index, ticket));
+    },
+    handleEmptyTickets() {
+      dispatch(emptyTickets());
     }
   };
 };
