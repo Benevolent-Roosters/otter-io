@@ -165,8 +165,8 @@ exports.seed = function (knex, Promise) {
       return models.Ticket.forge({
         title: 'testticket3A',
         description: 'testing3A...',
-        status: 'in progress',
-        priority: 1,
+        status: 'complete',
+        priority: 2,
         type: 'feature',
         created_at: knex.fn.now(),
         creator_id: 3,
