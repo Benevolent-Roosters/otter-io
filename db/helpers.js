@@ -254,7 +254,7 @@ module.exports.getPanelById = function(panelId) {
 
 module.exports.getPanelsByBoard = function(boardId) {
   return Board.forge({id: boardId})
-    .fetch({withRelated: ['panels']})
+    .fetch({withRelated: [{ panels: function(query) { query.orderBy('due_date'); }}]})
     .then(board => {
       if (!board) {
         throw 'invalid board';
@@ -299,13 +299,16 @@ module.exports.createTicket = function(data) {
       }
       return Ticket.forge(data).save();
     })
+    // fetch required to include created_at field in return value
     .then(ticket => {
-      console.log(`Ticket ${ticket.toJSON().title} saved!`);
+      return Ticket.forge({id: ticket.id}).fetch();
+    })
+    .then(ticket => {
       return ticket.toJSON();
     })
     .catch(situation => {
       if (situation === 'invalid panel') {
-        console.log(`There is a situation: panel ID ${data.panel_id}`);
+        console.log(`There is a situation: panel ID ${data.panel_id} doesn't exist!`);
       }
       if (situation === 'duplicate ticket') {
         console.log(`There is a situation: ticket ${data.title} already exists on this panel!`);
