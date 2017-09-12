@@ -114,6 +114,7 @@ module.exports.verifyBoardOwnerElse401 = (req, res, next) => {
 
 //to be used as middleware auth before performing a specific GET PANEL apir route or some TICKET CRUD api routes
 module.exports.verifyPanelMemberElse401 = (req, res, next) => {
+  console.log(req.body);
   var panelid;
   if (!req.query && !req.body && !req.params) {
     res.status(400).send('panel id couldnt be found in request from client');

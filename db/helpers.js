@@ -191,6 +191,7 @@ module.exports.getBoardById = function(boardId) {
 };
 
 module.exports.updateBoardById = function(boardId, data) {
+  console.log('data:', data, 'boardId: ', boardId);
   return Board.forge({id: boardId})
     .fetch()
     .then(board => {

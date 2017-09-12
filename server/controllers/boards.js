@@ -98,7 +98,6 @@ module.exports.updateBoard = (req, res) => {
   var validKeys = {
     'id': true,
     'board_name': true,
-    'repo_name': true,
     'repo_url': true,
     'owner_id': true
   };

@@ -12,14 +12,15 @@ class EditBoard extends React.Component {
     this.state = {
       board_name: '',
       repo_url: '',
-      owner_id: this.props.owner_id
+      owner_id: this.props.owner_id,
+      id: this.props.currentBoard.id
     };
   }
 
   reorderBoards(editedBoard) {
     let idx;
     for (let i = 0; i < this.props.boards.length; i++) {
-      if (editedBoard.boardId === this.props.boards[i].boardId) {
+      if (editedBoard.id === this.props.boards[i].id) {
         idx = i;
         break;
       }
@@ -33,7 +34,9 @@ class EditBoard extends React.Component {
     const name = target.name;
 
     this.setState({
-      [name]: value
+      [name]: value,
+      owner_id: this.props.owner_id,
+      id: this.props.currentBoard.id      
     });
   }
 
@@ -52,17 +55,17 @@ class EditBoard extends React.Component {
                       <FormGroup>
                         <Col componentClass={ControlLabel} sm={4}>Board Name</Col>
                         <Col sm={8}>
-                        <FormControl name='board_name' bsSize="large" type="text" value={this.state.board_name} placeholder={'Board name'} onChange={this.handleInputChange.bind(this)}></FormControl>
+                        <FormControl name='board_name' bsSize="large" type="text" value={this.state.board_name} placeholder={this.props.currentBoard.board_name} onChange={this.handleInputChange.bind(this)}></FormControl>
                         </Col>
                       </FormGroup>
                       <FormGroup>
                         <Col componentClass={ControlLabel} sm={4}>Github Repo URL</Col>
                         <Col sm={8}>
-                        <FormControl name='repo_url' bsSize="large" type="text" value={this.state.repo_url} placeholder={'Github Repo'} onChange={ this.handleInputChange.bind(this)}></FormControl>
+                        <FormControl name='repo_url' bsSize="large" type="text" value={this.state.repo_url} placeholder={this.props.currentBoard.repo_url} onChange={ this.handleInputChange.bind(this)}></FormControl>
                         </Col>
                       </FormGroup>
                       <Button style={buttonStyle} bsStyle="default" onClick={this.props.handleEditBoardRendered}>Cancel</Button>
-                      <Button style={buttonStyle} bsStyle="primary" type="button" onClick={() => this.props.handleEditBoard(this.state)}>Update</Button>
+                      <Button style={buttonStyle} bsStyle="primary" type="button" onClick={() => {this.props.handleEditBoard(this.reorderBoards.bind(this), this.state); this.props.handleEditBoardRendered();}}>Update</Button>
                     </Form>
                   </Modal.Body>
                 </Modal>
@@ -85,8 +88,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    handleEditBoard(boardObj) {
-      dispatch(editBoards(reorderBoards(boardObj)));
+    handleEditBoard(callback, boardObj) {
+      dispatch(editBoards(callback(boardObj)));
       dispatch(putEditedBoard(boardObj))
     },
     handleEditBoardRendered() {

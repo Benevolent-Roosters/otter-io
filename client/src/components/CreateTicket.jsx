@@ -19,6 +19,7 @@ class CreateTicket extends React.Component {
       creator_id: this.props.userId,
       assignee_id: this.props.userId,
       panel_id: this.props.currentPanel.id,
+
       board_id: this.props.currentBoardId
     };
   }
@@ -57,9 +58,9 @@ class CreateTicket extends React.Component {
     });
   }
 
-  handleSelectPanel(eventKey) {
+  handleSelectStatus(eventKey) {
     this.setState({
-      panel_id: eventKey.currentTarget.textContent
+      status: eventKey.currentTarget.textContent
     });
   }
 
@@ -91,9 +92,9 @@ class CreateTicket extends React.Component {
                        
                       <ButtonToolbar>
                         <DropdownButton title={this.state.assignee_id ? this.state.assignee_id : 'Who should do this?'} pullRight id="split-button-pull-right">
-                          <MenuItem eventKey="1" onClick={this.handleSelectAssignee.bind(this)}>{'Brendan'}</MenuItem>
-                          <MenuItem eventKey="2" onClick={this.handleSelectAssignee.bind(this)}>{'Brendan'}</MenuItem>
-                          <MenuItem eventKey="3" onClick={this.handleSelectAssignee.bind(this)}>{'Seriously, give it to Brendan'}</MenuItem>
+                          <MenuItem eventKey="1" onClick={this.handleSelectAssignee.bind(this)}>{3}</MenuItem>
+                          <MenuItem eventKey="2" onClick={this.handleSelectAssignee.bind(this)}>{3}</MenuItem>
+                          <MenuItem eventKey="3" onClick={this.handleSelectAssignee.bind(this)}>{3}</MenuItem>
                         </DropdownButton>
                         
                         <DropdownButton title={this.state.type ? this.state.type : 'Specify that type of ticket'} pullRight id="split-button-pull-right">
@@ -107,15 +108,16 @@ class CreateTicket extends React.Component {
                           <MenuItem eventKey="2" onClick={this.handleSelectPriority.bind(this)}>{2}</MenuItem>
                           <MenuItem eventKey="3" onClick={this.handleSelectPriority.bind(this)}>{3}</MenuItem>
                         </DropdownButton>
-                        
-                        <DropdownButton title={this.state.panel_id ? this.state.panel_id : 'What Panel is this ticket for?' } pullRight id="split-button-pull-right">
-                          <MenuItem eventKey="1" onClick={this.handleSelectPanel.bind(this)}>{'This one'}</MenuItem>
-                          <MenuItem eventKey="2" onClick={this.handleSelectPanel.bind(this)}>{'That one'}</MenuItem>
-                          <MenuItem eventKey="3" onClick={this.handleSelectPanel.bind(this)}>{'That other one'}</MenuItem>
+
+                        <DropdownButton title={this.state.status ? this.state.status : 'What is the ticket status?'} pullRight id="split-button-pull-right">
+                          <MenuItem eventKey="1" onClick={this.handleSelectStatus.bind(this)}>{'Not Started'}</MenuItem>
+                          <MenuItem eventKey="2" onClick={this.handleSelectStatus.bind(this)}>{'In Progress'}</MenuItem>
+                          <MenuItem eventKey="3" onClick={this.handleSelectStatus.bind(this)}>{'Complete'}</MenuItem>
                         </DropdownButton>
+                        
                       </ButtonToolbar>
                       <Button style={buttonStyle} bsStyle="default" onClick={this.props.handleCreateTicketRendered}>Cancel</Button>
-                      <Button style={buttonStyle} bsStyle="primary" type="button" onClick={() => this.props.handleSetTickets(this.state)}>Create</Button>
+                      <Button style={buttonStyle} bsStyle="primary" type="button" onClick={() => {this.props.handleSetTickets(Object.assign({}, this.state, {creator_id: this.props.userId, panel_id: this.props.currentPanel.id, board_id: this.props.currentBoardId})); this.props.handleCreateTicketRendered();}}>Create</Button>
                     </Form>
                   </Modal.Body>
                 </Modal>
@@ -130,8 +132,8 @@ class CreateTicket extends React.Component {
 
 const mapStateToProps = state => {
   return {
-    userId: state.user.userid, //double check what userid key actually is named
-    currentBoardId: state.currentBoard.boardid, //double check what userid key actually is named,
+    userId: state.user.id, 
+    currentBoardId: state.currentBoard.id, 
     currentPanel: state.currentPanel,
     panels: state.panels,
     createTicketRendered: state.createTicketRendered

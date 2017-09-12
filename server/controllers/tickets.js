@@ -23,6 +23,7 @@ module.exports.getPanelTickets = (req, res) => {
 };
 
 module.exports.createPanelTicket = (req, res) => {
+  console.log(req.body);
   if (helper.checkUndefined(
     req.body.title,
     req.body.description,
