@@ -10,6 +10,12 @@ export const SET_PANELS = 'SET_PANELS';
 
 export const SET_TICKETS = 'SET_TICKETS';
 
+export const ADD_BOARD = 'ADD_BOARD';
+
+export const ADD_PANEL = 'ADD_PANEL';
+
+export const ADD_TICKET = 'ADD_TICKET';
+
 export const EDIT_BOARDS = 'EDIT_BOARDS';
 
 export const EDIT_CURRENT_BOARD = 'EDIT_CURRENT_BOARD';
@@ -18,9 +24,13 @@ export const EDIT_PANELS = 'EDIT_PANELS';
 
 export const EDIT_CURRENT_PANEL = 'EDIT_CURRENT_PANEL';
 
-export const EDIT_TICKETS = 'EDIT_TICKETS';
+export const EDIT_TICKET = 'EDIT_TICKET';
 
 export const EDIT_CURRENT_TICKET = 'EDIT_CURRENT_TICKET';
+
+export const EMPTY_PANELS = 'EMPTY_PANELS';
+
+export const EMPTY_TICKETS = 'EMPTY_TICKETS';
 
 export const TOGGLE_DRAWER = 'TOGGLE_DRAWER';
 
@@ -35,3 +45,5 @@ export const TOGGLE_EDIT_TICKET = 'TOGGLE_EDIT_TICKET';
 export const TOGGLE_CREATE_PANEL = 'TOGGLE_CREATE_PANEL';
 
 export const TOGGLE_EDIT_PANEL = 'TOGGLE_EDIT_PANEL';
+
+export const SET_CURRENT_TICKET = 'SET_CURRENT_TICKET';

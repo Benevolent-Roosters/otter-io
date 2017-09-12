@@ -1,7 +1,6 @@
-import { SET_USER, SET_CURRENT_BOARD, SET_CURRENT_PANEL, SET_BOARDS, SET_PANELS, SET_TICKETS, EDIT_CURRENT_BOARD, EDIT_BOARDS, EDIT_PANELS, EDIT_CURRENT_PANEL, EDIT_TICKETS, EDIT_CURRENT_TICKET, TOGGLE_DRAWER, TOGGLE_CREATE_BOARD, TOGGLE_EDIT_BOARD, TOGGLE_CREATE_TICKET, TOGGLE_EDIT_TICKET, TOGGLE_EDIT_PANEL, TOGGLE_CREATE_PANEL } from './actions';
+import { SET_USER, SET_CURRENT_BOARD, SET_CURRENT_PANEL, SET_BOARDS, SET_PANELS, SET_TICKETS, EDIT_CURRENT_BOARD, EDIT_BOARDS, EDIT_PANELS, EDIT_CURRENT_PANEL, EDIT_TICKETS, EDIT_CURRENT_TICKET, TOGGLE_DRAWER, TOGGLE_CREATE_BOARD, TOGGLE_EDIT_BOARD, TOGGLE_CREATE_TICKET, TOGGLE_EDIT_TICKET, TOGGLE_EDIT_PANEL, TOGGLE_CREATE_PANEL, ADD_BOARD, ADD_PANEL, ADD_TICKET, EMPTY_PANELS, EMPTY_TICKETS, SET_CURRENT_TICKET, EDIT_TICKET } from './actions';
 
 import axios from 'axios';
-
 
 export function setUser(user) {
   return {type: SET_USER, value: user};
@@ -15,17 +14,33 @@ export function setCurrentPanel(panel) {
   return {type: SET_CURRENT_PANEL, value: panel};
 }
 
+export function setCurrentTicket(ticket) {
+  return {type: SET_CURRENT_TICKET, value: ticket};
+}
+
 export function setPanels(panels) {
   return {type: SET_PANELS, value: panels};
 }
 
-/** setBoards is used to both retrieve boards from db and to create a new board and add it to state **/
 export function setBoards(boards) { 
   return {type: SET_BOARDS, value: boards};
 }
 
 export function setTickets(tickets) {
   return {type: SET_TICKETS, value: tickets};
+}
+
+export function addBoard(board) {
+  return {type: ADD_BOARD, value: board};
+}
+
+export function addPanel(panel) {
+  return {type: ADD_PANEL, value: panel};
+}
+
+/** This will be used both for adding a single ticket and adding all tickets from DB upon board change **/
+export function addTicket(ticket) {
+  return {type: ADD_TICKET, value: ticket};
 }
 
 export function editBoards(boards) {
@@ -40,16 +55,24 @@ export function editPanels(panels) {
   return {type: EDIT_PANELS, value: panels};
 }
 
+export function editTicket(index, ticket) {
+  return {type: EDIT_TICKET, index: index, value: ticket};
+}
+
 export function editCurrentPanel(panelObj) {
   return {type: EDIT_CURRENT_PANEL, value: panelObj};
 }
 
-export function editTickets(tickets) {
-  return {type: EDIT_TICKETS, value: tickets};
-}
-
 export function editCurrentTicket(ticketObj) {
   return {type: EDIT_CURRENT_TICKET, value: ticketObj};
+}
+
+export function emptyPanels() {
+  return {type: EMPTY_PANELS};
+}
+
+export function emptyTickets() {
+  return {type: EMPTY_TICKETS};
 }
 
 export function toggleDrawer() {
@@ -152,7 +175,7 @@ export function postCreatedBoard(newBoard) {
     axios.post('/api/boards', newBoard) //owner_id: userid
     /** Add new board info to board and currentBoard state ONLY if it successfully saved **/
       .then(response => {
-        dispatch(setBoards(response.data));
+        dispatch(addBoard(response.data));
         dispatch(setCurrentBoard(response.data)); //set current state to most recently created Board
       })
       
@@ -164,11 +187,11 @@ export function postCreatedBoard(newBoard) {
 
 /** Upon creation a panel, save the panel to the database and then retrieve all panels associated with the board and set the currentpanel to the newly created one **/
 //TODO: Edit param names based on React CreatePanel form inputs obj
-export function postCreatedPanel(newPanel, boardid) {
+export function postCreatedPanel(newPanel) {
   return (dispatch => {
     axios.post('/api/panels', newPanel) // userid: userid
       .then(response => {
-        dispatch(setPanels(response.data));
+        dispatch(addPanel(response.data));
         dispatch(setCurrentPanel(response.data)); //new panel is now current
       })
 
@@ -180,12 +203,16 @@ export function postCreatedPanel(newPanel, boardid) {
 
 /** Upon creation of a ticket, save the ticket to the database and then retrieve all tickets associated with all panels currently in state  **/
 //TODO: Edit param names based on React CreateTicket form inputs obj
-export function postCreatedTicket(newTicket, panelid) {
+export function postCreatedTicket(newTicket) {
   return (dispatch => {
     axios.post('/api/tickets', newTicket) //panelid: panelid, userid: userid
       .then(response => {
-        dispatch(setTickets(response.data)); 
+        dispatch(addTicket(response.data)); 
         //no need to set current ticket upon creation
+      })
+
+      .catch(error => {
+        console.log('ERROR ON CREATETICKET:', error);
       });
   });
 }
@@ -196,6 +223,10 @@ export function putEditedBoard(boardObj) {
     axios.put('/api/boards', boardObj)
       .then(() => {
         dispatch(editCurrentBoard(boardObj));
+      })
+
+      .catch(error => {
+        console.log('ERROR ON PUTEDITEDBOARD:', error);
       });
   });
 }
@@ -206,6 +237,10 @@ export function putEditedPanel(panelObj) {
     axios.put('/api/panels', panelObj)
       .then(() => {
         dispatch(editCurrentPanel(panelObj));
+      })
+
+      .catch(error => {
+        console.log('ERROR ON PUTEDITEDPANEL:', error);
       });
   });
 }
@@ -216,6 +251,10 @@ export function putEditedTicket(ticketObj) {
     axios.put('/api/tickets', ticketObj)
       .then(() => {
         dispatch(editCurrentTicket(ticketObj));
+      })
+
+      .catch(error => {
+        console.log('ERROR ON PUTEDITEDTICKET:', error);
       });
   });
 }

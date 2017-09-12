@@ -34,11 +34,13 @@ class App extends React.Component {
     this.props.handleGetUser(function(userInfo) {
       context.props.handleSetBoards(function() {
         context.props.handleSetPanels(context.props.currentBoard.id, function(panels) {
-          for (let panel of panels) {
-            context.props.handleSetTickets(panel.id);
+          if (panels.length !== 0) {
+            for (let panel of panels) {
+              context.props.handleSetTickets(panel.id);
+            }
+            let closestIndex = context.findCurrentPanel(panels);
+            context.props.handleSetCurrentPanel(panels[closestIndex]);    
           }
-          let closestIndex = context.findCurrentPanel(panels);
-          context.props.handleSetCurrentPanel(panels[closestIndex]);    
         });
       });
     });
@@ -66,7 +68,6 @@ class App extends React.Component {
       <div>
       <div>
         <Button bsStyle="primary" onClick={this.props.handleEditBoardRendered}>Edit Board</Button>
-        <Button bsStyle="primary" onClick={this.props.handleCreateTicketRendered}>Create Ticket</Button>
         <Button bsStyle="primary" onClick={this.props.handleEditTicketRendered}>Edit Ticket</Button>
         <Button bsStyle="primary" onClick={this.props.handleCreatePanelRendered}>Create Panel</Button>
         <Button style={iconStyle}><img src={require('../images/menu.png')} onClick={this.props.handleToggleDrawer}/></Button>

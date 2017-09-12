@@ -1,8 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getTicketsByPanel } from '../redux/actionCreators.js';
-import { Panel as BootstrapPanel } from 'react-bootstrap';
+import { getTicketsByPanel, toggleEditTicket, setCurrentTicket, setCurrentPanel } from '../redux/actionCreators.js';
+import { Panel as BootstrapPanel, NavItem } from 'react-bootstrap';
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
+import '../../../ticketStyle.css';
 
 let ticketStyle = {
   color: 'black',
@@ -65,16 +66,14 @@ let ticketStyle = {
 // };
 
 let ticketHeaderAndFooter = {
-  display: '-webkit-inline-box', 
-  flexWrap: 'wrap', 
-  justifyContent: 'space-around'
-}
+  display: 'flex'
+};
 
 let ticketTextStyle = {
   color: 'black', 
   fontFamily: 'Avenir Next', 
-  margin: '0 auto'
-}
+  margin: '0px auto 0 10px'
+};
 
 /** Ticket Priority vertical lines can be made with hr HTML tag **/
 // <hr width="1" size="60" color="#B8E986">
@@ -92,11 +91,10 @@ class Ticket extends React.Component {
       status: 'done',
       priority: 1,
       type: 'feature',
-      creator_id: this.props.userId,
-      assignee_id: this.props.userId,
-      assignee: 'dsc03',
-      panel_id: this.props.currentPanel,
-      board_id: this.props.currentBoardId,
+      creator_id: this.props.ticketInfo.creator_id,
+      assignee_handle: this.props.ticketInfo.assignee_handle,
+      panel_id: this.props.ticketInfo.panel_id,
+      board_id: this.props.ticketInfo.board_id,
       hovered: false
     }
   }
@@ -113,9 +111,23 @@ class Ticket extends React.Component {
         onMouseEnter={this.handleHover.bind(this)}
         onMouseLeave={this.handleHover.bind(this)}
         bsStyle={this.props.ticketInfo.priority === 1 ? 'info' : (this.props.ticketInfo.priority === 2) ? 'warning' : 'danger'}
-        header= {<div style={ticketHeaderAndFooter}><div> <img src={(this.props.ticketInfo.type === 'devOps' ? require('../images/devOps-circle.png') : (this.props.ticketInfo.type === 'bug') ? require('../images/bug-circle.png') : require('../images/feature-circle.png'))}/></div> <h4 style={ticketTextStyle}>{this.props.ticketInfo.title}</h4>
-        </div>}
-        footer={<div style={ticketHeaderAndFooter}><div> <img src={(this.props.ticketInfo.status === 'not started' ? require('../images/notstarted-circle.png') : (this.props.ticketInfo.status === 'in progress') ? require('../images/inprogress-circle.png') : require('../images/circle-done.png'))}/></div> <h6 style={ticketTextStyle}>{this.props.ticketInfo.assignee}</h6></div>}>
+        className='ticket-panel'
+        header= {
+          <div style={ticketHeaderAndFooter}>
+            <div> <img src={(this.props.ticketInfo.type === 'devOps' ? require('../images/devOps-circle.png') : (this.props.ticketInfo.type === 'bug') ? require('../images/bug-circle.png') : require('../images/feature-circle.png'))}/>
+            </div> 
+            <h4 style={ticketTextStyle}>
+              {this.props.ticketInfo.title}
+              </h4>
+              <div><NavItem eventKey={1} onClick={() => {
+                this.props.handleSetCurrentTicket(this.props.ticketInfo);
+                this.props.handleSetCurrentPanel(this.props.panelInfo);
+                this.props.handleEditTicketRendered();
+                }}>Edit</NavItem>
+            </div>
+          </div>}
+
+        footer={<div style={ticketHeaderAndFooter}><div> <img src={(this.props.ticketInfo.status === 'not started' ? require('../images/notstarted-circle.png') : (this.props.ticketInfo.status === 'in progress') ? require('../images/inprogress-circle.png') : require('../images/circle-done.png'))}/></div> <h6 style={ticketTextStyle}>{this.props.ticketInfo.assignee_handle}</h6></div>}>
         {this.props.ticketInfo.description}
       </BootstrapPanel>
     );
@@ -129,5 +141,19 @@ const mapStateToProps = (state) => {
   };
 };
 
+const mapDispatchToProps = (dispatch) => {
+  return {
+    handleEditTicketRendered() {
+      dispatch(toggleEditTicket());
+    },
+    handleSetCurrentTicket(ticketInfo) {
+      dispatch(setCurrentTicket(ticketInfo));
+    },
+    handleSetCurrentPanel(panel) {
+      dispatch(setCurrentPanel(panel));
+    }
+  };
+};
+
 export var UnwrappedTicket = Ticket;
-export default connect(mapStateToProps)(Ticket);
+export default connect(mapStateToProps, mapDispatchToProps)(Ticket);

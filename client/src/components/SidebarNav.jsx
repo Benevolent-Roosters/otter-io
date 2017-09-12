@@ -1,8 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { setCurrentBoard, toggleDrawer, toggleCreateBoard } from '../redux/actionCreators';
+import { setCurrentBoard, toggleDrawer, toggleCreateBoard, getPanelsByBoard, getTicketsByPanel, setCurrentPanel, setPanels, setTickets, emptyPanels, emptyTickets  } from '../redux/actionCreators';
 import { GridList, GridTile, Drawer } from 'material-ui';
 import { Thumbnail, Image, Button } from 'react-bootstrap';
+import moment from 'moment';
 
 let counter = 0; 
 
@@ -64,6 +65,34 @@ const styles = {
 };
 
 const SidebarNavigation = (props) => {
+
+  let findCurrentPanel = (panels) => {
+    let dueDates = panels.map(panel => panel.due_date.slice(0, 10));
+    let closest = 0;
+    for (let i = 0; i < dueDates.length; i++) {
+      if (moment().diff(dueDates[i]) < 0 && moment().diff(dueDates[i]) > moment().diff(dueDates[closest])) {
+        closest = i;
+      }
+    }
+    return closest;
+  };
+
+  let onBoardClick = (boardid) => {
+    props.handleSetPanels(boardid, function(panels) {
+      if (panels.length !== 0) {
+        props.handleEmptyTickets();
+        for (let panel of panels) {      
+          props.handleSetTickets(panel.id);
+        }
+        let closestIndex = findCurrentPanel(panels);
+        props.handleSetCurrentPanel(panels[closestIndex]);    
+      } else {
+        props.handleEmptyPanels();
+        props.handleEmptyTickets();
+      }
+    });
+  };
+
   return (
     <div>
       <Drawer containerStyle={{backgroundColor: '#ffffff'}} docked={false} open={props.drawerToggled} onRequestChange={(open) => props.handleToggledDrawer(open)}>
@@ -75,7 +104,7 @@ const SidebarNavigation = (props) => {
 
         <GridList style={styles.gridList} cols={1} padding={15}>
           {props.boards.map((board) => 
-            <GridTile style={{marginLeft: '15px', marginRight: '15px', backgroundColor: getRandomColor()}} key={board.id} title={board.board_name}> </GridTile>)}
+            <GridTile style={{marginLeft: '15px', marginRight: '15px', backgroundColor: getRandomColor()}} key={board.id} title={board.board_name} onClick={() => { onBoardClick(board.id); props.handleSetCurrentBoard(board); props.handleToggledDrawer();}}> </GridTile>)}
         </GridList>
 
       </Drawer>
@@ -103,6 +132,21 @@ const mapDispatchToProps = (dispatch) => {
     },
     handleCreateBoardRendered() {
       dispatch(toggleCreateBoard());
+    },
+    handleSetPanels(boardid, callback) {
+      dispatch(getPanelsByBoard(boardid, callback));
+    },
+    handleSetTickets(panelId) {
+      dispatch(getTicketsByPanel(panelId));
+    },
+    handleSetCurrentPanel(panel) {
+      dispatch(setCurrentPanel(panel));
+    },
+    handleEmptyPanels() {
+      dispatch(emptyPanels());
+    },
+    handleEmptyTickets() {
+      dispatch(emptyTickets());
     }
   };
 };

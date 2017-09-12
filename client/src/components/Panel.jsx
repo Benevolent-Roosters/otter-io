@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { getPanelsByBoard, getTicketsByPanel, toggleEditPanel } from '../redux/actionCreators.js';
+import { getPanelsByBoard, getTicketsByPanel, toggleEditPanel, toggleCreateTicket, setCurrentPanel } from '../redux/actionCreators.js';
 import { Modal, Button, ListGroup, ListGroupItem } from 'react-bootstrap';
 import DatePicker from 'material-ui/DatePicker';
 import Ticket from './Ticket.jsx';
@@ -8,10 +8,13 @@ import { Panel as BootstrapPanel } from 'react-bootstrap';
 
 const Panel = props => {
   return (
-    <BootstrapPanel header={props.panelInfo.name}>
-      <Button bsStyle="primary" onClick={props.handleEditPanelRendered}>Edit Panel</Button>
+    <BootstrapPanel header={<div>{props.panelInfo.name} <Button bsStyle="primary" onClick={() => {props.handleSetCurrentPanel(props.panelInfo); props.handleEditPanelRendered(); }}>Edit Panel</Button></div>}>
+      <Button style={{marginBottom: '15px'}} bsStyle="primary" bsSize="large" onClick={() => {
+              props.handleSetCurrentPanel(props.panelInfo);
+              props.handleCreateTicketRendered(); 
+              }} block>Add a Ticket</Button>
       {props.tickets.map(ticket =>
-        ticket.panel_id === props.panelInfo.id ? <ListGroupItem><Ticket ticketInfo={ticket} /></ListGroupItem> : ''
+        ticket.panel_id === props.panelInfo.id ? <Ticket panelInfo={props.panelInfo} ticketInfo={ticket} /> : ''
       )}
     </BootstrapPanel>
   );
@@ -22,7 +25,8 @@ const mapStateToProps = (state) => {
   return {
     'currentBoardId': state.currentBoard.boardid,
     'currentPanel': state.currentPanel,
-    'tickets': state.tickets
+    'tickets': state.tickets,
+    'createTicketRendered': state.createTicketRendered
   };
 };
 
@@ -34,8 +38,14 @@ const mapDispatchToProps = (dispatch) => {
     handleGetTicketsByPanel(panelId) {
       dispatch(getTicketsByPanel(panelId));
     },
+    handleSetCurrentPanel(panel) {
+      dispatch(setCurrentPanel(panel));
+    },
     handleEditPanelRendered() {
       dispatch(toggleEditPanel());
+    },
+    handleCreateTicketRendered() {
+      dispatch(toggleCreateTicket());
     }
   };
 };  

@@ -52,7 +52,7 @@ class CreateBoard extends React.Component {
                         </Col>
                       </FormGroup>
                       <Button style={buttonStyle} bsStyle="default" onClick={this.props.handleCreateBoardRendered}>Cancel</Button>
-                      <Button style={buttonStyle} bsStyle="primary" type="button" onClick={() => {this.props.handleSetAndPostCreatedBoard(this.state); this.props.handleCreateBoardRendered();}}>Create</Button>
+                      <Button style={buttonStyle} bsStyle="primary" type="button" onClick={() => {this.props.handlePostCreatedBoard(this.state); this.props.handleSetCurrentBoard(this.state); this.props.handleCreateBoardRendered();}}>Create</Button>
                     </Form>
                   </Modal.Body>
                 </Modal>
@@ -76,11 +76,14 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    handleSetAndPostCreatedBoard(boardObj) {
+    handlePostCreatedBoard(boardObj) {
       dispatch(postCreatedBoard(boardObj));
     },
     handleCreateBoardRendered() {
       dispatch(toggleCreateBoard());
+    },
+    handleSetCurrentBoard(board) {
+      dispatch(setCurrentBoard(board));
     }
   };
 };

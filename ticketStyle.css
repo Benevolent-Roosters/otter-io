@@ -72,6 +72,9 @@ ul, menu, dir {
     -webkit-margin-before: 1em;
     -webkit-margin-after: 1em;
     -webkit-margin-start: 0px;
-    -webkit-margin-end: 0px;
-    -webkit-padding-start: 40px;
+    -webkit-margin-end: 0px; 
+}
+
+.ticket-panel li[role='presentation'] {
+    list-style: none;
 }

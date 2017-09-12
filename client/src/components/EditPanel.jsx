@@ -11,9 +11,11 @@ class EditPanel extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      name: '',
-      due_date: ''
-    }
+      id: this.props.currentPanel.id,
+      name: this.props.currentPanel.name,
+      due_date: this.props.currentPanel.due_date,
+      board_id: this.props.currentBoardId
+    };
   }
 
   reorderPanels(editedPanel) {
@@ -29,17 +31,22 @@ class EditPanel extends React.Component {
 
   handleNameChange(e) {
     this.setState({
-      name: e.target.value
+      name: e.target.value,
+      id: this.props.currentPanel.id,
+      board_id: this.props.currentBoardId      
     });
   }
 
   handleDateChange(e, date) {
     this.setState({
-      due_date: moment(date).format().slice(0,10)
+      due_date: moment(date).format().slice(0, 10),
+      id: this.props.currentPanel.id,
+      board_id: this.props.currentBoardId  
     });
   }
 
   render() {
+
     return (
       <div>
         <Modal show={this.props.editPanelRendered}>
@@ -53,7 +60,7 @@ class EditPanel extends React.Component {
                   Panel Name
                 </Col>
                 <Col sm={10}>
-                  <FormControl onChange={this.handleNameChange.bind(this)} placeholder="Panel name" />
+                  <FormControl onChange={this.handleNameChange.bind(this)} placeholder={this.props.currentPanel.name}></FormControl>
                 </Col>
               </FormGroup>
               <FormGroup>
@@ -61,15 +68,15 @@ class EditPanel extends React.Component {
                   Due Date
                 </Col>
                 <Col sm={10}>
-                  <DatePicker onChange={this.handleDateChange.bind(this)} hintText="Pick a due date" />
+                  <DatePicker onChange={this.handleDateChange.bind(this)} hintText={this.props.currentPanel.due_date ? this.props.currentPanel.due_date.slice(0, 10) : 'Select a Due Date' }></DatePicker>
                 </Col>
               </FormGroup>
             </Form>
           </Modal.Body>
           <Modal.Footer>
             <Button onClick={this.props.handleEditPanelRendered}>Cancel</Button>
-            <Button bsStyle="primary" onClick={() => {
-              this.props.handleEditPanel(this.reorderPanels.bind(this), this.state);
+            <Button bsStyle="primary" onClick={() => { 
+              this.state.name ? this.props.handleEditPanel(this.reorderPanels.bind(this), this.state) : '';
               this.props.handleEditPanelRendered();
             }}>Submit</Button>
           </Modal.Footer>
@@ -82,7 +89,7 @@ class EditPanel extends React.Component {
 const mapStateToProps = state => {
   return {
     userId: state.user.userid, //double check what userid key actually is named
-    currentBoardId: state.currentBoard.boardid, //double check what userid key actually is named
+    currentBoardId: state.currentBoard.id, //double check what userid key actually is named
     panels: state.panels,
     currentPanel: state.currentPanel,
     editPanelRendered: state.editPanelRendered
@@ -91,9 +98,9 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    handleEditPanel(reorderPanels, panelObj) {
-      dispatch(editPanels(reorderPanels(panelObj)));
-      dispatch(putEditedPanel(panelObj))
+    handleEditPanel(callback, panelObj) {
+      dispatch(editPanels(callback(panelObj)));
+      dispatch(putEditedPanel(panelObj));
     },
     handleEditPanelRendered() {
       dispatch(toggleEditPanel());
