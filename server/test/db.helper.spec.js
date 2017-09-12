@@ -158,7 +158,7 @@ describe('User', () => {
 
 });
 
-describe('User-Board Memberships', () => {
+describe('User-Board Membership', () => {
   beforeEach(function (done) {
     knex('knex_migrations_lock').where('is_locked', '1').del()
       .then(() => {
@@ -336,7 +336,7 @@ describe('User-Board Memberships', () => {
 
 });
 
-describe('Boards', () => {
+describe('Board', () => {
   beforeEach(function (done) {
     knex('knex_migrations_lock').where('is_locked', '1').del()
       .then(() => {
@@ -484,7 +484,7 @@ describe('Boards', () => {
 
 });
 
-describe('Panels', () => {
+describe('Panel', () => {
   beforeEach(function (done) {
     knex('knex_migrations_lock').where('is_locked', '1').del()
       .then(() => {
@@ -704,7 +704,7 @@ describe('Panels', () => {
 
 });
 
-describe('tickets', () => {
+describe('Ticket', () => {
   beforeEach(function (done) {
     knex('knex_migrations_lock').where('is_locked', '1').del()
       .then(() => {
@@ -732,7 +732,7 @@ describe('tickets', () => {
         status: 'in progress',
         priority: 1,
         creator_id: 1,
-        assignee_id: 2,
+        assignee_handle: 'stevepkuo2',
         panel_id: 1,
         board_id: 1
       };
@@ -744,7 +744,7 @@ describe('tickets', () => {
           expect(ticket['priority']).to.equal(1);
           expect(ticket['created_at']).to.be.a('date');
           expect(ticket['creator_id']).to.equal(1);
-          expect(ticket['assignee_id']).to.equal(2);
+          expect(ticket['assignee_handle']).to.equal('stevepkuo2');
           expect(ticket['panel_id']).to.equal(1);
           expect(ticket['board_id']).to.equal(1);
           done();
@@ -777,7 +777,7 @@ describe('tickets', () => {
         priority: 1,
         created_at: knex.fn.now(),
         creator_id: 1,
-        assignee_id: 2,
+        assignee_handle: 'stevepkuo2',
         panel_id: 9,
         board_id: 1
       };
@@ -811,7 +811,7 @@ describe('tickets', () => {
           expect(ticket['status']).to.equal('in progress');
           expect(ticket['type']).to.equal('feature');
           expect(ticket['creator_id']).to.equal(1);
-          expect(ticket['assignee_id']).to.equal(1);
+          expect(ticket['assignee_handle']).to.equal('stevepkuo');
           expect(ticket['panel_id']).to.equal(1);
           expect(ticket['board_id']).to.equal(1);
           done();
@@ -867,7 +867,7 @@ describe('tickets', () => {
         priority: 1,
         created_at: knex.fn.now(),
         creator_id: 1,
-        assignee_id: 2,
+        assignee_handle: 'stevepkuo2',
         panel_id: 1,
         board_id: 1
       };
@@ -903,7 +903,7 @@ describe('tickets', () => {
           expect(tickets[0]['status']).to.equal('in progress');
           expect(tickets[0]['type']).to.equal('feature');
           expect(tickets[0]['creator_id']).to.equal(1);
-          expect(tickets[0]['assignee_id']).to.equal(1);
+          expect(tickets[0]['assignee_handle']).to.equal('stevepkuo');
           expect(tickets[0]['panel_id']).to.equal(1);
           expect(tickets[0]['board_id']).to.equal(1);
           done();
@@ -961,7 +961,7 @@ describe('tickets', () => {
           expect(tickets[0]['type']).to.equal('feature');
           expect(tickets[0]['created_at']).to.be.a('date');
           expect(tickets[0]['creator_id']).to.equal(1);
-          expect(tickets[0]['assignee_id']).to.equal(1);
+          expect(tickets[0]['assignee_handle']).to.equal('stevepkuo');
           expect(tickets[0]['panel_id']).to.equal(1);
           expect(tickets[0]['board_id']).to.equal(1);
           done();
