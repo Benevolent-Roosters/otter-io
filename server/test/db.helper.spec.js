@@ -5,7 +5,13 @@ const dbhelper = require('../../db/helpers.js');
 
 describe('User', () => {
   beforeEach(function (done) {
-    knex('knex_migrations_lock').where('is_locked', '1').del()
+    knex.schema.hasTable('knex_migrations_lock')
+      .then((exists) => {
+        if (exists) {
+          return knex('knex_migrations_lock').where('is_locked', '1').del();
+        }
+        return;
+      })
       .then(() => {
         dbUtils.rollbackMigrate(done);
       });
@@ -13,7 +19,13 @@ describe('User', () => {
 
   // Resets database back to original settings
   afterEach(function (done) {
-    knex('knex_migrations_lock').where('is_locked', '1').del()
+    knex.schema.hasTable('knex_migrations_lock')
+      .then((exists) => {
+        if (exists) {
+          return knex('knex_migrations_lock').where('is_locked', '1').del();
+        }
+        return;
+      })
       .then(() => {
         dbUtils.rollback(done);
       });

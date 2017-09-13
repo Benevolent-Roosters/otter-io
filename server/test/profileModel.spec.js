@@ -6,7 +6,13 @@ const knex = require('knex')(require('../../knexfile'));
 describe('User model tests', function () {
   // Deletes all tables, creates new tables, and seeds tables with test data
   beforeEach(function (done) {
-    knex('knex_migrations_lock').where('is_locked', '1').del()
+    knex.schema.hasTable('knex_migrations_lock')
+      .then((exists) => {
+        if (exists) {
+          return knex('knex_migrations_lock').where('is_locked', '1').del();
+        }
+        return;
+      })
       .then(() => {
         dbUtils.rollbackMigrate(done);
       });
@@ -14,7 +20,13 @@ describe('User model tests', function () {
 
   // Resets database back to original settings
   afterEach(function (done) {
-    knex('knex_migrations_lock').where('is_locked', '1').del()
+    knex.schema.hasTable('knex_migrations_lock')
+      .then((exists) => {
+        if (exists) {
+          return knex('knex_migrations_lock').where('is_locked', '1').del();
+        }
+        return;
+      })
       .then(() => {
         dbUtils.rollback(done);
       });
@@ -38,13 +50,13 @@ describe('User model tests', function () {
         expect(result.get('id')).to.equal(1);
       })
       .then(function () {
-        return User.where({ id: 1 }).save({ github_handle: 'James'}, { method: 'update' });
+        return User.where({ id: 1 }).save({ email: 'James@gmail.com'}, { method: 'update' });
       })
       .then(function () {
         return User.where({ id: 1 }).fetch();
       })
       .then(function (result) {
-        expect(result.get('github_handle')).to.equal('James');
+        expect(result.get('email')).to.equal('James@gmail.com');
         done();
       })
       .catch(function (err) {

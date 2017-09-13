@@ -12,7 +12,13 @@ describe('CRUD API authorization', function () {
   beforeEach(function (done) {
     authenticated = request(app);
     agent = request.agent(app);
-    knex('knex_migrations_lock').where('is_locked', '1').del()
+    knex.schema.hasTable('knex_migrations_lock')
+      .then((exists) => {
+        if (exists) {
+          return knex('knex_migrations_lock').where('is_locked', '1').del();
+        }
+        return;
+      })
       .then(() => {
         dbUtils.rollbackMigrate(done);
       });
@@ -20,7 +26,13 @@ describe('CRUD API authorization', function () {
 
   // Resets database back to original settings
   afterEach(function (done) {
-    knex('knex_migrations_lock').where('is_locked', '1').del()
+    knex.schema.hasTable('knex_migrations_lock')
+      .then((exists) => {
+        if (exists) {
+          return knex('knex_migrations_lock').where('is_locked', '1').del();
+        }
+        return;
+      })
       .then(() => {
         dbUtils.rollback(done);
       });
@@ -991,6 +1003,37 @@ describe('CRUD API tickets', function () {
       });
   });
 
+  it('rejects POST requests to /api/tickets to create ticket with assignee that isnt member of board', function(done) {
+    agent.get('/auth/fake3')
+      .then((res) => {
+        return agent.post('/api/tickets')
+          .send({
+            title: 'newticket',
+            description: 'newticket',
+            status: 'in progress',
+            priority: '1',
+            type: 'feature',
+            creator_id: 3,
+            assignee_handle: 'stevepkuo',
+            board_id: 3,
+            panel_id: 3
+          });
+      })
+      .then((res) => {
+        expect(res.status).to.equal(500);
+        return agent.get('/api/tickets')
+          .query({panel_id: 3});
+      })
+      .then((res) => {
+        expect(res.status).to.equal(200);
+        expect(res.body.length).to.equal(3);
+        done();
+      })
+      .catch((err) => {
+        return done(err);
+      });
+  });
+
   it('rejects POST requests to /api/tickets to create duplicate ticket in a board that user is member of', function(done) {
     agent.get('/auth/fake3')
       .then((res) => {
@@ -1055,6 +1098,38 @@ describe('CRUD API tickets', function () {
       .then((res) => {
         expect(res.body.length).to.equal(1);
         expect(res.body[0].title).to.equal('newticket');
+        done();
+      })
+      .catch((err) => {
+        return done(err);
+      });
+  });
+
+  it('rejects PUT requests to /api/tickets to update ticket with assignee that isnt member of board', function(done) {
+    agent.get('/auth/fake3')
+      .then((res) => {
+        return agent.put('/api/tickets')
+          .send({
+            id: 3,
+            title: 'newticketname',
+            description: 'newticketname',
+            status: 'in progress',
+            priority: '1',
+            type: 'feature',
+            creator_id: 3,
+            assignee_handle: 'stevepkuo',
+            board_id: 3,
+            panel_id: 3
+          });
+      })
+      .then((res) => {
+        expect(res.status).to.equal(500);
+        return agent.get('/api/tickets')
+          .query({panel_id: 3});
+      })
+      .then((res) => {
+        expect(res.status).to.equal(200);
+        expect(res.body.length).to.equal(3);
         done();
       })
       .catch((err) => {
@@ -1147,9 +1222,8 @@ describe('CRUD API tickets', function () {
         expect(res.status).to.equal(200);
         expect(res.body.length).to.equal(3);
         expect(res.body[0].title).to.equal('testticket3C'); //priority 3, in progress
-        expect(res.body[1].title).to.equal('newticketname');
-        expect(res.body[2].title).to.equal('testticket3B'); //priority 2, in progress
-        expect(res.body[3].title).to.equal('testticket3A'); //priority 2, complete
+        expect(res.body[1].title).to.equal('newticketname'); //priority 2, in progress
+        expect(res.body[2].title).to.equal('testticket3A'); //priority 2, complete
         done();
       })
       .catch((err) => {

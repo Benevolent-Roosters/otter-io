@@ -39,7 +39,7 @@ module.exports.createPanelTicket = (req, res) => {
     return;
   }
   if (parseInt(req.body.creator_id) !== req.user.id) {
-    res.status(400).send('owner_id field from client doesnt match actual logged in user');
+    res.status(400).send('creator_id field from client doesnt match actual logged in user');
     return;
   }
   var ticketObj = {
@@ -53,7 +53,24 @@ module.exports.createPanelTicket = (req, res) => {
     board_id: req.body.board_id,
     panel_id: req.body.panel_id
   };
-  dbhelper.createTicket(ticketObj)
+  //check that assignee_handle is actually a member of the board_id
+  //get members of board
+  dbhelper.getUsersByBoard(parseInt(ticketObj.board_id))
+    .then((users) => {
+      if (!users) {
+        throw 'couldnt get users for board';
+      }
+      var boardMember = false;
+      users.forEach(eachUser => {
+        if (eachUser.github_handle === ticketObj.assignee_handle) {
+          boardMember = true;
+        }
+      });
+      if (!boardMember) {
+        throw 'assignee_handle is not member of board';
+      }
+      return dbhelper.createTicket(ticketObj);
+    })
     .then(ticket => {
       if (!ticket) {
         throw 'cant create ticket';
@@ -111,10 +128,35 @@ module.exports.updateTicket = (req, res) => {
   }
   var ticketId = ticketObj.id;
   if (!ticketId) {
-    res.status(400).send(`Update panel object ${JSON.stringify(ticketId)} doesnt have id field`);
+    res.status(400).send(`Update ticket object ${JSON.stringify(ticketId)} doesnt have id field`);
     return;
   }
-  dbhelper.updateTicketById(parseInt(ticketId), ticketObj)
+  dbhelper.getTicketById(parseInt(ticketId))
+    .then(ticket => {
+      if (!ticket) {
+        throw 'cant get ticket by id';
+      }
+      return dbhelper.getUsersByBoard(parseInt(ticket.board_id));
+    })
+    .then((users) => {
+      if (!users) {
+        throw 'couldnt get users for board';
+      }
+      var boardMember = false;
+      if (!('assignee_handle' in ticketObj)) {
+        boardMember = true;
+      } else {
+        users.forEach(eachUser => {
+          if (eachUser.github_handle === ticketObj.assignee_handle) {
+            boardMember = true;
+          }
+        });
+      }
+      if (!boardMember) {
+        throw 'assignee_handle is not member of board';
+      }
+      return dbhelper.updateTicketById(parseInt(ticketId), ticketObj);
+    })
     .then((ticket) => {
       if (!ticket) {
         throw 'cant update ticket by id';
