@@ -4,6 +4,7 @@ const redisClient = require('redis').createClient();
 const models = require('../../db/models');
 const dbhelper = require('../../db/helpers.js');
 const helper = require('../controllers/helper');
+require('dotenv').config();
 
 //for testing purposes to set up a fake login session
 module.exports.fakemiddleware = (req, res, next) => {
@@ -207,7 +208,7 @@ module.exports.verifyTicketMemberElse401 = (req, res, next) => {
 module.exports.session = session({
   store: new RedisStore({
     client: redisClient,
-    host: 'localhost',
+    host: process.env.REDIS_HOST || 'localhost',
     port: 6379
   }),
   secret: 'more laughter, more love, more life',

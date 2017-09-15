@@ -2,15 +2,16 @@
   "name": "course.thesis",
   "version": "1.0.0",
   "scripts": {
-    "postinstall": "curl -s https://raw.githubusercontent.com/reactorcore/pomander/master/bin/install | bash",
     "start": "nodemon server",
     "test": "jest NODE_ENV=test grunt test",
     "testUpdate": "jest -u NODE_ENV=test grunt test",
-    "build": "webpack --watch"
+    "build": "webpack --watch",
+    "deploy": "git pull && webpack && pm2 restart all"
   },
   "author": "Hack Reactor",
   "license": "MIT",
   "dependencies": {
+    "aws-sdk": "^2.114.0",
     "axios": "^0.16.2",
     "babel-core": "^6.24.1",
     "bcrypt-nodejs": "0.0.3",
@@ -22,6 +23,7 @@
     "connect-redis": "^3.2.0",
     "cookie-parser": "^1.4.3",
     "css-loader": "^0.28.7",
+    "dotenv": "^4.0.0",
     "ejs": "^2.5.6",
     "express": "^4.15.2",
     "express-session": "^1.15.1",
