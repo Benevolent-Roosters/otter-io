@@ -4,6 +4,7 @@ exports.up = function(knex, Promise) {
     knex.schema.table('users', function(table) {
       table.string('oauth_id', 30).nullable().unique();
       table.integer('lastboard_id').references('boards.id').onDelete('CASCADE');
+      table.string('api_key', 64).notNullable().unique(); 
     }),
     knex.schema.dropTableIfExists('auths'),
     knex.schema.dropTableIfExists('profiles')

@@ -12,7 +12,8 @@ exports.seed = function (knex, Promise) {
       return models.User.forge({
         github_handle: 'stevepkuo',
         profile_photo: 'https://avatars0.githubusercontent.com/u/14355395?v=4',
-        oauth_id: '14355395'
+        oauth_id: '14355395',
+        api_key: 'fish'
       }).save();
     })
     .then( () => models.Board.where({board_name: 'testboard'}).fetch())
@@ -72,7 +73,8 @@ exports.seed = function (knex, Promise) {
       return models.User.forge({
         github_handle: 'stevepkuo2',
         profile_photo: 'https://avatars0.githubusercontent.com/u/14355395?v=5',
-        oauth_id: '14355396'
+        oauth_id: '14355396',
+        api_key: 'dog'
       }).save();
     })
     .then( () => {
@@ -100,7 +102,8 @@ exports.seed = function (knex, Promise) {
       return models.User.forge({
         github_handle: 'dsc03',
         profile_photo: 'https://avatars0.githubusercontent.com/u/25214199?v=4',
-        oauth_id: '25214199'
+        oauth_id: '25214199',
+        api_key: 'cat'
       }).save();
     })
     .then((user) => {

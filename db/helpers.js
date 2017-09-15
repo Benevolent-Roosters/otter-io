@@ -9,6 +9,7 @@ const Ticket = require('./models/tickets.js');
 
 // createUser
 // getUserById
+// getUserByApiKey
 // updateUserById
 
 // addUserToBoard
@@ -60,6 +61,21 @@ module.exports.getUserById = function(userId) {
     })
     .catch(situation => {
       console.log(`There is a situation: user ID ${userId} does not exist!`);
+      throw situation;
+    });
+};
+
+module.exports.getUserByApiKey = function(apiKey) {
+  return User.forge({api_key: apiKey})
+    .fetch()
+    .then(user => {
+      if (!user) {
+        throw 'invalid user';
+      }
+      return user.toJSON();
+    })
+    .catch(situation => {
+      console.log(`There is a situation: user API key does not exist!`);
       throw situation;
     });
 };
@@ -186,6 +202,21 @@ module.exports.getBoardById = function(boardId) {
     })
     .catch(situation => {
       console.log(`There is a situation: board ID ${boardId} doesn't exist!`);
+      throw situation;
+    });
+};
+
+module.exports.getBoardByRepoUrl = function(boardRepoUrl) {
+  return Board.forge({repo_url: boardRepoUrl})
+    .fetch()
+    .then(board => {
+      if (!board) {
+        throw 'invalid board';
+      }
+      return board.toJSON();
+    })
+    .catch(situation => {
+      console.log(`There is a situation: board repo-url ${boardRepoUrl} doesn't exist!`);
       throw situation;
     });
 };

@@ -5,7 +5,13 @@ const dbhelper = require('../../db/helpers.js');
 
 describe('User', () => {
   beforeEach(function (done) {
-    knex('knex_migrations_lock').where('is_locked', '1').del()
+    knex.schema.hasTable('knex_migrations_lock')
+      .then((exists) => {
+        if (exists) {
+          return knex('knex_migrations_lock').where('is_locked', '1').del();
+        }
+        return;
+      })
       .then(() => {
         dbUtils.rollbackMigrate(done);
       });
@@ -13,7 +19,13 @@ describe('User', () => {
 
   // Resets database back to original settings
   afterEach(function (done) {
-    knex('knex_migrations_lock').where('is_locked', '1').del()
+    knex.schema.hasTable('knex_migrations_lock')
+      .then((exists) => {
+        if (exists) {
+          return knex('knex_migrations_lock').where('is_locked', '1').del();
+        }
+        return;
+      })
       .then(() => {
         dbUtils.rollback(done);
       });
@@ -104,6 +116,44 @@ describe('User', () => {
         });
     });
   });
+
+  describe('getUserByApiKey()', () => {
+    it('Should exist', () => {
+      expect(dbhelper.getUserByApiKey).to.exist;
+    });
+    it('Should be a function', () => {
+      expect(dbhelper.getUserByApiKey).to.be.a('function');
+    });
+    it('Should return user if inputted API key exists', (done) => {
+      dbhelper.getUserByApiKey('fish')
+        .then((user) => {
+          expect(user).to.exist;
+          expect(user['id']).to.equal(1);
+          expect(user['api_key']).to.equal('fish');
+          done();
+        })
+        .catch((err) => {
+          done(err);
+        })
+        .error((err) => done(err));
+    });
+    it('Should reject if inputted API Key does not exist', (done) => {
+      dbhelper.getUserByApiKey('otter123')
+        .then((result) => {
+          expect('not thrown').to.equal('thrown error');
+          done();
+        })
+        .catch((err) => {
+          expect('thrown error').to.equal('thrown error');
+          done();
+        })
+        .error((err) => {
+          expect('thrown error').to.equal('thrown error');
+          done();
+        });
+    });
+  });
+
   describe('updateUserById()', () => {
     it('Should exist', () => {
       expect(dbhelper.updateUserById).to.exist;
@@ -482,6 +532,46 @@ describe('Board', () => {
     });
   });
 
+});
+
+describe('getBoardByRepoUrl()', () => {
+  it('Should exist', () => {
+    expect(dbhelper.getBoardByRepoUrl).to.exist;
+  });
+  it('Should be a function', () => {
+    expect(dbhelper.getBoardByRepoUrl).to.be.a('function');
+  });
+  it('Should retrieve a board using its Github repo-url if it exists in the database', (done) => {
+    dbhelper.getBoardByRepoUrl('https://github.com/Benevolent-Roosters/thesis')
+      .then(board => {
+        expect(board).to.exist;
+        expect(board.id).to.equal(1);
+        done();
+      })
+      .catch(err => {
+        expect('thrown error').to.equal('thrown error');
+        done();
+      })
+      .error(err => {
+        expect('thrown error').to.equal('thrown error');
+        done();
+      });
+  });
+  it('Should reject if the passed in board repo-url does not exist', (done) => {
+    dbhelper.getBoardByRepoUrl('https://github.com/foobar')
+    .then((result) => {
+      expect('not thrown').to.equal('thrown error');
+      done();
+    })
+    .catch((err) => {
+      expect('thrown error').to.equal('thrown error');
+      done();
+    })
+    .error((err) => {
+      expect('thrown error').to.equal('thrown error');
+      done();
+    });
+  });
 });
 
 describe('Panel', () => {

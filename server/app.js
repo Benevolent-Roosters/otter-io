@@ -23,5 +23,6 @@ app.use(express.static(path.join(__dirname, '../public')));
 app.use('/', routes.auth);
 app.use('/api', middleware.auth.verifyElse401, routes.api);
 app.use('/api/profiles', middleware.auth.verifyElse401, routes.profiles);
+app.use('/cli', middleware.auth.verifyAPIKey, routes.cli);
 
 module.exports = app;
