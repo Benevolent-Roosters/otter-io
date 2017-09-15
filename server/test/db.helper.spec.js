@@ -116,6 +116,46 @@ describe('User', () => {
         });
     });
   });
+
+  describe('getUserByApiKey()', () => {
+    it('Should exist', () => {
+      expect(dbhelper.getUserByApiKey).to.exist;
+    });
+    it('Should be a function', () => {
+      expect(dbhelper.getUserByApiKey).to.be.a('function');
+    });
+    it('Should return user if inputted API key exists', (done) => {
+      dbhelper.getUserByApiKey('fish')
+        .then((user) => {
+          expect(user).to.exist;
+          expect(user['id']).to.equal(1);
+          expect(user['github_handle']).to.equal('stevepkuo');
+          expect(user['profile_photo']).to.equal('https://avatars0.githubusercontent.com/u/14355395?v=4');
+          expect(user['oauth_id']).to.equal('14355395');
+          done();
+        })
+        .catch((err) => {
+          done(err);
+        })
+        .error((err) => done(err));
+    });
+    it('Should reject if inputted API Key does not exist', (done) => {
+      dbhelper.getUserByApiKey('otter123')
+        .then((result) => {
+          expect('not thrown').to.equal('thrown error');
+          done();
+        })
+        .catch((err) => {
+          expect('thrown error').to.equal('thrown error');
+          done();
+        })
+        .error((err) => {
+          expect('thrown error').to.equal('thrown error');
+          done();
+        });
+    });
+  });
+
   describe('updateUserById()', () => {
     it('Should exist', () => {
       expect(dbhelper.updateUserById).to.exist;

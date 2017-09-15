@@ -312,7 +312,6 @@ describe('CRUD API authorization', function () {
         return done(err);
       });
   });
-
 });
 
 describe('CRUD API boards', function () {
@@ -1324,3 +1323,5 @@ describe('Profile route', function () {
       });
   });
 });
+
+

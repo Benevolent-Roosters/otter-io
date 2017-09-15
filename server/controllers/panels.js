@@ -24,6 +24,7 @@ module.exports.getBoardPanels = (req, res) => {
 };
 
 module.exports.createBoardPanel = (req, res) => {
+  console.log(req.options);
   if (helper.checkUndefined(req.body.name, req.body.due_date, req.body.board_id)) {
     res.status(400).send('one of parameters from client is undefined');
     return;

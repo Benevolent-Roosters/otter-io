@@ -29,6 +29,28 @@ module.exports.verifyElse401 = (req, res, next) => {
   res.sendStatus(401);
 };
 
+/** CREATE TESTS FOR THIS ROUTE **/
+module.exports.verifyAPIKey = (req, res, next) => {
+  console.log('params', req.params, 'body', req.body, 'query', req.query);
+  if (!req.params && !req.body && !req.query) {
+    res.status(400).send('API key could not be found in request');
+  }
+  
+  dbhelper.getUserByApiKey(req.query.api_key)
+    .then(user => {
+      if (!user) {
+        return res.status(401).send();
+      }
+      return res.status(200).send(JSON.stringify(user));
+    })
+    .error(err => {
+      res.status(500).send();
+    })
+    .catch(err => {
+      res.status(404).send(JSON.stringify(err));
+    });
+};
+
 //to be used as middleware auth before performing BOARD CRUD api croutes
 module.exports.verifyBoardMemberElse401 = (req, res, next) => {
   var boardid;
@@ -114,7 +136,6 @@ module.exports.verifyBoardOwnerElse401 = (req, res, next) => {
 
 //to be used as middleware auth before performing a specific GET PANEL apir route or some TICKET CRUD api routes
 module.exports.verifyPanelMemberElse401 = (req, res, next) => {
-  console.log(req.body);
   var panelid;
   if (!req.query && !req.body && !req.params) {
     res.status(400).send('panel id couldnt be found in request from client');
