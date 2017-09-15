@@ -31,7 +31,6 @@ module.exports.verifyElse401 = (req, res, next) => {
 
 /** CREATE TESTS FOR THIS ROUTE **/
 module.exports.verifyAPIKey = (req, res, next) => {
-  console.log('params', req.params, 'body', req.body, 'query', req.query);
   if (!req.params && !req.body && !req.query) {
     res.status(400).send('API key could not be found in request');
   }
@@ -40,8 +39,12 @@ module.exports.verifyAPIKey = (req, res, next) => {
     .then(user => {
       if (!user) {
         return res.status(401).send();
+      } else if (Object.keys(req.query).length === 1 && (req.query.hasOwnProperty('api_key'))) {
+        let userInfo = {id: user.id, api_key: user.api_key} ;
+        return res.status(200).send(JSON.stringify(userInfo));
+      } else { /** IF REQUEST WAS NOT SPECIFICALLY FOR API_KEY VERIFICATION **/
+        return next();
       }
-      return res.status(200).send(JSON.stringify(user));
     })
     .error(err => {
       res.status(500).send();
@@ -64,7 +67,7 @@ module.exports.verifyBoardMemberElse401 = (req, res, next) => {
   } else {
     boardid = parseInt(req.query.board_id);
   }
-  var userId = req.user.id;
+  var userId = req.user.id || req.query.user_id;
 
   // return models.User.where({ id: userId }).fetch({withRelated:['memberOfBoards']})
   // .then(function(user) {

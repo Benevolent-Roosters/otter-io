@@ -206,6 +206,21 @@ module.exports.getBoardById = function(boardId) {
     });
 };
 
+module.exports.getBoardByRepoUrl = function(boardRepoUrl) {
+  return Board.forge({repo_url: boardRepoUrl})
+    .fetch()
+    .then(board => {
+      if (!board) {
+        throw 'invalid board';
+      }
+      return board.toJSON();
+    })
+    .catch(situation => {
+      console.log(`There is a situation: board repo-url ${boardRepoUrl} doesn't exist!`);
+      throw situation;
+    });
+};
+
 module.exports.updateBoardById = function(boardId, data) {
   console.log('data:', data, 'boardId: ', boardId);
   return Board.forge({id: boardId})

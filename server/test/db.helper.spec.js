@@ -129,9 +129,7 @@ describe('User', () => {
         .then((user) => {
           expect(user).to.exist;
           expect(user['id']).to.equal(1);
-          expect(user['github_handle']).to.equal('stevepkuo');
-          expect(user['profile_photo']).to.equal('https://avatars0.githubusercontent.com/u/14355395?v=4');
-          expect(user['oauth_id']).to.equal('14355395');
+          expect(user['api_key']).to.equal('fish');
           done();
         })
         .catch((err) => {
@@ -534,6 +532,46 @@ describe('Board', () => {
     });
   });
 
+});
+
+describe('getBoardByRepoUrl()', () => {
+  it('Should exist', () => {
+    expect(dbhelper.getBoardByRepoUrl).to.exist;
+  });
+  it('Should be a function', () => {
+    expect(dbhelper.getBoardByRepoUrl).to.be.a('function');
+  });
+  it('Should retrieve a board using its Github repo-url if it exists in the database', (done) => {
+    dbhelper.getBoardByRepoUrl('https://github.com/Benevolent-Roosters/thesis')
+      .then(board => {
+        expect(board).to.exist;
+        expect(board.id).to.equal(1);
+        done();
+      })
+      .catch(err => {
+        expect('thrown error').to.equal('thrown error');
+        done();
+      })
+      .error(err => {
+        expect('thrown error').to.equal('thrown error');
+        done();
+      });
+  });
+  it('Should reject if the passed in board repo-url does not exist', (done) => {
+    dbhelper.getBoardByRepoUrl('https://github.com/foobar')
+    .then((result) => {
+      expect('not thrown').to.equal('thrown error');
+      done();
+    })
+    .catch((err) => {
+      expect('thrown error').to.equal('thrown error');
+      done();
+    })
+    .error((err) => {
+      expect('thrown error').to.equal('thrown error');
+      done();
+    });
+  });
 });
 
 describe('Panel', () => {

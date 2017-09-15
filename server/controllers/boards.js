@@ -71,7 +71,7 @@ module.exports.createMyBoard = (req, res) => {
     });
 };
 
-module.exports.getOneBoard = (req, res) => {
+module.exports.getOneBoardById = (req, res) => {
   if (helper.checkUndefined(req.params.id)) {
     res.status(400).send('one of parameters from client is undefined');
     return;
@@ -83,6 +83,26 @@ module.exports.getOneBoard = (req, res) => {
         throw 'could not get board';
       }
       res.status(200).send(board);
+    })
+    .catch((err) => {
+      res.status(500).send(JSON.stringify(err));
+    });
+};
+
+/** TODO: TEST THIS CONTROLLER FUNCTION **/
+module.exports.getOneBoardByRepoUrl = (req, res) => {
+  if (helper.checkUndefined(req.query.repo_url)) {
+    res.status(400).send('one of parameters from client is undefined');
+    return;
+  }
+  var boardRepoUrl = req.query.repo_url;
+  dbhelper.getBoardByRepoUrl(boardRepoUrl)
+    .then(board => {
+      if (!board) {
+        throw 'could not get board';
+      }
+      let boardInfo = {id: board.id};
+      res.status(200).send(boardInfo);
     })
     .catch((err) => {
       res.status(500).send(JSON.stringify(err));

@@ -24,7 +24,7 @@ router.route('/boards')
 
 //Get, Delete particular Board
 router.route('/boards/:id')
-  .get(middleware.auth.verifyBoardMemberElse401, BoardController.getOneBoard); //only if member of board
+  .get(middleware.auth.verifyBoardMemberElse401, BoardController.getOneBoardById); //only if member of board
 //  .delete(BoardController.deleteOne) //only if owner of board
 //  //also delete all of board's tickets, panels, and everything from boards_users, and all user's lastboard_id???
 
