@@ -8,5 +8,5 @@ const helpers = require('../db/helpers.js');
 const knex = require('knex')(require('../knexfile'));
 
 app.listen(PORT, () => {
-  console.log('Example app listening on port 3000!');
+  console.log('Example app listening on port ', PORT);
 });
