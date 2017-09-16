@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import { Provider } from 'react-redux';
+
 import { ConnectedRouter } from 'react-router-redux';
 
 import MainRouter from './components/MainRouter.jsx';
