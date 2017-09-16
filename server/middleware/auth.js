@@ -1,11 +1,12 @@
 const session = require('express-session');
 const RedisStore = require('connect-redis')(session);
-const redisClient = require('redis').createClient();
+const redisClient = require('redis').createClient('6379', 'otterio-redis-v2.kdm0tv.ng.0001.usw1.cache.amazonaws.com');
 const models = require('../../db/models');
 const dbhelper = require('../../db/helpers.js');
 const helper = require('../controllers/helper');
-require('dotenv').config();
 
+
+console.log(redisClient);
 //for testing purposes to set up a fake login session
 module.exports.fakemiddleware = (req, res, next) => {
   if (req && req.session && req.session.user_tmp) {
@@ -205,11 +206,10 @@ module.exports.verifyTicketMemberElse401 = (req, res, next) => {
     });
 };
 
+
 module.exports.session = session({
   store: new RedisStore({
-    client: redisClient,
-    host: process.env.REDIS_HOST || 'localhost',
-    port: 6379
+    client: redisClient
   }),
   secret: 'more laughter, more love, more life',
   resave: false,
