@@ -50,7 +50,7 @@ module.exports.verifyAPIKey = (req, res, next) => {
       if (!user) {
         return res.status(401).send();
       } else if (Object.keys(req.query).length === 1 && (req.query.hasOwnProperty('api_key'))) {
-        let userInfo = {id: user.id, github_handle: user.github_handle, api_key: apiKey, board_id: req.query.board_id} ;
+        let userInfo = {id: user.id, github_handle: user.github_handle, api_key: apiKey, board_id: req.query.board_id};
         return res.status(200).send(JSON.stringify(userInfo));
       } else { /** IF REQUEST WAS NOT SPECIFICALLY FOR API_KEY VERIFICATION **/
         return next();
