@@ -35,13 +35,22 @@ module.exports.verifyAPIKey = (req, res, next) => {
   if (!req.params && !req.body && !req.query) {
     res.status(400).send('API key could not be found in request');
   }
-  
-  dbhelper.getUserByApiKey(req.query.api_key)
+
+  let apiKey;
+
+  // LOCATE API KEY
+  if (req.query.api_key) {
+    apiKey = req.query.api_key;
+  } else {
+    apiKey = req.body.api_key;
+  }
+
+  dbhelper.getUserByApiKey(apiKey)
     .then(user => {
       if (!user) {
         return res.status(401).send();
       } else if (Object.keys(req.query).length === 1 && (req.query.hasOwnProperty('api_key'))) {
-        let userInfo = {id: user.id, api_key: user.api_key} ;
+        let userInfo = {id: user.id, github_handle: user.github_handle, api_key: apiKey, board_id: req.query.board_id} ;
         return res.status(200).send(JSON.stringify(userInfo));
       } else { /** IF REQUEST WAS NOT SPECIFICALLY FOR API_KEY VERIFICATION **/
         return next();
