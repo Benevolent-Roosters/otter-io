@@ -6,7 +6,7 @@
     "test": "NODE_ENV=test grunt test",
     "testUpdate": "jest -u NODE_ENV=test grunt test",
     "build": "webpack --watch",
-    "deploy": "git pull && webpack && pm2 restart all"
+    "deploy": "webpack && pm2 restart all"
   },
   "author": "Hack Reactor",
   "license": "MIT",
@@ -47,6 +47,7 @@
     "react-bootstrap": "^0.31.3",
     "react-dom": "^15.4.2",
     "react-redux": "^5.0.6",
+    "react-router-redux": "4.0.8",
     "react-slick": "^0.15.4",
     "redis": "^2.7.1",
     "redux": "^3.7.2",
