@@ -50,7 +50,6 @@ module.exports.getPanelTicketsByUser = (req, res) => {
 };
 
 module.exports.createPanelTicket = (req, res) => {
-  console.log(req.body);
   if (helper.checkUndefined(
     req.body.title,
     req.body.description,
@@ -65,17 +64,23 @@ module.exports.createPanelTicket = (req, res) => {
     res.status(400).send('one of parameters from client is undefined');
     return;
   }
-  if (parseInt(req.body.creator_id) !== req.user.id) {
-    res.status(400).send('creator_id field from client doesnt match actual logged in user');
-    return;
+
+  // Match ticket creator to user for web client only
+  if (req.user) {
+    if (parseInt(req.body.creator_id) !== req.user.id) {
+      res.status(400).send('creator_id field from client doesnt match actual logged in user');
+      return;
+    }
+    req.body.creator_id = req.user.id;
   }
+
   var ticketObj = {
     title: req.body.title,
     description: req.body.description,
     status: req.body.status,
     priority: req.body.priority,
     type: req.body.type,
-    creator_id: req.user.id,
+    creator_id: req.body.creator_id,
     assignee_handle: req.body.assignee_handle,
     board_id: req.body.board_id,
     panel_id: req.body.panel_id
@@ -110,11 +115,11 @@ module.exports.createPanelTicket = (req, res) => {
 };
 
 module.exports.getOneTicket = (req, res) => {
-  if (helper.checkUndefined(req.params.id)) {
+  if (helper.checkUndefined(req.params.id) && helper.checkUndefined(req.query.id)) {
     res.status(400).send('one of parameters from client is undefined');
     return;
   }
-  var ticketId = req.params.id;
+  var ticketId = req.params.id || req.query.id;
   dbhelper.getTicketById(parseInt(ticketId))
     .then(ticket => {
       if (!ticket) {
@@ -155,6 +160,10 @@ module.exports.updateTicket = (req, res) => {
     return;
   }
   var ticketObj = req.body;
+
+  // API key included in request from CLI; removing from ticket being stored in DB
+  delete ticketObj.api_key;
+
   var validKeys = {
     'id': true,
     'title': true,
@@ -182,6 +191,7 @@ module.exports.updateTicket = (req, res) => {
   }
   dbhelper.getTicketById(parseInt(ticketId))
     .then(ticket => {
+      console.log('HEY', ticket);
       if (!ticket) {
         throw 'cant get ticket by id';
       }
