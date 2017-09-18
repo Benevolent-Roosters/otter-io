@@ -161,6 +161,7 @@ module.exports.updateTicket = (req, res) => {
   }
   var ticketObj = req.body;
 
+  // API key included in request from CLI; removing from ticket being stored in DB
   delete ticketObj.api_key;
 
   var validKeys = {
