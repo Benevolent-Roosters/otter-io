@@ -154,10 +154,37 @@ describe('CRUD API authorization', function () {
       });
   });
 
-  it('rejects unauthorized post requests to /api/boards/:id/members that user isnt an owner of', function(done) {
+  it('rejects unauthorized post requests to /api/boards/:id/members that user isnt an owner of and isnt invited to', function(done) {
     agent.get('/auth/fake')
       .then((res) => {
-        return agent.post('/api/boards/2/members');
+        return agent.post('/api/boards/2/members')
+          .send({user_id: 1});
+      })
+      .then((res) => {
+        expect(res.status).to.equal(401);
+        done();
+      })
+      .catch((err) => {
+        return done(err);
+      });
+  });
+
+  it('rejects unauthorized post requests to /api/boards/:id/members that user is a member of but not owner or invitee', function(done) {
+    agent.get('/auth/fake')
+      .then((res) => {
+        return agent.post('/api/boards/1/members')
+          .send({user_id: 2});
+      })
+      .then((res) => {
+        expect(res.status).to.equal(201);
+        return agent.get('/logout');
+      })
+      .then((res) => {
+        return agent.get('/auth/fake2');
+      })
+      .then((res) => {
+        return agent.post('/api/boards/1/members')
+          .send({user_id: 2});
       })
       .then((res) => {
         expect(res.status).to.equal(401);
@@ -312,6 +339,24 @@ describe('CRUD API authorization', function () {
         return done(err);
       });
   });
+
+  it('rejects unauthorized GET requests to /api/boards/:id/invite for boards that user doesnt own', function(done) {
+    agent.get('/auth/fake')
+      .then((res) => {
+        return agent.get('/api/boards/2/')
+          .send({
+            panel_id: 3
+          });
+      })
+      .then((res) => {
+        expect(res.status).to.equal(401);
+        done();
+      })
+      .catch((err) => {
+        return done(err);
+      });
+  });
+
 });
 
 describe('CRUD API boards', function () {
@@ -547,6 +592,42 @@ describe('CRUD API boards', function () {
         expect(res.status).to.equal(200);
         expect(res.body.length).to.equal(2);
         expect(res.body[1].id).to.equal(2);
+        done();
+      })
+      .catch((err) => {
+        return done(err);
+      });
+  });
+
+  it('accepts POST requests to /api/boards/:id/members for invitee to add self to board', function(done) {
+    agent.get('/auth/fake')
+      .then((res) => {
+        return agent.post('/api/boards/1/invite')
+          .send({user_emails: ['newnew@aol.com']});
+      })
+      .then((res) => {
+        expect(res.status).to.equal(201);
+        return agent.get('/api/boards/1/members');
+      })
+      .then(res => {
+        expect(res.status).to.equal(200);
+        expect(res.body.length).to.equal(1);
+        return agent.get('/logout');
+      })
+      .then(res => {
+        return agent.get('/auth/fake4');
+      })
+      .then(res => {
+        return agent.post('/api/boards/1/members')
+          .send({user_id: 4});
+      })
+      .then((res) => {
+        expect(res.status).to.equal(201);
+        return agent.get('/api/boards/1/members');
+      })
+      .then((res) => {
+        expect(res.status).to.equal(200);
+        expect(res.body.length).to.equal(2);
         done();
       })
       .catch((err) => {
@@ -1288,6 +1369,7 @@ describe('Profile route', function () {
         expect(res.status).to.equal(200);
         expect(res.body.github_handle).to.equal('dsc03');
         expect(res.body.lastboard_id).to.equal(null);
+        expect(res.body.api_key).to.equal('cat');
         done();
       })
       .catch((err) => {

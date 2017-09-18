@@ -24,7 +24,7 @@ passport.use('github', new GithubStrategy({
 );
 
 const getOrCreateGithubOAuthProfile = (type, oauthProfile, done) => {
-  return models.User.where({ oauth_id: oauthProfile.id }).fetch()
+  return models.User.where({ github_handle: oauthProfile.username }).fetch()
     .then(oauthAccount => {
 
       //check if Auth table already has user
@@ -62,9 +62,7 @@ const getOrCreateGithubOAuthProfile = (type, oauthProfile, done) => {
       if (!profile) {
         throw JSON.stringify(profile);
       }
-      
       delete profile.api_key;
-
       console.log('Saved user profile');
       done(null, profile.serialize());
     })

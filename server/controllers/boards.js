@@ -170,12 +170,20 @@ module.exports.addMember = (req, res) => {
   }
   var userId = req.body.user_id;
   var boardId = req.params.id;
+  var memberAdded;
   dbhelper.addUserToBoard(parseInt(userId), parseInt(boardId))
     .then(member => {
       if (!member) {
         throw 'couldnt add user to board';
       }
-      res.status(201).send(member);
+      memberAdded = member;
+      return dbhelper.getUserById(parseInt(userId));
+    })
+    .then(user => {
+      return dbhelper.uninviteByBoard(user.github_handle, boardId);
+    })
+    .then(() => {
+      res.status(201).send(memberAdded);
     })
     .catch(err => {
       res.status(500).send(JSON.stringify(err));

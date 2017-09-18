@@ -209,6 +209,67 @@ module.exports.verifyTicketMemberElse401 = (req, res, next) => {
     });
 };
 
+//to be used as middleware auth before performing Invite accept/reject api croutes
+module.exports.verifyBoardOwnerOrInviteeElse401 = (req, res, next) => {
+  var boardid, boardOwnerID;
+  if (!req.params) {
+    res.status(400).send('board id couldnt be found in request from client');
+  }
+  if (!req.body && !(req.body.user_id || req.body.user_emails)) {
+    res.status(400).send('invitee couldnt be found in request from client');
+  }
+  if (req.params && req.params.id) {
+    boardid = parseInt(req.params.id);
+  }
+  var userId = req.user.id;
+  //see whether the boardid's shows up under any of the users owned boards or invite list
+  dbhelper.getBoardById(parseInt(boardid))
+    .then(board => {
+      if (!board) {
+        throw board;
+      }
+      boardOwnerID = board.owner_id;
+      return dbhelper.getInviteesByBoard(boardid);
+    })
+    .then(invitees => {
+      var isInvitee = false;
+      if (req.body.user_id && req.body.user_id === userId) {
+        for (var i = 0; i < invitees.length; i++) {
+          if (invitees[i].id === req.body.user_id) {
+            isInvitee = true;
+            break;
+          }
+        }
+      } else if (req.body.user_emails && req.body.user_emails.length === 1 && req.body.user_emails[0] === req.user.email) {
+        for (var i = 0; i < invitees; i++) {
+          if (invitees[i].email === req.body.user_emails[0]) {
+            isInvitee = true;
+            break;
+          }
+        }
+      }
+      // if (isInvitee) {
+      //   console.log(`User ${userId} is invitee of this board ${boardid}`);
+      // }
+      // if (boardOwnerID === userId) {
+      //   console.log(`User ${userId} is owner of this board ${boardid}`);
+      // }
+      return isInvitee || (boardOwnerID === userId);
+    })
+    .then(ownsOrInvitedToBoard => {
+      if (!ownsOrInvitedToBoard) {
+        res.status(401).send();
+      } else {
+        return next();
+      }
+    })
+    .error(err => {
+      res.status(500).send();
+    })
+    .catch(err => {
+      res.status(404).send(JSON.stringify(err));
+    });
+};
 
 module.exports.session = session({
   store: new RedisStore({

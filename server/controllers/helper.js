@@ -27,6 +27,22 @@ module.exports.checkIfMemberOfBoardId = (userId, boardId) => {
     });
 };
 
+module.exports.checkIfEmailMemberOfBoardId = (email, boardId) => {
+  return dbhelper.getUsersByBoard(parseInt(boardId))
+    .then(users => {
+      if (!users) {
+        throw users;
+      }
+      var userMatch = false;
+      users.forEach(eachUser => {
+        if (eachUser.email === email) {
+          userMatch = true;
+        }
+      });
+      return userMatch;
+    });
+};
+
 module.exports.checkIfOwnerOfBoardId = (userId, boardId) => {
   return dbhelper.getBoardById(parseInt(boardId))
     .then(board => {

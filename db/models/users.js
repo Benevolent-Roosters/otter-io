@@ -1,8 +1,10 @@
 const db = require('../');
 const Promise = require('bluebird');
+db.plugin('visibility');
 
 const User = db.Model.extend({
   tableName: 'users',
+  hidden: ['api_key'],
   memberOfBoards: function() {
     return this.belongsToMany('Board');
   },
@@ -17,6 +19,12 @@ const User = db.Model.extend({
   },
   recentBoard: function() {
     return this.belongsTo('Board', 'lastboard_id');
+  },
+  invitedToBoards: function() {
+    return this.belongsToMany('Board', 'boards_invites', 'invitee_handle', 'board_id', 'github_handle', 'id').withPivot(['id', 'last_email']);
+  },
+  invites: function() {
+    return this.hasMany('Invite', 'invitee_handle', 'github_handle');
   }
 });
 

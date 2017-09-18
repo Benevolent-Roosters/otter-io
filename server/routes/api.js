@@ -1,6 +1,7 @@
 'use strict';
 const express = require('express');
 const router = express.Router();
+const InviteController = require('../controllers').Invites;
 const BoardController = require('../controllers').Boards;
 const PanelController = require('../controllers').Panels;
 const TicketController = require('../controllers').Tickets;
@@ -31,8 +32,14 @@ router.route('/boards/:id')
 //Get, Add, Remove people from Board
 router.route('/boards/:id/members')
   .get(middleware.auth.verifyBoardMemberElse401, BoardController.getUsersByBoard) //only if member of board
-  .post(middleware.auth.verifyBoardOwnerElse401, BoardController.addMember); //only if owner of board
+  .post(middleware.auth.verifyBoardOwnerOrInviteeElse401, BoardController.addMember); //only if owner of board
 //  .delete(middleware.auth.verifyBoardOwnerElse401, BoardController.delmember) //only if owner of board
+
+//Get, Add, Remove invitees from Board
+router.route('/boards/:id/invite')
+  .get(middleware.auth.verifyBoardOwnerElse401, InviteController.getInvitees) //only if owner of board
+  .post(middleware.auth.verifyBoardOwnerElse401, InviteController.addInvitees) //only if owner of board
+  .delete(middleware.auth.verifyBoardOwnerOrInviteeElse401, InviteController.deleteInvitees); //only if owner of board or invitee removing themself
 
 //Request to join a board
 //router.route('/boards/:id/requestjoin')
