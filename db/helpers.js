@@ -222,7 +222,7 @@ module.exports.getBoardByRepoUrl = function(boardRepoUrl) {
 };
 
 module.exports.updateBoardById = function(boardId, data) {
-  console.log('data:', data, 'boardId: ', boardId);
+
   return Board.forge({id: boardId})
     .fetch()
     .then(board => {
@@ -360,6 +360,21 @@ module.exports.getTicketById = function(ticketId) {
     })
     .catch(situation => {
       console.log(`There is a situation: ticket ID ${ticketId} doesn't exist!`);
+      throw situation;
+    });
+};
+
+module.exports.getTicketsByUserHandleAndBoard = function(userHandle, boardId) {
+  return User.forge({github_handle: userHandle})
+  .fetch({withRelated: [{ assignedTickets: function(query) {query.where({board_id: boardId}).orderBy('id', 'ASC'); }}]})
+    .then((user) => {
+      if (!user) {
+        throw 'invalid user';
+      }
+      return user.related('assignedTickets').toJSON();
+    })
+    .catch(situation => {
+      console.log(`There is a situation: user handle ${userHandle} doesn't exist!`);
       throw situation;
     });
 };

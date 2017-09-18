@@ -129,6 +129,7 @@ describe('User', () => {
         .then((user) => {
           expect(user).to.exist;
           expect(user['id']).to.equal(1);
+          expect(user['github_handle']).to.equal('stevepkuo');
           expect(user['api_key']).to.equal('fish');
           done();
         })
@@ -913,6 +914,49 @@ describe('Ticket', () => {
     });
     it('Should reject if passed a ticket that does not exist', (done) => {
       dbhelper.getTicketById(9)
+        .then((result) => {
+          expect('not thrown').to.equal('thrown error');
+          done();
+        })
+        .catch((err) => {
+          expect('thrown error').to.equal('thrown error');
+          done();
+        })
+        .error((err) => {
+          expect('thrown error').to.equal('thrown error');
+          done();
+        });
+    });
+  });
+
+  describe('getTicketsByUserHandleAndBoard()', () => {
+    it('Should exist', () => {
+      expect(dbhelper.getTicketsByUserHandleAndBoard).to.exist;
+    });
+    it('Should be a function', () => {
+      expect(dbhelper.getTicketsByUserHandleAndBoard).to.be.a('function');
+    });
+    it('Should return tickets of a user if they exist in database', (done) => {
+      dbhelper.getTicketsByUserHandleAndBoard('stevepkuo', 1)
+        .then((tickets) => {
+          expect(tickets).to.exist;
+          expect(tickets[0]['title']).to.equal('testticket');
+          expect(tickets[0]['status']).to.equal('in progress');
+          expect(tickets[0]['priority']).to.equal(2);
+          expect(tickets[0]['type']).to.equal('feature');
+          expect(tickets[0]['creator_id']).to.equal(1);
+          expect(tickets[0]['assignee_handle']).to.equal('stevepkuo');
+          expect(tickets[0]['panel_id']).to.equal(1);
+          expect(tickets[0]['board_id']).to.equal(1);
+          done();
+        })
+        .catch((err) => {
+          done(err);
+        })
+        .error(err => done(err));
+    });
+    it('Should reject if user and board id do not match or have tickets', (done) => {
+      dbhelper.getTicketsByUserHandleAndBoard('bobby123', 5)
         .then((result) => {
           expect('not thrown').to.equal('thrown error');
           done();

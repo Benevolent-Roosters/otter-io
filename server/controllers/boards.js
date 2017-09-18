@@ -89,7 +89,6 @@ module.exports.getOneBoardById = (req, res) => {
     });
 };
 
-/** TODO: TEST THIS CONTROLLER FUNCTION **/
 module.exports.getOneBoardByRepoUrl = (req, res) => {
   if (helper.checkUndefined(req.query.repo_url)) {
     res.status(400).send('one of parameters from client is undefined');

@@ -22,6 +22,33 @@ module.exports.getPanelTickets = (req, res) => {
     });
 };
 
+/** TODO: WRITE TEST FOR THIS FUNCTION **/
+module.exports.getPanelTicketsByUser = (req, res) => {
+  if (helper.checkUndefined(req.query.panel_id)) {
+    res.status(400).send('one of parameters from client is undefined');
+    return;
+  }
+  
+  var panelId = req.query.panel_id;
+  dbhelper.getTicketsByPanel(parseInt(panelId))
+    .then(tickets => {
+      if (!tickets) {
+        throw 'cant get tickets by panel id';
+      }
+      
+      //filter for user tickets
+      let userTickets = tickets.filter(ticket => {
+        return ticket.assignee_handle === req.query.github_handle;
+      });
+
+      res.status(200).send(userTickets.reverse());
+    })
+    .catch(err => {
+      // This code indicates an outside service (the database) did not respond in time
+      res.status(500).send(JSON.stringify(err));
+    });
+};
+
 module.exports.createPanelTicket = (req, res) => {
   console.log(req.body);
   if (helper.checkUndefined(
@@ -96,6 +123,28 @@ module.exports.getOneTicket = (req, res) => {
       res.status(200).send(ticket);
     })
     .catch((err) => {
+      res.status(500).send(JSON.stringify(err));
+    });
+};
+
+/** WRITE TEST FOR THIS ROUTE **/
+module.exports.getUserTicketsByBoard = (req, res) => {
+  if (helper.checkUndefined(req.query.user_id, req.query.github_handle, req.query.board_id, req.query.api_key)) {
+    res.status(400).send('one of parameters from client is undefined');
+    return;
+  }
+  
+  var userHandle = req.query.github_handle;
+  var boardId = req.query.board_id;
+  dbhelper.getTicketsByUserHandleAndBoard(userHandle, parseInt(boardId))
+    .then(tickets => {
+      if (!tickets) {
+        throw 'cant get tickets by panel id';
+      }
+      res.status(200).send(tickets);
+    })
+    .catch(err => {
+      // This code indicates an outside service (the database) did not respond in time
       res.status(500).send(JSON.stringify(err));
     });
 };

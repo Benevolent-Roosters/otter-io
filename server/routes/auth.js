@@ -13,7 +13,8 @@ if (process.env.NODE_ENV === 'test') {
     'github_handle': 'stevepkuo',
     'profile_photo': 'https://avatars0.githubusercontent.com/u/14355395?v=5',
     'oauth_id': '14355395',
-    'lastboard_id': null
+    'lastboard_id': null,
+    'api_key': 'fish'
   };
   var fakeUser2 = {
     'id': 2,
@@ -21,7 +22,8 @@ if (process.env.NODE_ENV === 'test') {
     'github_handle': 'stevepkuo2',
     'profile_photo': 'https://avatars0.githubusercontent.com/u/14355396?v=5',
     'oauth_id': '14355396',
-    'lastboard_id': null
+    'lastboard_id': null,
+    'api_key': 'dog'
   };
   var fakeUser3 = {
     'id': 3,
@@ -29,7 +31,8 @@ if (process.env.NODE_ENV === 'test') {
     'github_handle': 'dsc03',
     'profile_photo': 'https://avatars0.githubusercontent.com/u/25214199?v=4',
     'oauth_id': '25214199',
-    'lastboard_id': null
+    'lastboard_id': null,
+    'api_key': 'cat'
   };
   router.use(middleware.auth.fakemiddleware);
   router.route('/auth/fake')
