@@ -4,20 +4,33 @@ const User = require('./models/users.js');
 const Board = require('./models/boards.js');
 const Panel = require('./models/panels.js');
 const Ticket = require('./models/tickets.js');
+const Invite = require('./models/invites.js');
+const knex = require('knex')(require('../knexfile'));
 
 // Functions are in the following order:
 
 // createUser
 // getUserById
 // getUserByApiKey
+// getUserByIdUnhidden
+// getUserByEmailNoError
+// verifiedEmail
+// handleExists
+// emailExists
 // updateUserById
 
 // addUserToBoard
+// inviteByBoard
+// inviteEmailByBoard
+// getInvitesByUser
+// uninviteByBoard
 // getUsersByBoard
+// getInviteesByBoard
 // getBoardsByUser
 
 // createBoard
 // getBoardById
+// getBoardByRepoUrl
 // updateBoardById
 
 // createPanel
@@ -37,6 +50,9 @@ module.exports.createUser = function(data) {
     .then((user) => {
       if (user) {
         throw 'duplicate user';
+      }
+      if (!('api_key' in data)) {
+        throw 'no api key given';
       }
       return User.forge(data).save();
     })
@@ -72,10 +88,89 @@ module.exports.getUserByApiKey = function(apiKey) {
       if (!user) {
         throw 'invalid user';
       }
-      return user.toJSON();
+      return user.toJSON({hidden: []});
     })
     .catch(situation => {
       console.log(`There is a situation: user API key does not exist!`);
+      throw situation;
+    });
+};
+
+module.exports.getUserByIdUnhidden = function(userId) {
+  return User.forge({id: userId})
+    .fetch()
+    .then(user => {
+      if (!user) {
+        throw 'invalid user';
+      }
+      return user.toJSON({hidden: []});
+    })
+    .catch(situation => {
+      console.log(`There is a situation: user ID ${userId} does not exist!`);
+      throw situation;
+    });
+};
+
+//get user by email; if user doesnt exist, return a message instead of throwing error
+module.exports.getUserByEmailNoError = function(email) {
+  return User.forge({email: email})
+    .fetch()
+    .then(user => {
+      if (!user) {
+        return 'nonexisting user';
+      }
+      return user.toJSON();
+    })
+    .catch(situation => {
+      console.log(`There is a situation: user ID ${email} does not exist!`);
+      throw situation;
+    });
+};
+
+module.exports.verifiedEmail = function(email) {
+  return User.forge({email: email})
+    .fetch()
+    .then(user => {
+      if (!user) {
+        return false;
+      }
+      if (user.toJSON().verified === 1) {
+        return true;
+      }
+      return false;
+    })
+    .catch(situation => {
+      console.log(`There is a situation: githandle ${gitHandle}`);
+      throw situation;
+    });
+};
+
+module.exports.handleExists = function(gitHandle) {
+  return User.forge({github_handle: gitHandle})
+    .fetch()
+    .then(user => {
+      if (!user) {
+        return false;
+      }
+      return true;
+    })
+    .catch(situation => {
+      console.log(`There is a situation: githandle ${gitHandle}`);
+      throw situation;
+    });
+};
+
+module.exports.emailExists = function(email) {
+  return User.forge({email: email})
+    .fetch()
+    .then(user => {
+      if (!user) {
+        return false;
+      }
+      return true;
+    })
+    .catch(situation => {
+      console.log(`There is a situation: email ${email}`);
       throw situation;
     });
 };
@@ -135,6 +230,216 @@ module.exports.addUserToBoard = function(userId, boardId) {
     });
 };
 
+module.exports.inviteByBoard = function(githandle, boardId) {
+  var boardAdd;
+  return Board.forge({id: boardId})
+    .fetch()
+    .then(board => {
+      if (!board) {
+        throw 'invalid board';
+      }
+      boardAdd = board;
+      return User.forge({github_handle: githandle}).fetch({withRelated: ['invitedToBoards']});
+    })
+    .then(user => {
+      if (!user) {
+        throw 'invalid user';
+      }
+      let boardIds = user.related('invitedToBoards').toJSON().map(board => board.id);
+      if (boardIds.includes(boardId)) {
+        return 'duplicate invite';
+      }
+      return user.invitedToBoards().attach(boardId);
+    })
+    .then(result => {
+      if (typeof result === 'string') {
+        return result;
+      }
+      console.log(result.toJSON());
+      return result.toJSON();
+    })
+    .catch(situation => {
+      if (situation === 'invalid board') {
+        console.log(`There is a situation: board ID ${boardId} doesn't exist!`);
+      }
+      if (situation === 'invalid user') {
+        console.log(`There is a situation: githandle ${githandle} doesn't exist!`);
+      }
+      console.log(situation);
+      throw situation;
+    });
+};
+
+module.exports.inviteEmailByBoard = function(email, boardId) {
+  var boardAdd;
+  return Board.forge({id: boardId})
+    .fetch()
+    .then(board => {
+      if (!board) {
+        throw 'invalid board';
+      }
+      boardAdd = board;
+      return User.forge({email: email}).fetch({withRelated: ['invitedToBoards']});
+    })
+    .then(user => {
+      if (!user) {
+        throw 'invalid user';
+      }
+      let boardIds = user.related('invitedToBoards').toJSON().map(board => board.id);
+      if (boardIds.includes(boardId)) {
+        return 'duplicate invite';
+      }
+      return user.invitedToBoards().attach(boardId);
+    })
+    .then(result => {
+      if (typeof result === 'string') {
+        return result;
+      }
+      return result.toJSON();
+    })
+    .catch(situation => {
+      if (situation === 'invalid board') {
+        console.log(`There is a situation: board ID ${boardId} doesn't exist!`);
+      }
+      if (situation === 'invalid user') {
+        console.log(`There is a situation: email ${email} doesn't exist!`);
+      }
+      console.log(situation);
+      throw situation;
+    });
+};
+
+//for email worker to
+//get invite list of verified users and their invited boards, where last_email > 2 days ago
+module.exports.getInvitees = function() {
+  return User.where({verified: 1}).fetchAll()
+    .then(users => {
+      if (!users) {
+        throw 'error';
+      }
+      var promiseArray = users.map(eachUser => eachUser.fetch({withRelated: [
+        {invitedToBoards: function(query) {
+          //query.whereRaw('last_email = "null"');
+          query.where('last_email', null).orWhereRaw(`last_email < now()-INTERVAL '2 days'`);
+        }}
+      ]}));
+      return Promise.all(promiseArray);
+    })
+    .then(users => {
+      if (!users) {
+        throw 'error';
+      }
+      users = users.map(eachUser => eachUser.toJSON());
+      //users = users.filter(eachUser => eachUser.toJSON().length > 0);
+      //console.log('all invitees in the db', users.map(eachUser => eachUser.toJSON().invitedToBoards));
+      users = users.filter(eachUser => eachUser.invitedToBoards.length > 0);
+      console.log('all invitees in the db', users);
+      return users;
+    })
+    .catch(err => {
+      console.log('Error while getting all invites in the db');
+      throw err;
+    });
+};
+
+//for email worker to
+//mark invites in the invite join table between invitee and board as recently emailed
+module.exports.emailedInvites = function(inviteIDs) {
+  return Promise.resolve(inviteIDs)
+    .then(arrayIn => {
+      if (inviteIDs.length === 0) {
+        throw 'empty array';
+      }
+      return true;
+    })
+    .then(() => {
+      return Invite.where('id', 'in', inviteIDs).fetch();
+    })
+    .then(invites => {
+      if (!invites) {
+        throw 'empty array';
+      }
+      return Invite.where('id', 'in', inviteIDs)
+        .save({'last_email': knex.fn.now()}, { method: 'update' });
+    })
+    .then(result => {
+      if (!result) {
+        throw 'save error';
+      }
+      console.log(result.toJSON());
+      return 'success';
+    })
+    .error(err => {
+      console.log('there was an error updating invite email dates');
+      throw err;
+    })
+    .catch(situation => {
+      if (situation === 'empty array') {
+        console.log('there is nothing to update');
+        return 'empty';
+      }
+      if (situation === 'save error') {
+        console.log('Saving recent emailed invites failed');
+      }
+      throw situation;
+    });
+};
+
+module.exports.getInvitesByUser = function(userId) {
+  return User.forge({id: userId})
+    .fetch()
+    .then(user => {
+      if (!user) {
+        throw 'invalid user';
+      }
+      return user.related('invitedToBoards').fetch();
+    })
+    .then((boards) => {
+      console.log(`User ${userId} is invited to`);
+      console.log(boards.toJSON());
+      return boards.toJSON();
+    })
+    .catch(situation => {
+      console.log(`There is a situation: user ID ${userId} doesn't exist!`);
+      throw situation;
+    });
+};
+
+module.exports.uninviteByBoard = function(githandle, boardId) {
+  return User.forge({github_handle: githandle}).fetch({withRelated: ['invitedToBoards']})
+    .then(user => {
+      if (!user) {
+        throw 'invalid user';
+      }
+      console.log(user.related('invitedToBoards').toJSON());
+      var boardIds = user.related('invitedToBoards').toJSON().map(board => board.id);
+
+      if (!boardIds.includes(boardId)) {
+        return 'user already not in invitee list';
+      }
+      return user.invitedToBoards().detach(boardId);
+    })
+    .then(result => {
+      if (result === 'user already not in invitee list') {
+        return result;
+      }
+      if (!result || result.toJSON().length !== 0) {
+        throw 'uninvite error';
+      }
+      console.log(result.toJSON());
+      return result.toJSON();
+    })
+    .catch(situation => {
+      if (situation === 'invalid user') {
+        console.log(`There is a situation: githandle ${githandle} doesn't exist!`);
+      }
+      if (situation === 'uninvite error') {
+        console.log(`There is a situation: Couldnt delete ${githandle} from invite table to board ${boardId}`);
+      }
+      throw situation;
+    });
+};
+
 module.exports.getUsersByBoard = function(boardId) {
   return Board.forge({id: boardId})
     .fetch()
@@ -146,6 +451,25 @@ module.exports.getUsersByBoard = function(boardId) {
     })
     .then((users) => {
       return users.toJSON();
+    })
+    .catch(situation => {
+      console.log(`There is a situation: board ID ${boardId} doesn't exist!`);
+      throw situation;
+    });
+};
+
+module.exports.getInviteesByBoard = function(boardId) {
+  return Board.forge({id: boardId})
+    .fetch()
+    .then(board => {
+      if (!board) {
+        throw 'invalid board';
+      }
+      return board.related('invitedHandles').fetch();
+    })
+    .then((handles) => {
+      console.log('Invited to board', handles.toJSON());
+      return handles.toJSON();
     })
     .catch(situation => {
       console.log(`There is a situation: board ID ${boardId} doesn't exist!`);
@@ -222,7 +546,7 @@ module.exports.getBoardByRepoUrl = function(boardRepoUrl) {
 };
 
 module.exports.updateBoardById = function(boardId, data) {
-  console.log('data:', data, 'boardId: ', boardId);
+
   return Board.forge({id: boardId})
     .fetch()
     .then(board => {
@@ -360,6 +684,21 @@ module.exports.getTicketById = function(ticketId) {
     })
     .catch(situation => {
       console.log(`There is a situation: ticket ID ${ticketId} doesn't exist!`);
+      throw situation;
+    });
+};
+
+module.exports.getTicketsByUserHandleAndBoard = function(userHandle, boardId) {
+  return User.forge({github_handle: userHandle})
+  .fetch({withRelated: [{ assignedTickets: function(query) {query.where({board_id: boardId}).orderBy('id', 'ASC'); }}]})
+    .then((user) => {
+      if (!user) {
+        throw 'invalid user';
+      }
+      return user.related('assignedTickets').toJSON();
+    })
+    .catch(situation => {
+      console.log(`There is a situation: user handle ${userHandle} doesn't exist!`);
       throw situation;
     });
 };

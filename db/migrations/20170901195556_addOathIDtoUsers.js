@@ -31,6 +31,7 @@ exports.down = function(knex, Promise) {
       table.integer('profile_id').references('profiles.id').onDelete('CASCADE');
     }),
     knex.schema.table('users', function(table) {
+      table.dropColumn('api_key');
       table.dropColumn('lastboard_id');
       table.dropColumn('oauth_id');
     })

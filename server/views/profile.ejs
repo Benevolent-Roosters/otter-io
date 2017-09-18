@@ -11,13 +11,14 @@
         <!-- LOCAL INFORMATION -->
         <div class="col-sm-6">
             <div class="well">
-                <h3><span class="fa fa-user"></span> Local</h3>
+                <h3><span class="fa fa-user"></span> Github linked</h3>
 
                 <% if (user.email) { %>
                 <p>
-                    <strong>display name</strong>: <%= user.display %><br>
-                    <strong>id</strong>: <%= user.id %><br>
-                    <strong>email</strong>: <%= user.email %>
+                    <strong>handle</strong>: <%= user.github_handle %><br>
+                    <strong>email</strong>: <%= user.email %><br>
+                    <strong>Otter id</strong>: <%= user.id %><br>
+                    <strong>Otter api_key</strong>: <%= user.api_key %>
                 </p>
 
                 <a href="/unlink/local" class="btn btn-default">Unlink</a>

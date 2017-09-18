@@ -1,11 +1,12 @@
 const session = require('express-session');
 const RedisStore = require('connect-redis')(session);
-const redisClient = require('redis').createClient();
+const redisClient = require('redis').createClient('6379', 'otterio-redis-v2.kdm0tv.ng.0001.usw1.cache.amazonaws.com');
 const models = require('../../db/models');
 const dbhelper = require('../../db/helpers.js');
 const helper = require('../controllers/helper');
-require('dotenv').config();
 
+
+console.log(redisClient);
 //for testing purposes to set up a fake login session
 module.exports.fakemiddleware = (req, res, next) => {
   if (req && req.session && req.session.user_tmp) {
@@ -30,7 +31,6 @@ module.exports.verifyElse401 = (req, res, next) => {
   res.sendStatus(401);
 };
 
-/** CREATE TESTS FOR THIS ROUTE **/
 module.exports.verifyAPIKey = (req, res, next) => {
   if (!req.params && !req.body && !req.query) {
     res.status(400).send('API key could not be found in request');
@@ -46,11 +46,14 @@ module.exports.verifyAPIKey = (req, res, next) => {
   }
 
   dbhelper.getUserByApiKey(apiKey)
+
     .then(user => {
       if (!user) {
         return res.status(401).send();
       } else if (Object.keys(req.query).length === 1 && (req.query.hasOwnProperty('api_key'))) {
+
         let userInfo = {id: user.id, github_handle: user.github_handle, api_key: apiKey, board_id: req.query.board_id};
+
         return res.status(200).send(JSON.stringify(userInfo));
       } else { /** IF REQUEST WAS NOT SPECIFICALLY FOR API_KEY VERIFICATION **/
         return next();
@@ -67,6 +70,7 @@ module.exports.verifyAPIKey = (req, res, next) => {
 //to be used as middleware auth before performing BOARD CRUD api croutes
 module.exports.verifyBoardMemberElse401 = (req, res, next) => {
   var boardid;
+  // console.log('query:', req.query);
   if (!req.params && !req.body && !req.query) {
     res.status(400).send('board id couldnt be found in request from client');
   }
@@ -77,7 +81,8 @@ module.exports.verifyBoardMemberElse401 = (req, res, next) => {
   } else {
     boardid = parseInt(req.query.board_id);
   }
-  var userId = req.user.id || req.query.user_id;
+
+  var userId = req.user ? req.user.id : req.query.user_id;
 
   // return models.User.where({ id: userId }).fetch({withRelated:['memberOfBoards']})
   // .then(function(user) {
@@ -214,11 +219,71 @@ module.exports.verifyTicketMemberElse401 = (req, res, next) => {
     });
 };
 
+//to be used as middleware auth before performing Invite accept/reject api croutes
+module.exports.verifyBoardOwnerOrInviteeElse401 = (req, res, next) => {
+  var boardid, boardOwnerID;
+  if (!req.params) {
+    res.status(400).send('board id couldnt be found in request from client');
+  }
+  if (!req.body && !(req.body.user_id || req.body.user_emails)) {
+    res.status(400).send('invitee couldnt be found in request from client');
+  }
+  if (req.params && req.params.id) {
+    boardid = parseInt(req.params.id);
+  }
+  var userId = req.user.id;
+  //see whether the boardid's shows up under any of the users owned boards or invite list
+  dbhelper.getBoardById(parseInt(boardid))
+    .then(board => {
+      if (!board) {
+        throw board;
+      }
+      boardOwnerID = board.owner_id;
+      return dbhelper.getInviteesByBoard(boardid);
+    })
+    .then(invitees => {
+      var isInvitee = false;
+      if (req.body.user_id && req.body.user_id === userId) {
+        for (var i = 0; i < invitees.length; i++) {
+          if (invitees[i].id === req.body.user_id) {
+            isInvitee = true;
+            break;
+          }
+        }
+      } else if (req.body.user_emails && req.body.user_emails.length === 1 && req.body.user_emails[0] === req.user.email) {
+        for (var i = 0; i < invitees; i++) {
+          if (invitees[i].email === req.body.user_emails[0]) {
+            isInvitee = true;
+            break;
+          }
+        }
+      }
+      // if (isInvitee) {
+      //   console.log(`User ${userId} is invitee of this board ${boardid}`);
+      // }
+      // if (boardOwnerID === userId) {
+      //   console.log(`User ${userId} is owner of this board ${boardid}`);
+      // }
+      return isInvitee || (boardOwnerID === userId);
+    })
+    .then(ownsOrInvitedToBoard => {
+      if (!ownsOrInvitedToBoard) {
+        res.status(401).send();
+      } else {
+        return next();
+      }
+    })
+    .error(err => {
+      res.status(500).send();
+    })
+    .catch(err => {
+      res.status(404).send(JSON.stringify(err));
+    });
+};
+
 module.exports.session = session({
   store: new RedisStore({
-    client: redisClient,
-    host: process.env.REDIS_HOST || 'localhost',
-    port: 6379
+    client: redisClient
   }),
   secret: 'more laughter, more love, more life',
   resave: false,

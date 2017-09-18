@@ -13,7 +13,8 @@ if (process.env.NODE_ENV === 'test') {
     'github_handle': 'stevepkuo',
     'profile_photo': 'https://avatars0.githubusercontent.com/u/14355395?v=5',
     'oauth_id': '14355395',
-    'lastboard_id': null
+    'lastboard_id': null,
+    'api_key': 'fish'
   };
   var fakeUser2 = {
     'id': 2,
@@ -21,7 +22,8 @@ if (process.env.NODE_ENV === 'test') {
     'github_handle': 'stevepkuo2',
     'profile_photo': 'https://avatars0.githubusercontent.com/u/14355396?v=5',
     'oauth_id': '14355396',
-    'lastboard_id': null
+    'lastboard_id': null,
+    'api_key': 'dog'
   };
   var fakeUser3 = {
     'id': 3,
@@ -29,7 +31,17 @@ if (process.env.NODE_ENV === 'test') {
     'github_handle': 'dsc03',
     'profile_photo': 'https://avatars0.githubusercontent.com/u/25214199?v=4',
     'oauth_id': '25214199',
-    'lastboard_id': null
+    'lastboard_id': null,
+    'api_key': 'cat'
+  };
+  var fakeUser4 = {
+    'id': 4,
+    'email': 'newnew@aol.com',
+    'github_handle': 'newnew@aol.com',
+    'profile_photo': null,
+    'oauth_id': null,
+    'lastboard_id': null,
+    'verified': 0
   };
   router.use(middleware.auth.fakemiddleware);
   router.route('/auth/fake')
@@ -73,7 +85,7 @@ router.route('/signup')
 /** ROUTE USED TO RETRIEVE AND UPDATE USER DATA AND SEND BACK TO CLIENT **/
 router.route('/profile')
   .get(middleware.auth.verifyElse401, (req, res) => {
-    dbhelper.getUserById(parseInt(req.user.id))
+    dbhelper.getUserByIdUnhidden(parseInt(req.user.id))
       .then(user => {
         if (!user) {
           throw user;
@@ -127,6 +139,48 @@ router.route('/profile')
         res.status(500).send(JSON.stringify(err));
       });
 
+  });
+
+/** ROUTE USED TO RETRIEVE USER INVITES SEND BACK TO CLIENT **/
+router.route('/profile/invitations')
+  .get(middleware.auth.verifyElse401, (req, res) => {
+    dbhelper.getInvitesByUser(parseInt(req.user.id))
+      .then(invites => {
+        if (!invites) {
+          throw invites;
+        }
+        res.status(200).send(invites);
+      })
+      .catch((err) => {
+        res.status(500).send(JSON.stringify(err));
+      });
+  });
+
+/** ROUTE TO SERVE UP PROFILE PAGE ALONG WITH INVITATIONS**/
+router.route('/myprofile')
+  .get(middleware.auth.verifyElse401, (req, res) => {
+    var user;
+    dbhelper.getUserByIdUnhidden(parseInt(req.user.id))
+      .then(userUnhidden => {
+        if (!userUnhidden) {
+          throw userUnhidden;
+        }
+        user = userUnhidden;
+        //get my invitations and display them
+        return dbhelper.getInvitesByUser(parseInt(req.user.id));
+      })
+      .then(invites => {
+        if (!invites) {
+          throw invites;
+        }
+        res.render('profile.ejs', {
+          user: user, // get the user with api key from dbhelper and pass to template
+          invites: invites //pass in the boards that user is invited to
+        });
+      })
+      .catch((err) => {
+        res.status(500).send(JSONstringify(err));
+      });
   });
 
 router.route('/logout')

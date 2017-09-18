@@ -13,7 +13,8 @@ exports.seed = function (knex, Promise) {
         github_handle: 'stevepkuo',
         profile_photo: 'https://avatars0.githubusercontent.com/u/14355395?v=4',
         oauth_id: '14355395',
-        api_key: 'fish'
+        api_key: 'fish',
+        email: 'blah@aol.com'
       }).save();
     })
     .then( () => models.Board.where({board_name: 'testboard'}).fetch())
@@ -74,7 +75,8 @@ exports.seed = function (knex, Promise) {
         github_handle: 'stevepkuo2',
         profile_photo: 'https://avatars0.githubusercontent.com/u/14355395?v=5',
         oauth_id: '14355396',
-        api_key: 'dog'
+        api_key: 'dog',
+        email: 'blah2@aol.com'
       }).save();
     })
     .then( () => {

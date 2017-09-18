@@ -22,6 +22,7 @@ exports.up = function (knex, Promise) {
       table.string('email', 100).nullable();
       table.string('github_handle', 100).unique().notNullable();
       table.string('profile_photo', 200).nullable();
+      table.integer('verified').notNullable().defaultTo(1);
     }),
     knex.schema.createTableIfNotExists('boards', function(table) {
       table.increments('id').unsigned().primary();
@@ -36,6 +37,12 @@ exports.up = function (knex, Promise) {
       table.integer('user_id').references('users.id').onDelete('CASCADE');
       table.integer('board_id').references('boards.id').onDelete('CASCADE');
       // add ownership/privileges?
+    }),
+    knex.schema.createTableIfNotExists('boards_invites', function(table) {
+      table.increments('id').unsigned().primary();
+      table.string('invitee_handle').references('users.github_handle').onDelete('CASCADE');
+      table.integer('board_id').references('boards.id').onDelete('CASCADE');
+      table.timestamp('last_email').nullable();
     }),
     knex.schema.createTableIfNotExists('panels', function(table) {
       table.increments('id').unsigned().primary();
@@ -66,6 +73,7 @@ exports.down = function (knex, Promise) {
   return Promise.all([
     knex.schema.dropTable('tickets'),
     knex.schema.dropTable('panels'),
+    knex.schema.dropTable('boards_invites'),
     knex.schema.dropTable('boards_users'),
     knex.schema.dropTable('boards'),
     knex.schema.dropTable('users'),
