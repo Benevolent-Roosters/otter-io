@@ -4,5 +4,5 @@ import rootReducer from './reducers.js';
 
 export default combineReducers({
   routing: routerReducer,
-  counter
+  rootReducer
 })
