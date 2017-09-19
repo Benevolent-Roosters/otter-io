@@ -4,8 +4,8 @@ import { putEditedTicket, handleSetTickets, editCurrentTicket, toggleEditTicket,
 import { Modal, Form, FormGroup, FormControl, Button, ControlLabel, Grid, Col, Row, DropdownButton, MenuItem, ButtonToolbar } from 'react-bootstrap';
 import axios from 'axios';
 
-let buttonStyle = {marginTop: '15px', marginRight: '15px'};
-let dropDownStyle = {marginTop: '15px'};
+const buttonStyle = {marginTop: '15px', marginRight: '15px'};
+const dropDownStyle = {marginTop: '15px'};
 
 class EditTicket extends React.Component {
   constructor(props) {
@@ -68,14 +68,6 @@ class EditTicket extends React.Component {
 
   /** ON EDIT, PERFORM GET REQUEST FOR ALL PANELS IN BOARD TO RE-RENDER TICKETS IN CORRECT PLACES (IN CASED TICKET WAS MOVED FROM ONE PANEL TO ANOTHER) **/
   handleOnEdit() {
-    // let currentTicket = Object.assign({}, this.state, {creator_id: this.props.userId, board_id: this.props.currentBoardId});
-    // delete currentTicket.panel_name;
-    // for (var i = 0; i < this.props.tickets.length; i++) {
-      //   if (currentTicket.id === this.props.tickets[i].id) {
-      //     this.props.handleEditTicket(i, currentTicket);
-      //   }
-      // }
-
     if (this.props.panels.length > 0) {
       this.props.handleEmptyTickets();
       for (let panel of this.props.panels) {
@@ -85,9 +77,6 @@ class EditTicket extends React.Component {
   }
 
   render() {
-    /*NOTE: Once we hook everything together, MenuItem will be created by mapping over the store's users, ticket types, ticket priorities, and store's panels */
-
-    
     return (
       <div>
         <Grid>
@@ -160,8 +149,8 @@ class EditTicket extends React.Component {
 const mapStateToProps = state => {
   return {
     userId: state.rootReducer.user.id,
-    userHandle: state.rootReducer.user.github_handle, //double check what userid key actually is named
-    currentBoardId: state.rootReducer.currentBoard.id, //double check what userid key actually is named,
+    userHandle: state.rootReducer.user.github_handle,
+    currentBoardId: state.rootReducer.currentBoard.id,
     currentPanel: state.rootReducer.currentPanel,
     panels: state.rootReducer.panels,
     tickets: state.rootReducer.tickets,

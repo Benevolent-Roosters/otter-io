@@ -133,7 +133,6 @@ class Ticket extends React.Component {
   }
 }
 
-//NOTE: most likely NOT necessary if upon entering new board we navigate to new route, because navigating to new route will re-render app (we think).
 const mapStateToProps = (state) => {
   return {
     'currentTicket': state.rootReducer.currentTicket

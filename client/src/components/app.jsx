@@ -9,7 +9,7 @@ import SidebarNavigation from './SidebarNav.jsx';
 import { Button } from 'react-bootstrap';
 import MainRouter from './MainRouter.jsx';
 
-let iconStyle = {
+const iconStyle = {
   position: 'absolute',
   top: '20px',
   left: '20px',

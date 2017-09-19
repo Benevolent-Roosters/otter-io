@@ -3,7 +3,7 @@ import { putEditedBoard, editBoards, toggleEditBoard } from '../redux/actionCrea
 import { connect } from 'react-redux';
 import { Modal, Form, FormGroup, FormControl, Button, ControlLabel, Grid, Col, Row } from 'react-bootstrap';
 
-let buttonStyle = {marginTop: '15px', marginRight: '15px'};
+const buttonStyle = {marginTop: '15px', marginRight: '15px'};
 
 class EditBoard extends React.Component {
   constructor(props) {

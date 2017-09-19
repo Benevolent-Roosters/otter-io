@@ -161,7 +161,3 @@ const mapDispatchToProps = (dispatch) => {
 
 export var UnwrappedSidebar = SidebarNavigation;
 export default connect(mapStateToProps, mapDispatchToProps)(SidebarNavigation);
-
-// {props.boards.map((board) => {
-//   return <GridTile key={require('../images/menu.png')} title={'Cheese Pizza'}></GridTile>;
-// })}

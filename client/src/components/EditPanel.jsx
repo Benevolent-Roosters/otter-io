@@ -88,8 +88,8 @@ class EditPanel extends React.Component {
 
 const mapStateToProps = state => {
   return {
-    userId: state.rootReducer.user.userid, //double check what userid key actually is named
-    currentBoardId: state.rootReducer.currentBoard.id, //double check what userid key actually is named
+    userId: state.rootReducer.user.userid,
+    currentBoardId: state.rootReducer.currentBoard.id,
     panels: state.rootReducer.panels,
     currentPanel: state.rootReducer.currentPanel,
     editPanelRendered: state.rootReducer.editPanelRendered
