@@ -1,13 +1,13 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import { getUserInfo, getBoardsByUser, getPanelsByBoard, getTicketsByPanel, setCurrentPanel, setCurrentBoard, toggleDrawer, toggleCreateBoard, toggleEditBoard, toggleCreateTicket, toggleEditTicket, toggleCreatePanel } from '../redux/actionCreators.js';
-
 import axios from 'axios';
 import moment from 'moment';
-import Board from './Board.jsx';
-import SidebarNavigation from './SidebarNav.jsx';
+import { connect } from 'react-redux';
 import { Button } from 'react-bootstrap';
+
+import Board from './Board.jsx';
 import MainRouter from './MainRouter.jsx';
+import SidebarNavigation from './SidebarNav.jsx';
+import { getUserInfo, getBoardsByUser, getPanelsByBoard, getTicketsByPanel, setCurrentPanel, setCurrentBoard, toggleDrawer, toggleCreateBoard, toggleEditBoard, toggleCreateTicket, toggleEditTicket, toggleCreatePanel } from '../redux/actionCreators.js';
 
 const iconStyle = {
   position: 'absolute',
