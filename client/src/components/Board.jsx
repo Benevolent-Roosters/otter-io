@@ -1,5 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
+<<<<<<< HEAD
+=======
+import Panel from './Panel.jsx';
+import { getPanelsByBoard, getTicketsByPanel, toggleEditBoard } from '../redux/actionCreators.js';
+>>>>>>> implemented css styling on boards, panels, and tickets
 import { Carousel, Button, NavItem } from 'react-bootstrap';
 import Slider from 'react-slick';
 import PrevArrow from 'react-slick';
@@ -63,9 +68,15 @@ const Board = (props) => {
 
 const mapStateToProps = (state) => {
   return {
+<<<<<<< HEAD
     'currentBoard': state.rootReducer.currentBoard,
     'panels': state.rootReducer.panels,
     currentPanel: state.rootReducer.currentPanel
+=======
+    'currentBoard': state.currentBoard,
+    'panels': state.panels,
+    'currentPanel': state.currentPanel
+>>>>>>> implemented css styling on boards, panels, and tickets
   };
 };
 
@@ -79,9 +90,12 @@ const mapDispatchToProps = (dispatch) => {
     },
     handleEditBoardRendered() {
       dispatch(toggleEditBoard());
+<<<<<<< HEAD
     },
     handleCreatePanelRendered() {
       dispatch(toggleCreatePanel());
+=======
+>>>>>>> implemented css styling on boards, panels, and tickets
     }
   };
 };
