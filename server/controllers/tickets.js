@@ -9,7 +9,7 @@ module.exports.getPanelTickets = (req, res) => {
   }
   //req.query.panel_id used to be req.params.panel_id but axios GET can only put in req.query
   var panelId = req.query.panel_id;
-  dbhelper.getTicketsByPanel(parseInt(panelId))
+  dbhelper.getTicketsByPanel(panelId)
     .then(tickets => {
       if (!tickets) {
         throw 'cant get tickets by panel id';

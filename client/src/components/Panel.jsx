@@ -4,11 +4,29 @@ import { getPanelsByBoard, getTicketsByPanel, toggleEditPanel, toggleCreateTicke
 import { Modal, Button, ListGroup, ListGroupItem } from 'react-bootstrap';
 import DatePicker from 'material-ui/DatePicker';
 import Ticket from './Ticket.jsx';
-import { Panel as BootstrapPanel } from 'react-bootstrap';
+import { Panel as BootstrapPanel, NavItem } from 'react-bootstrap';
 
 const Panel = props => {
+
+  /** PANEL HEADER STYLING AND INFO **/
+  const panelHeader = (
+    <div className="panelHeader">
+      <div>
+        <div>{props.panelInfo.name}</div>
+        <h6 style={{fontStyle: 'italic', marginTop: '0px', marginBottom: '0px'}}> COMPLETE BY: {props.panelInfo.due_date.slice(0, 10)}</h6>
+      </div>
+        <NavItem eventKey={1} onClick={() => {
+          props.handleSetCurrentPanel(props.panelInfo);
+          props.handleEditPanelRendered();}}>
+          Edit
+        </NavItem> 
+    </div>
+  );
+
   return (
-    <BootstrapPanel header={<div>{props.panelInfo.name} <Button bsStyle="primary" onClick={() => {props.handleSetCurrentPanel(props.panelInfo); props.handleEditPanelRendered(); }}>Edit Panel</Button></div>}>
+    <BootstrapPanel
+    className="sprint-panel"
+    header={panelHeader}>
       <Button style={{marginBottom: '15px'}} bsStyle="primary" bsSize="large" onClick={() => {
               props.handleSetCurrentPanel(props.panelInfo);
               props.handleCreateTicketRendered(); 

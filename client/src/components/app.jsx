@@ -67,8 +67,6 @@ class App extends React.Component {
     return (
       <div>
       <div>
-        <Button bsStyle="primary" onClick={this.props.handleEditBoardRendered}>Edit Board</Button>
-        <Button bsStyle="primary" onClick={this.props.handleEditTicketRendered}>Edit Ticket</Button>
         <Button bsStyle="primary" onClick={this.props.handleCreatePanelRendered}>Create Panel</Button>
         <Button style={iconStyle}><img src={require('../images/menu.png')} onClick={this.props.handleToggleDrawer}/></Button>
         <SidebarNavigation/>

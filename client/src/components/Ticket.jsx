@@ -12,59 +12,6 @@ let ticketStyle = {
   borderColor: '#9B9B9B'
 };
 
-// let ticketTypeColors = {
-//   devOps: {
-//     background: '#417505',
-//     width: '19px',
-//     height: '16px',
-//     borderRadius: '50%'
-//   },
-
-//   bug: {
-//     background: '#9012FE',
-//     width: '19px',
-//     height: '16px',
-//     borderRadius: '50%'
-//   },
-
-//   feature: {
-//     background: '#F6A623',
-//     width: '19px',
-//     height: '16px',
-//     borderRadius: '50%'
-//   }
-// };
-
-// let ticketStatusColors = {
-//   notStarted: {
-//     background: '#4990E2',
-//     width: '19px',
-//     height: '16px',
-//     borderRadius: '50%'
-//   },
-
-//   inProgress: {
-//     background: '#F8E81C',
-//     width: '19px',
-//     height: '16px',
-//     borderRadius: '50%'
-//   },
-
-//   done: {
-//     background: '#7ED321',
-//     width: '19px',
-//     height: '16px',
-//     borderRadius: '50%'
-//   }
-// };
-
-// let priorityStatusLines = {
-//   borderTop: '100px #B8E986',
-//   borderBottom: '100px',
-//   borderRight: '100px',
-//   borderLeft: '100px',
-// };
-
 let ticketHeaderAndFooter = {
   display: 'flex'
 };
@@ -72,7 +19,8 @@ let ticketHeaderAndFooter = {
 let ticketTextStyle = {
   color: 'black', 
   fontFamily: 'Avenir Next', 
-  margin: '0px auto 0 10px'
+  margin: '0px auto 0 10px',
+  fontStyle: 'bold'
 };
 
 /** Ticket Priority vertical lines can be made with hr HTML tag **/
@@ -106,29 +54,80 @@ class Ticket extends React.Component {
   }
 
   render() {
+
+    /** TICKET TYPE CONDITIONAL STYLING **/
+    const ticketTypeColor = {
+      background: this.props.ticketInfo.type === 'devOps' ? '#417505' : (this.props.ticketInfo.type === 'bug') ? '#9012FE' : '#F6A623',
+      width: '16px',
+      height: '16px',
+      borderRadius: '50%'
+    };
+
+    /** TICKET STATUS STYLING **/
+    const ticketStatusColor = {
+      background: this.props.ticketInfo.status === 'not started' ? '#4990E2' : (this.props.ticketInfo.status === 'in progress') ? '#F8E81C' : '#7ED321',
+      width: '16px',
+      height: '16px',
+      borderRadius: '50%'
+    };
+
+    /** TICKET URGENCY **/
+    const ticketPriorityColor = {
+      borderLeft: '2pt solid',
+      borderColor: this.props.ticketInfo.priority === 1 ? '#B8E986' : (this.props.ticketInfo.status === 2) ? '#F8E81C' : '#D0011B',
+    };
+
+    /** TICKET HEADER **/
+    const ticketHeader = (
+      <div>
+
+        <div className="ticket-title">
+            <div className="ticket-type" style={ticketTypeColor}>
+            </div> 
+
+            <h4>
+              {this.props.ticketInfo.title}
+            </h4>
+          </div>
+
+          <div className="ticket-edit">
+            <NavItem eventKey={1} onClick={() => {
+            this.props.handleSetCurrentTicket(this.props.ticketInfo);
+            this.props.handleSetCurrentPanel(this.props.panelInfo);
+            this.props.handleEditTicketRendered();
+            }}>Edit</NavItem>
+          </div>
+      </div>
+    );
+
+    /** TICKET BODY **/
+
+    const ticketBody = (
+      <div className="ticketBody" style={ticketPriorityColor}>
+          <div className="description" style={{marginLeft: '5px'}}>
+            <div>{this.props.ticketInfo.description}</div>
+          </div>
+        <div className="status">
+            <div className="status-circle" style={ticketStatusColor}></div>
+            <p>{this.props.ticketInfo.status}</p>
+        </div>
+      </div>
+    );
+
+    /** TICKET FOOTER **/
+    const ticketFooter = (
+      <div className="ticket-footer">
+        <h6 style={{marginRight: '10px'}}>ASSIGNED TO: </h6>
+        <h6>{this.props.ticketInfo.assignee_handle}</h6>
+      </div>
+    );
+
     return (
       <BootstrapPanel 
-        onMouseEnter={this.handleHover.bind(this)}
-        onMouseLeave={this.handleHover.bind(this)}
-        bsStyle={this.props.ticketInfo.priority === 1 ? 'info' : (this.props.ticketInfo.priority === 2) ? 'warning' : 'danger'}
         className='ticket-panel'
-        header= {
-          <div style={ticketHeaderAndFooter}>
-            <div> <img src={(this.props.ticketInfo.type === 'devOps' ? require('../images/devOps-circle.png') : (this.props.ticketInfo.type === 'bug') ? require('../images/bug-circle.png') : require('../images/feature-circle.png'))}/>
-            </div> 
-            <h4 style={ticketTextStyle}>
-              {this.props.ticketInfo.title}
-              </h4>
-              <div><NavItem eventKey={1} onClick={() => {
-                this.props.handleSetCurrentTicket(this.props.ticketInfo);
-                this.props.handleSetCurrentPanel(this.props.panelInfo);
-                this.props.handleEditTicketRendered();
-                }}>Edit</NavItem>
-            </div>
-          </div>}
-
-        footer={<div style={ticketHeaderAndFooter}><div> <img src={(this.props.ticketInfo.status === 'not started' ? require('../images/notstarted-circle.png') : (this.props.ticketInfo.status === 'in progress') ? require('../images/inprogress-circle.png') : require('../images/circle-done.png'))}/></div> <h6 style={ticketTextStyle}>{this.props.ticketInfo.assignee_handle}</h6></div>}>
-        {this.props.ticketInfo.description}
+        header= {ticketHeader}
+        footer= {ticketFooter}>
+        {ticketBody}
       </BootstrapPanel>
     );
   }

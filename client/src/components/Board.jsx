@@ -1,10 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import Panel from './Panel.jsx';
-import { getPanelsByBoard, getTicketsByPanel } from '../redux/actionCreators.js';
-import { Carousel, Button } from 'react-bootstrap';
+import { getPanelsByBoard, getTicketsByPanel, toggleEditBoard } from '../redux/actionCreators.js';
+import { Carousel, Button, NavItem } from 'react-bootstrap';
 import Slider from 'react-slick';
 import PrevArrow from 'react-slick';
+import '../../../ticketStyle.css';
 
 
 const Board = (props) => {
@@ -17,19 +18,35 @@ const Board = (props) => {
     centerMode: true,
     focusOnSelect: true,
     draggable: false,
-    initialSlide: 3
+    initialSlide: 3,
+    useCSS: true,
+    slickGoTo: 3
     /*currentSlide: props.currentPanel*/
   };
 
-  let panelStyle = {
+  const panelStyle = {
     height: '650px'
   };
 
+  const boardNameStyle = {
+    fontSize: '20px',
+    color: 'black',
+    fontWeight: 'normal',
+    display: 'flex',
+    listStyle: 'none',
+  };
+
   return (
-      <Slider {...settings}>
-        {props.panels.map(panel => 
-         <div><Panel panelInfo={panel} key={panel.id} style={panelStyle}/></div>)}
-      </Slider>
+      <div>
+        <NavItem className="boardName" style={boardNameStyle} eventKey={1} onClick={() => {
+          props.handleEditBoardRendered();}}>
+          {props.currentBoard.board_name}
+        </NavItem> 
+        <Slider {...settings}>
+          {props.panels.map(panel => 
+          <div><Panel panelInfo={panel} key={panel.id} style={panelStyle}/></div>)}
+        </Slider>
+      </div>
   );
 };
 
@@ -38,7 +55,7 @@ const mapStateToProps = (state) => {
   return {
     'currentBoard': state.currentBoard,
     'panels': state.panels,
-    currentPanel: state.currentPanel
+    'currentPanel': state.currentPanel
   };
 };
 
@@ -49,6 +66,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     handleGetTicketsByPanel(panelId) {
       dispatch(getTicketsByPanel(panelId));
+    },
+    handleEditBoardRendered() {
+      dispatch(toggleEditBoard());
     }
   };
 };
