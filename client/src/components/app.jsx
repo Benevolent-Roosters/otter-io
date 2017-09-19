@@ -4,17 +4,10 @@ import { getUserInfo, getBoardsByUser, getPanelsByBoard, getTicketsByPanel, setC
 
 import axios from 'axios';
 import moment from 'moment';
-import CreatePanel from './CreatePanel.jsx';
 import Board from './Board.jsx';
 import SidebarNavigation from './SidebarNav.jsx';
-import PerformanceDashboard from './PerformanceDashboard.jsx';
-import Panel from './Panel.jsx';
-import CreateBoard from './CreateBoard.jsx';
-import EditBoard from './EditBoard.jsx';
-import CreateTicket from './CreateTicket.jsx';
-import EditTicket from './EditTicket.jsx';
 import { Button } from 'react-bootstrap';
-import EditPanel from './EditPanel.jsx';
+import MainRouter from './MainRouter.jsx';
 
 let iconStyle = {
   position: 'absolute',
@@ -22,7 +15,6 @@ let iconStyle = {
   left: '20px',
   backgroundColor: 'white'
 };
-
 
 class App extends React.Component {
   constructor(props) {
@@ -46,7 +38,6 @@ class App extends React.Component {
     });
   }
 
-
   findCurrentPanel(panels) {
     let dueDates = panels.map(panel => panel.due_date.slice(0, 10));
     let closest = 0;
@@ -59,28 +50,14 @@ class App extends React.Component {
   }
 
   render() {
-    let boardStyle = {
-      width: '100%',
-      height: '750px',
-
-    }
     return (
       <div>
-      <div>
-        <Button bsStyle="primary" onClick={this.props.handleEditBoardRendered}>Edit Board</Button>
-        <Button bsStyle="primary" onClick={this.props.handleEditTicketRendered}>Edit Ticket</Button>
-        <Button bsStyle="primary" onClick={this.props.handleCreatePanelRendered}>Create Panel</Button>
-        <Button style={iconStyle}><img src={require('../images/menu.png')} onClick={this.props.handleToggleDrawer}/></Button>
-        <SidebarNavigation/>
-        <PerformanceDashboard/>
-        <CreateBoard/>
-        <EditBoard/>
-        <CreateTicket/>
-        <EditTicket/>
-        <CreatePanel/>
-        <EditPanel/>
+        <div>
+          <Button style={iconStyle}><img src={require('../images/menu.png')} onClick={this.props.handleToggleDrawer}/></Button>
+          <SidebarNavigation/>
+          <MainRouter />
+        </div>
       </div>
-        <div style={{width: window.innerWidth - 100 }}><Board style={boardStyle}/></div></div>
     );
   } 
 }
@@ -120,9 +97,6 @@ const mapDispatchToProps = (dispatch) => {
     },
     handleToggleDrawer() {
       dispatch(toggleDrawer());
-    },
-    handleEditBoardRendered() {
-      dispatch(toggleEditBoard());
     },
     handleCreateTicketRendered() {
       dispatch(toggleCreateTicket());

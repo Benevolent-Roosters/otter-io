@@ -46,7 +46,7 @@ class EditBoard extends React.Component {
         <Grid>
           <Col sm={12}>
             <Row>
-              <Modal show={this.props.editBoardRendered ? true : false}>
+              <Modal show={this.props.editBoardRendered}>
                 <Modal.Header bsSize='large' style={{backgroundColor: '#7ED321'}}>
                   <Modal.Title style={{color: 'white'}}>Edit Board</Modal.Title>
                   </Modal.Header>

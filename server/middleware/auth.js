@@ -81,7 +81,6 @@ module.exports.verifyBoardMemberElse401 = (req, res, next) => {
   } else {
     boardid = parseInt(req.query.board_id);
   }
-
   var userId = req.user ? req.user.id : req.query.user_id;
 
   // return models.User.where({ id: userId }).fetch({withRelated:['memberOfBoards']})

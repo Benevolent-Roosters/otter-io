@@ -13,14 +13,11 @@ const middleware  =[
   routerMiddleware(history)
 ];
 
-
-
 const devToolsExtension = window.devToolsExtension;
 
 if (typeof devToolsExtension === 'function') {
   enhancers.push(devToolsExtension());
 }
-
 
 const composedEnhancers = compose(
   applyMiddleware(...middleware),
