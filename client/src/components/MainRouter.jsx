@@ -24,7 +24,7 @@ const MainRouter = props => (
         </div>
         )} />
     </Switch>
- </div> 
+  </div> 
 )
 
 export default MainRouter;

@@ -5,7 +5,7 @@ import Slider from 'react-slick';
 import PrevArrow from 'react-slick';
 import '../../../ticketStyle.css';
 
-import { getPanelsByBoard, getTicketsByPanel, toggleEditBoard } from '../redux/actionCreators.js';
+import { getPanelsByBoard, getTicketsByPanel, toggleEditBoard, toggleCreatePanel } from '../redux/actionCreators.js';
 import Panel from './Panel.jsx';
 import CreateBoard from './CreateBoard.jsx';
 import CreatePanel from './CreatePanel.jsx';
@@ -52,6 +52,7 @@ const Board = (props) => {
         props.handleEditBoardRendered();}}>
         {props.currentBoard.board_name}
       </NavItem> 
+      <Button onClick={() => props.handleCreatePanelRendered()}>Create Panel</Button>
       <Slider {...settings}>
         {props.panels.map(panel => 
         <div><Panel panelInfo={panel} key={panel.id} style={panelStyle}/></div>)}
@@ -78,6 +79,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     handleEditBoardRendered() {
       dispatch(toggleEditBoard());
+    },
+    handleCreatePanelRendered() {
+      dispatch(toggleCreatePanel());
     }
   };
 };
