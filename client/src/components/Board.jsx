@@ -6,12 +6,13 @@ import PrevArrow from 'react-slick';
 import '../../../ticketStyle.css';
 
 import { getPanelsByBoard, getTicketsByPanel, toggleEditBoard } from '../redux/actionCreators.js';
-import CreatePanel from './CreatePanel.jsx';
-import EditBoard from './EditBoard.jsx';
 import Panel from './Panel.jsx';
+import CreateBoard from './CreateBoard.jsx';
+import CreatePanel from './CreatePanel.jsx';
+import CreateTicket from './CreateTicket.jsx';
+import EditBoard from './EditBoard.jsx';
 import EditPanel from './EditPanel.jsx';
 import EditTicket from './EditTicket.jsx';
-import CreateTicket from './CreateTicket.jsx';
 
 const Board = (props) => {
   let settings = {
@@ -41,10 +42,11 @@ const Board = (props) => {
 
   return (  
     <div>
+      <CreateBoard />
       <CreatePanel />
+      <CreateTicket />
       <EditBoard />
       <EditPanel />
-      <CreateTicket />
       <EditTicket />
       <NavItem className="boardName" style={boardNameStyle} eventKey={1} onClick={() => {
         props.handleEditBoardRendered();}}>

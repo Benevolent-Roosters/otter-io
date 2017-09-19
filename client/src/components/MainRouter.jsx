@@ -7,9 +7,8 @@ import Board from './Board.jsx';
 var Main = (props) => (
   <div id='routes'>
     <Switch>
-      <Route exact path='/' component={App} />
-      <Route path='/boards/:id' component={App} />
-      <Route path='/*' component={App} />
+      <Route exact path='/' component={Board} />
+      <Route path='/boards/:id' component={Board} />
     </Switch>
  </div> 
 )
