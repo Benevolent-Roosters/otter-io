@@ -7,12 +7,13 @@ import { ConnectedRouter } from 'react-router-redux';
 
 import App from './components/app.jsx';
 
-import store, { history } from './redux/store.js';
+import store from './redux/store.js';
+import { history } from './redux/store.js';
 
 ReactDOM.render(
 
   <Provider store={store}>
-    <ConnectedRouter history = {history}>
+    <ConnectedRouter history={history}>
       <MuiThemeProvider>
         <App />
       </MuiThemeProvider>

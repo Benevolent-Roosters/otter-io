@@ -130,12 +130,12 @@ class CreateTicket extends React.Component {
 
 const mapStateToProps = state => {
   return {
-    userId: state.user.id, 
-    userHandle: state.user.github_handle,
-    currentBoardId: state.currentBoard.id, 
-    currentPanel: state.currentPanel,
-    panels: state.panels,
-    createTicketRendered: state.createTicketRendered
+    userId: state.rootReducer.user.id, 
+    userHandle: state.rootReducer.user.github_handle,
+    currentBoardId: state.rootReducer.currentBoard.id, 
+    currentPanel: state.rootReducer.currentPanel,
+    panels: state.rootReducer.panels,
+    createTicketRendered: state.rootReducer.createTicketRendered
   };
 };
 

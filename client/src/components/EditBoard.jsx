@@ -79,10 +79,10 @@ class EditBoard extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    'boards': state.boards,
-    'currentBoard': state.currentBoard,
-    'editBoardRendered': state.editBoardRendered,
-    'owner_id': state.user.id
+    'boards': state.rootReducer.boards,
+    'currentBoard': state.rootReducer.currentBoard,
+    'editBoardRendered': state.rootReducer.editBoardRendered,
+    'owner_id': state.rootReducer.user.id
   };
 };
 

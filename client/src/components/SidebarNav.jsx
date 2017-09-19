@@ -4,6 +4,7 @@ import { setCurrentBoard, toggleDrawer, toggleCreateBoard, getPanelsByBoard, get
 import { GridList, GridTile, Drawer } from 'material-ui';
 import { Thumbnail, Image, Button } from 'react-bootstrap';
 import moment from 'moment';
+import { Link } from 'react-router-dom';
 
 let counter = 0; 
 
@@ -103,8 +104,15 @@ const SidebarNavigation = (props) => {
         <Button style={styles.createBoardButton} bsSize='large' bsStyle='primary' onClick={(open) => {props.handleToggledDrawer(open); props.handleCreateBoardRendered();}}>Create Board</Button>
 
         <GridList style={styles.gridList} cols={1} padding={15}>
-          {props.boards.map((board) => 
-            <GridTile style={{marginLeft: '15px', marginRight: '15px', backgroundColor: getRandomColor()}} key={board.id} title={board.board_name} onClick={() => { onBoardClick(board.id); props.handleSetCurrentBoard(board); props.handleToggledDrawer();}}> </GridTile>)}
+          {props.boards.map(board => 
+            <Link to={`/boards/${board.id}`}>
+              <GridTile style={{marginLeft: '15px', marginRight: '15px', backgroundColor: getRandomColor()}} 
+                key={board.id} title={board.board_name} 
+                onClick={() => { onBoardClick(board.id); props.handleSetCurrentBoard(board); props.handleToggledDrawer();}}> 
+              </GridTile>
+            </Link>
+            )
+          }
         </GridList>
 
       </Drawer>
@@ -114,11 +122,11 @@ const SidebarNavigation = (props) => {
 
 const mapStateToProps = (state) => {
   return {
-    'gitHandle': state.user.github_handle,
-    'profilePicture': state.user.profile_photo,
-    'boards': state.boards,
-    'currentBoard': state.currentBoard,
-    'drawerToggled': state.drawerToggled
+    'gitHandle': state.rootReducer.user.github_handle,
+    'profilePicture': state.rootReducer.user.profile_photo,
+    'boards': state.rootReducer.boards,
+    'currentBoard': state.rootReducer.currentBoard,
+    'drawerToggled': state.rootReducer.drawerToggled
   };
 };
 

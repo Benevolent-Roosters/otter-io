@@ -87,17 +87,17 @@ class App extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    user: state.user,
-    boards: state.boards,
-    panels: state.panels,
-    tickets: state.tickets,
-    currentBoard: state.currentBoard,
-    currentPanel: state.currentPanel,
-    createBoardRendered: state.createBoardRendered,
-    editBoardRendered: state.editBoardRendered,
-    createTicketRendered: state.createTicketRendered,
-    editTicketRendered: state.editTicketRendered,
-    createPanelRendered: state.createPanelRendered
+    user: state.rootReducer.user,
+    boards: state.rootReducer.boards,
+    panels: state.rootReducer.panels,
+    tickets: state.rootReducer.tickets,
+    currentBoard: state.rootReducer.currentBoard,
+    currentPanel: state.rootReducer.currentPanel,
+    createBoardRendered: state.rootReducer.createBoardRendered,
+    editBoardRendered: state.rootReducer.editBoardRendered,
+    createTicketRendered: state.rootReducer.createTicketRendered,
+    editTicketRendered: state.rootReducer.editTicketRendered,
+    createPanelRendered: state.rootReducer.createPanelRendered
   };
 };
 

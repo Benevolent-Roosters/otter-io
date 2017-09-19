@@ -159,14 +159,14 @@ class EditTicket extends React.Component {
 
 const mapStateToProps = state => {
   return {
-    userId: state.user.id,
-    userHandle: state.user.github_handle, //double check what userid key actually is named
-    currentBoardId: state.currentBoard.id, //double check what userid key actually is named,
-    currentPanel: state.currentPanel,
-    panels: state.panels,
-    tickets: state.tickets,
-    editTicketRendered: state.editTicketRendered,
-    currentTicket: state.currentTicket
+    userId: state.rootReducer.user.id,
+    userHandle: state.rootReducer.user.github_handle, //double check what userid key actually is named
+    currentBoardId: state.rootReducer.currentBoard.id, //double check what userid key actually is named,
+    currentPanel: state.rootReducer.currentPanel,
+    panels: state.rootReducer.panels,
+    tickets: state.rootReducer.tickets,
+    editTicketRendered: state.rootReducer.editTicketRendered,
+    currentTicket: state.rootReducer.currentTicket
   };
 };
 

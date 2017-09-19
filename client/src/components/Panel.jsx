@@ -23,10 +23,10 @@ const Panel = props => {
 //NOTE: most likely NOT necessary if upon entering new board we navigate to new route, because navigating to new route will re-render app (we think).
 const mapStateToProps = (state) => {
   return {
-    'currentBoardId': state.currentBoard.boardid,
-    'currentPanel': state.currentPanel,
-    'tickets': state.tickets,
-    'createTicketRendered': state.createTicketRendered
+    'currentBoardId': state.rootReducer.currentBoard.boardid,
+    'currentPanel': state.rootReducer.currentPanel,
+    'tickets': state.rootReducer.tickets,
+    'createTicketRendered': state.rootReducer.createTicketRendered
   };
 };
 

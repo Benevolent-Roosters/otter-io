@@ -66,11 +66,11 @@ class CreateBoard extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    'boards': state.boards,
-    'currentBoard': state.currentBoard,
-    'createBoardRendered': state.createBoardRendered,
-    'boardBeingCreated': state.boardBeingCreated,
-    'owner_id': state.user.id
+    'boards': state.rootReducer.boards,
+    'currentBoard': state.rootReducer.currentBoard,
+    'createBoardRendered': state.rootReducer.createBoardRendered,
+    'boardBeingCreated': state.rootReducer.boardBeingCreated,
+    'owner_id': state.rootReducer.user.id
   };
 };
 
