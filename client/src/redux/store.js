@@ -1,8 +1,8 @@
-import rootReducer from './reducers';
 import { createStore, compose, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import createHistory from 'history/createBrowserHistory';
 import { routerMiddleware } from 'react-router-redux';
+import combinedReducers from './reducers.js';
 
 export const history = createHistory();
 
@@ -13,13 +13,10 @@ const middleware  =[
   routerMiddleware(history)
 ];
 
+const devToolsExtension = window.devToolsExtension;
 
-if (process.env.NODE_ENV === 'development') {
-  const devToolsExtension = window.devToolsExtension;
-
-  if (typeof devToolsExtension === 'function') {
-    enhancers.push(devToolsExtension());
-  }
+if (typeof devToolsExtension === 'function') {
+  enhancers.push(devToolsExtension());
 }
 
 const composedEnhancers = compose(
@@ -28,7 +25,7 @@ const composedEnhancers = compose(
 )
 
 const store = createStore(
-  rootReducer,
+  combinedReducers,
   initialState,
   composedEnhancers
 );

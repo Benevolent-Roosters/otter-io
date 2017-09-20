@@ -6,7 +6,7 @@
     "test": "NODE_ENV=test grunt test",
     "testUpdate": "jest -u NODE_ENV=test grunt test",
     "build": "webpack --watch",
-    "deploy": "webpack && pm2 restart all"
+    "deploy": "git pull && webpack && pm2 restart all"
   },
   "author": "Hack Reactor",
   "license": "MIT",
@@ -30,6 +30,7 @@
     "express-session": "^1.15.1",
     "file-loader": "^0.11.2",
     "grunt-pg": "https://github.com/watsoncj/grunt-pg.git",
+    "history": "^4.7.2",
     "knex": "^0.12.9",
     "knex-cli": "^1.0.2",
     "material-ui": "^0.19.1",
@@ -47,7 +48,9 @@
     "react-bootstrap": "^0.31.3",
     "react-dom": "^15.4.2",
     "react-redux": "^5.0.6",
-    "react-router-redux": "4.0.8",
+    "react-router": "^4.2.0",
+    "react-router-dom": "^4.2.2",
+    "react-router-redux": "next",
     "react-slick": "^0.15.4",
     "redis": "^2.7.1",
     "redux": "^3.7.2",

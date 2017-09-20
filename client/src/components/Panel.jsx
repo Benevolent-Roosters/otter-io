@@ -38,13 +38,12 @@ const Panel = props => {
   );
 };
 
-//NOTE: most likely NOT necessary if upon entering new board we navigate to new route, because navigating to new route will re-render app (we think).
 const mapStateToProps = (state) => {
   return {
-    'currentBoardId': state.currentBoard.boardid,
-    'currentPanel': state.currentPanel,
-    'tickets': state.tickets,
-    'createTicketRendered': state.createTicketRendered
+    'currentBoardId': state.rootReducer.currentBoard.boardid,
+    'currentPanel': state.rootReducer.currentPanel,
+    'tickets': state.rootReducer.tickets,
+    'createTicketRendered': state.rootReducer.createTicketRendered
   };
 };
 
@@ -70,25 +69,3 @@ const mapDispatchToProps = (dispatch) => {
 
 export var UnwrappedPanel = Panel;
 export default connect(mapStateToProps, mapDispatchToProps)(Panel);
-
-// props.tickets.map((ticket) => {
-//   return <Ticket/>
-// })
-
-    // <div>
-    //   <Modal.Dialog bsSize="small" aria-labelledby="contained-modal-title-sm">
-    //     <Modal.Header style={{backgroundColor: '#7ED321'}}>
-    //       <Modal.Title style={{color: 'white'}}>
-    //         <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginRight: '20px'}}>
-    //           <div>
-    //             <h3>Sprint 3</h3>
-    //             <DatePicker textFieldStyle= {{fontFamily: 'Avenir Next', color: 'white', fontSize: '20px'}} hintText={'Select a Due Date'} /**defaultDate={/**props.currentPanel.dueDate}**/></DatePicker>
-    //           </div>
-    //             <Button bsStyle="primary" style={{float: 'right'}} onClick={props.handleEditPanelRendered}>Edit Panel</Button>
-    //         </div>
-    //       </Modal.Title>
-    //     </Modal.Header>
-    //     <Modal.Body>
-    //       </Modal.Body>
-    //   </Modal.Dialog>
-    // </div>

@@ -3,8 +3,8 @@ import { getTicketsByPanel, toggleCreateTicket, postCreatedTicket } from '../red
 import { connect } from 'react-redux';
 import { Modal, Form, FormGroup, FormControl, Button, ControlLabel, Grid, Col, Row, DropdownButton, MenuItem, ButtonToolbar } from 'react-bootstrap';
 
-let buttonStyle = {marginTop: '15px', marginRight: '15px'};
-let dropDownStyle = {marginTop: '15px'};
+const buttonStyle = {marginTop: '15px', marginRight: '15px'};
+const dropDownStyle = {marginTop: '15px'};
 
 class CreateTicket extends React.Component {
   constructor(props) {
@@ -65,7 +65,6 @@ class CreateTicket extends React.Component {
   }
 
   render() {
-    /*NOTE: Once we hook everything together, MenuItem will be created by mapping over the store's users, ticket types, ticket priorities, and store's panels */
     return (
       <div>
         <Grid>
@@ -130,12 +129,12 @@ class CreateTicket extends React.Component {
 
 const mapStateToProps = state => {
   return {
-    userId: state.user.id, 
-    userHandle: state.user.github_handle,
-    currentBoardId: state.currentBoard.id, 
-    currentPanel: state.currentPanel,
-    panels: state.panels,
-    createTicketRendered: state.createTicketRendered
+    userId: state.rootReducer.user.id, 
+    userHandle: state.rootReducer.user.github_handle,
+    currentBoardId: state.rootReducer.currentBoard.id, 
+    currentPanel: state.rootReducer.currentPanel,
+    panels: state.rootReducer.panels,
+    createTicketRendered: state.rootReducer.createTicketRendered
   };
 };
 

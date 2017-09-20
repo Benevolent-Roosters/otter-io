@@ -69,9 +69,9 @@ class CreatePanel extends React.Component {
 
 const mapStateToProps = state => {
   return {
-    userId: state.user.userid, //double check what userid key actually is named
-    currentBoardId: state.currentBoard.id, //double check what userid key actually is named
-    createPanelRendered: state.createPanelRendered 
+    userId: state.rootReducer.user.userid,
+    currentBoardId: state.rootReducer.currentBoard.id,
+    createPanelRendered: state.rootReducer.createPanelRendered 
   };
 };
 

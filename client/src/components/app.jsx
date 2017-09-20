@@ -1,28 +1,20 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import { getUserInfo, getBoardsByUser, getPanelsByBoard, getTicketsByPanel, setCurrentPanel, setCurrentBoard, toggleDrawer, toggleCreateBoard, toggleEditBoard, toggleCreateTicket, toggleEditTicket, toggleCreatePanel } from '../redux/actionCreators.js';
-
 import axios from 'axios';
 import moment from 'moment';
-import CreatePanel from './CreatePanel.jsx';
-import Board from './Board.jsx';
-import SidebarNavigation from './SidebarNav.jsx';
-import PerformanceDashboard from './PerformanceDashboard.jsx';
-import Panel from './Panel.jsx';
-import CreateBoard from './CreateBoard.jsx';
-import EditBoard from './EditBoard.jsx';
-import CreateTicket from './CreateTicket.jsx';
-import EditTicket from './EditTicket.jsx';
+import { connect } from 'react-redux';
 import { Button } from 'react-bootstrap';
-import EditPanel from './EditPanel.jsx';
 
-let iconStyle = {
+import Board from './Board.jsx';
+import MainRouter from './MainRouter.jsx';
+import SidebarNavigation from './SidebarNav.jsx';
+import { getUserInfo, getBoardsByUser, getPanelsByBoard, getTicketsByPanel, setCurrentPanel, setCurrentBoard, toggleDrawer, toggleCreateBoard, toggleEditBoard, toggleCreateTicket, toggleEditTicket, toggleCreatePanel } from '../redux/actionCreators.js';
+
+const iconStyle = {
   position: 'absolute',
   top: '20px',
   left: '20px',
   backgroundColor: 'white'
 };
-
 
 class App extends React.Component {
   constructor(props) {
@@ -46,7 +38,6 @@ class App extends React.Component {
     });
   }
 
-
   findCurrentPanel(panels) {
     let dueDates = panels.map(panel => panel.due_date.slice(0, 10));
     let closest = 0;
@@ -59,43 +50,31 @@ class App extends React.Component {
   }
 
   render() {
-    let boardStyle = {
-      width: '100%',
-      height: '750px',
-
-    }
     return (
       <div>
-      <div>
-        <Button bsStyle="primary" onClick={this.props.handleCreatePanelRendered}>Create Panel</Button>
-        <Button style={iconStyle}><img src={require('../images/menu.png')} onClick={this.props.handleToggleDrawer}/></Button>
-        <SidebarNavigation/>
-        <PerformanceDashboard/>
-        <CreateBoard/>
-        <EditBoard/>
-        <CreateTicket/>
-        <EditTicket/>
-        <CreatePanel/>
-        <EditPanel/>
+        <div>
+          <Button style={iconStyle}><img src={require('../images/menu.png')} onClick={this.props.handleToggleDrawer}/></Button>
+          <SidebarNavigation/>
+          <MainRouter />
+        </div>
       </div>
-        <div style={{width: window.innerWidth - 100 }}><Board style={boardStyle}/></div></div>
     );
   } 
 }
 
 const mapStateToProps = (state) => {
   return {
-    user: state.user,
-    boards: state.boards,
-    panels: state.panels,
-    tickets: state.tickets,
-    currentBoard: state.currentBoard,
-    currentPanel: state.currentPanel,
-    createBoardRendered: state.createBoardRendered,
-    editBoardRendered: state.editBoardRendered,
-    createTicketRendered: state.createTicketRendered,
-    editTicketRendered: state.editTicketRendered,
-    createPanelRendered: state.createPanelRendered
+    user: state.rootReducer.user,
+    boards: state.rootReducer.boards,
+    panels: state.rootReducer.panels,
+    tickets: state.rootReducer.tickets,
+    currentBoard: state.rootReducer.currentBoard,
+    currentPanel: state.rootReducer.currentPanel,
+    createBoardRendered: state.rootReducer.createBoardRendered,
+    editBoardRendered: state.rootReducer.editBoardRendered,
+    createTicketRendered: state.rootReducer.createTicketRendered,
+    editTicketRendered: state.rootReducer.editTicketRendered,
+    createPanelRendered: state.rootReducer.createPanelRendered
   };
 };
 
@@ -118,9 +97,6 @@ const mapDispatchToProps = (dispatch) => {
     },
     handleToggleDrawer() {
       dispatch(toggleDrawer());
-    },
-    handleEditBoardRendered() {
-      dispatch(toggleEditBoard());
     },
     handleCreateTicketRendered() {
       dispatch(toggleCreateTicket());

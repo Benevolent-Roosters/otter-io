@@ -3,7 +3,7 @@ import { putEditedBoard, editBoards, toggleEditBoard } from '../redux/actionCrea
 import { connect } from 'react-redux';
 import { Modal, Form, FormGroup, FormControl, Button, ControlLabel, Grid, Col, Row } from 'react-bootstrap';
 
-let buttonStyle = {marginTop: '15px', marginRight: '15px'};
+const buttonStyle = {marginTop: '15px', marginRight: '15px'};
 
 class EditBoard extends React.Component {
   constructor(props) {
@@ -46,7 +46,7 @@ class EditBoard extends React.Component {
         <Grid>
           <Col sm={12}>
             <Row>
-              <Modal show={this.props.editBoardRendered ? true : false}>
+              <Modal show={this.props.editBoardRendered}>
                 <Modal.Header bsSize='large' style={{backgroundColor: '#7ED321'}}>
                   <Modal.Title style={{color: 'white'}}>Edit Board</Modal.Title>
                   </Modal.Header>
@@ -79,10 +79,10 @@ class EditBoard extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    'boards': state.boards,
-    'currentBoard': state.currentBoard,
-    'editBoardRendered': state.editBoardRendered,
-    'owner_id': state.user.id
+    'boards': state.rootReducer.boards,
+    'currentBoard': state.rootReducer.currentBoard,
+    'editBoardRendered': state.rootReducer.editBoardRendered,
+    'owner_id': state.rootReducer.user.id
   };
 };
 

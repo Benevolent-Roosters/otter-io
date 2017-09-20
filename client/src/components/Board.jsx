@@ -1,15 +1,20 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import Panel from './Panel.jsx';
-import { getPanelsByBoard, getTicketsByPanel, toggleEditBoard } from '../redux/actionCreators.js';
 import { Carousel, Button, NavItem } from 'react-bootstrap';
 import Slider from 'react-slick';
 import PrevArrow from 'react-slick';
 import '../../../ticketStyle.css';
 
+import { getPanelsByBoard, getTicketsByPanel, toggleEditBoard, toggleCreatePanel } from '../redux/actionCreators.js';
+import Panel from './Panel.jsx';
+import CreateBoard from './CreateBoard.jsx';
+import CreatePanel from './CreatePanel.jsx';
+import CreateTicket from './CreateTicket.jsx';
+import EditBoard from './EditBoard.jsx';
+import EditPanel from './EditPanel.jsx';
+import EditTicket from './EditTicket.jsx';
 
 const Board = (props) => {
-  // let boardPanels = props.handleGetPanelsByBoard(props.panels);
   let settings = {
     slidesToShow: 3,
     slidesToScroll: 1,
@@ -21,7 +26,6 @@ const Board = (props) => {
     initialSlide: 3,
     useCSS: true,
     slickGoTo: 3
-    /*currentSlide: props.currentPanel*/
   };
 
   const panelStyle = {
@@ -36,26 +40,32 @@ const Board = (props) => {
     listStyle: 'none',
   };
 
-  return (
-      <div>
-        <NavItem className="boardName" style={boardNameStyle} eventKey={1} onClick={() => {
-          props.handleEditBoardRendered();}}>
-          {props.currentBoard.board_name}
-        </NavItem> 
-        <Slider {...settings}>
-          {props.panels.map(panel => 
-          <div><Panel panelInfo={panel} key={panel.id} style={panelStyle}/></div>)}
-        </Slider>
-      </div>
+  return (  
+    <div>
+      <CreateBoard />
+      <CreatePanel />
+      <CreateTicket />
+      <EditBoard />
+      <EditPanel />
+      <EditTicket />
+      <NavItem className="boardName" style={boardNameStyle} eventKey={1} onClick={() => {
+        props.handleEditBoardRendered();}}>
+        {props.currentBoard.board_name}
+      </NavItem> 
+      <Button onClick={() => props.handleCreatePanelRendered()}>Create Panel</Button>
+      <Slider {...settings}>
+        {props.panels.map(panel => 
+        <div><Panel panelInfo={panel} key={panel.id} style={panelStyle}/></div>)}
+      </Slider>
+    </div>
   );
 };
 
-//NOTE: most likely NOT necessary if upon entering new board we navigate to new route, because navigating to new route will re-render app (we think).
 const mapStateToProps = (state) => {
   return {
-    'currentBoard': state.currentBoard,
-    'panels': state.panels,
-    'currentPanel': state.currentPanel
+    'currentBoard': state.rootReducer.currentBoard,
+    'panels': state.rootReducer.panels,
+    currentPanel: state.rootReducer.currentPanel
   };
 };
 
@@ -69,6 +79,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     handleEditBoardRendered() {
       dispatch(toggleEditBoard());
+    },
+    handleCreatePanelRendered() {
+      dispatch(toggleCreatePanel());
     }
   };
 };

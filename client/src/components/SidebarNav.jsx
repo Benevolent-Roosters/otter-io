@@ -4,6 +4,7 @@ import { setCurrentBoard, toggleDrawer, toggleCreateBoard, getPanelsByBoard, get
 import { GridList, GridTile, Drawer } from 'material-ui';
 import { Thumbnail, Image, Button } from 'react-bootstrap';
 import moment from 'moment';
+import { Link } from 'react-router-dom';
 
 let counter = 0; 
 
@@ -98,13 +99,20 @@ const SidebarNavigation = (props) => {
       <Drawer containerStyle={{backgroundColor: '#ffffff'}} docked={false} open={props.drawerToggled} onRequestChange={(open) => props.handleToggledDrawer(open)}>
         <Thumbnail href="#" style={styles.profileImage} src={require('../images/business-person-silhouette-wearing-tie.png')} />
 
-        <h3 style={{textAlign: 'center', marginBottom: '15px'}}>@dsc03</h3>
+        <h3 style={{textAlign: 'center', marginBottom: '15px'}}>@{props.gitHandle}</h3>
 
         <Button style={styles.createBoardButton} bsSize='large' bsStyle='primary' onClick={(open) => {props.handleToggledDrawer(open); props.handleCreateBoardRendered();}}>Create Board</Button>
 
         <GridList style={styles.gridList} cols={1} padding={15}>
-          {props.boards.map((board) => 
-            <GridTile style={{marginLeft: '15px', marginRight: '15px', backgroundColor: getRandomColor()}} key={board.id} title={board.board_name} onClick={() => { onBoardClick(board.id); props.handleSetCurrentBoard(board); props.handleToggledDrawer();}}> </GridTile>)}
+          {props.boards.map(board => 
+            <Link to={`/boards/${board.id}`}>
+              <GridTile style={{marginLeft: '15px', marginRight: '15px', backgroundColor: getRandomColor()}} 
+                key={board.id} title={board.board_name} 
+                onClick={() => { onBoardClick(board.id); props.handleSetCurrentBoard(board); props.handleToggledDrawer();}}> 
+              </GridTile>
+            </Link>
+            )
+          }
         </GridList>
 
       </Drawer>
@@ -114,11 +122,11 @@ const SidebarNavigation = (props) => {
 
 const mapStateToProps = (state) => {
   return {
-    'gitHandle': state.user.github_handle,
-    'profilePicture': state.user.profile_photo,
-    'boards': state.boards,
-    'currentBoard': state.currentBoard,
-    'drawerToggled': state.drawerToggled
+    'gitHandle': state.rootReducer.user.github_handle,
+    'profilePicture': state.rootReducer.user.profile_photo,
+    'boards': state.rootReducer.boards,
+    'currentBoard': state.rootReducer.currentBoard,
+    'drawerToggled': state.rootReducer.drawerToggled
   };
 };
 
@@ -153,7 +161,3 @@ const mapDispatchToProps = (dispatch) => {
 
 export var UnwrappedSidebar = SidebarNavigation;
 export default connect(mapStateToProps, mapDispatchToProps)(SidebarNavigation);
-
-// {props.boards.map((board) => {
-//   return <GridTile key={require('../images/menu.png')} title={'Cheese Pizza'}></GridTile>;
-// })}

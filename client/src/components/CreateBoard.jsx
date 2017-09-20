@@ -3,7 +3,7 @@ import { setCurrentBoard, setBoards, postCreatedBoard, toggleCreateBoard } from 
 import { connect } from 'react-redux';
 import { Modal, Form, FormGroup, FormControl, Button, ControlLabel, Grid, Col, Row } from 'react-bootstrap';
 
-let buttonStyle = {marginTop: '15px', marginRight: '15px'};
+const buttonStyle = {marginTop: '15px', marginRight: '15px'};
 
 class CreateBoard extends React.Component {
   constructor(props) {
@@ -66,11 +66,11 @@ class CreateBoard extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    'boards': state.boards,
-    'currentBoard': state.currentBoard,
-    'createBoardRendered': state.createBoardRendered,
-    'boardBeingCreated': state.boardBeingCreated,
-    'owner_id': state.user.id
+    'boards': state.rootReducer.boards,
+    'currentBoard': state.rootReducer.currentBoard,
+    'createBoardRendered': state.rootReducer.createBoardRendered,
+    'boardBeingCreated': state.rootReducer.boardBeingCreated,
+    'owner_id': state.rootReducer.user.id
   };
 };
 
