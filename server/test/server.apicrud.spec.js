@@ -340,7 +340,7 @@ describe('CRUD API authorization', function () {
       });
   });
 
-  it('rejects unauthorized GET requests to /api/boards/:id/invite for boards that user doesnt own', function(done) {
+  it('rejects unauthorized GET requests to /api/boards/:id for boards that user doesnt own', function(done) {
     agent.get('/auth/fake')
       .then((res) => {
         return agent.get('/api/boards/2/')
@@ -357,6 +357,53 @@ describe('CRUD API authorization', function () {
       });
   });
 
+  it('rejects unauthorized GET requests to /api/boards/:id/invite for boards that user isnt owner of', function(done) {
+    agent.get('/auth/fake')
+      .then((res) => {
+        return agent.get('/api/boards/2/invite');
+      })
+      .then((res) => {
+        expect(res.status).to.equal(401);
+        done();
+      })
+      .catch((err) => {
+        return done(err);
+      });
+  });
+
+  it('rejects unauthorized POST requests to /api/boards/:id/invite for boards that user isnt owner of', function(done) {
+    agent.get('/auth/fake')
+      .then((res) => {
+        return agent.post('/api/boards/2/invite')
+          .send({
+            user_emails: ['newnew@aol.com']
+          });
+      })
+      .then((res) => {
+        expect(res.status).to.equal(401);
+        done();
+      })
+      .catch((err) => {
+        return done(err);
+      });
+  });
+
+  it('rejects unauthorized DELETE requests to /api/boards/:id/invite for boards that user isnt owner of', function(done) {
+    agent.get('/auth/fake')
+      .then((res) => {
+        return agent.delete('/api/boards/2/invite')
+          .send({
+            user_emails: ['newnew@aol.com']
+          });
+      })
+      .then((res) => {
+        expect(res.status).to.equal(401);
+        done();
+      })
+      .catch((err) => {
+        return done(err);
+      });
+  });
 });
 
 describe('CRUD API boards', function () {
@@ -1406,4 +1453,336 @@ describe('Profile route', function () {
   });
 });
 
+describe('Invite API routes', function () {
+  beforeEach(function (done) {
+    authenticated = request(app);
+    agent = request.agent(app);
+    knex('knex_migrations_lock').where('is_locked', '1').del()
+      .then(() => {
+        dbUtils.rollbackMigrate(done);
+      });
+  });
 
+  // Resets database back to original settings
+  afterEach(function (done) {
+    knex('knex_migrations_lock').where('is_locked', '1').del()
+      .then(() => {
+        dbUtils.rollback(done);
+      });
+  });
+
+  it('GET request to /api/boards/:id/invite should initially be empty array', function(done) {
+    agent.get('/auth/fake')
+      .then((res) => {
+        return agent.get('/api/boards/1/invite');
+      })
+      .then((res) => {
+        expect(res.status).to.equal(200);
+        expect(res.body.length).to.equal(0);
+        done();
+      })
+      .catch((err) => {
+        return done(err);
+      });
+  });
+
+  it('accepts GET and POST requests to /api/boards/:id/invite to invite 1 non-verified person and see 1 invitees', function(done) {
+    agent.get('/auth/fake')
+      .then((res) => {
+        return agent.get('/api/boards/1/invite');
+      })
+      .then((res) => {
+        expect(res.status).to.equal(200);
+        expect(res.body.length).to.equal(0);
+        return agent.post('/api/boards/1/invite')
+          .send({user_emails: ['newnew@aol.com']});
+      })
+      .then((res) => {
+        expect(res.status).to.equal(201);
+        expect(res.body.length).to.equal(1);
+        expect(res.body[0][0]['1']).to.exist;
+        return agent.get('/api/boards/1/invite');
+      })
+      .then((res) => {
+        expect(res.status).to.equal(200);
+        expect(res.body.length).to.equal(1);
+        expect(res.body[0].email).to.equal('newnew@aol.com');
+        expect(res.body[0].github_handle).to.equal('newnew@aol.com');
+        return agent.get('/api/boards/1/members');
+      })
+      .then((res) => {
+        expect(res.status).to.equal(200);
+        expect(res.body.length).to.equal(1);
+        done();
+      })
+      .catch((err) => {
+        return done(err);
+      });
+  });
+  it('accepts GET and POST requests to /api/boards/:id/invite to invite 1 verified person and see 0 invitees', function(done) {
+    agent.get('/auth/fake')
+      .then((res) => {
+        return agent.get('/api/boards/1/invite');
+      })
+      .then((res) => {
+        expect(res.status).to.equal(200);
+        expect(res.body.length).to.equal(0);
+        return agent.post('/api/boards/1/invite')
+          .send({user_emails: ['blah2@aol.com']});
+      })
+      .then((res) => {
+        expect(res.status).to.equal(201);
+        expect(res.body[0][0]['1']).to.exist;
+        return agent.get('/api/boards/1/invite');
+      })
+      .then((res) => {
+        expect(res.status).to.equal(200);
+        expect(res.body.length).to.equal(0);
+        return agent.get('/api/boards/1/members');
+      })
+      .then((res) => {
+        expect(res.status).to.equal(200);
+        expect(res.body.length).to.equal(2);
+        expect(res.body[1].github_handle).to.equal('stevepkuo2');
+        done();
+      })
+      .catch((err) => {
+        return done(err);
+      });
+  });
+  it('accepts GET and POST requests to /api/boards/:id/invite to invite 1 verified person who is already a member and see 0 invitees', function(done) {
+    agent.get('/auth/fake')
+      .then((res) => {
+        return agent.post('/api/boards/1/members')
+          .send({user_id: 2});
+      })
+      .then((res) => {
+        expect(res.status).to.equal(201);
+        return agent.get('/api/boards/1/invite');
+      })
+      .then((res) => {
+        expect(res.status).to.equal(200);
+        expect(res.body.length).to.equal(0);
+        return agent.post('/api/boards/1/invite')
+          .send({user_emails: ['blah2@aol.com']});
+      })
+      .then((res) => {
+        expect(res.status).to.equal(201);
+        expect(res.body[0]).to.equal('already member');
+        return agent.get('/api/boards/1/invite');
+      })
+      .then((res) => {
+        expect(res.status).to.equal(200);
+        expect(res.body.length).to.equal(0);
+        return agent.get('/api/boards/1/members');
+      })
+      .then((res) => {
+        expect(res.status).to.equal(200);
+        expect(res.body.length).to.equal(2);
+        expect(res.body[1].github_handle).to.equal('stevepkuo2');
+        done();
+      })
+      .catch((err) => {
+        return done(err);
+      });
+  });
+  it('accepts GET and POST requests to /api/boards/:id/invite to invite 1 non-verified person who is already invited and see 1 invitees', function(done) {
+    agent.get('/auth/fake')
+      .then((res) => {
+        return agent.get('/api/boards/1/invite');
+      })
+      .then((res) => {
+        expect(res.status).to.equal(200);
+        expect(res.body.length).to.equal(0);
+        return agent.post('/api/boards/1/invite')
+          .send({user_emails: ['newnew@aol.com']});
+      })
+      .then((res) => {
+        expect(res.status).to.equal(201);
+        expect(res.body.length).to.equal(1);
+        expect(res.body[0][0]['1']).to.exist;
+        return agent.post('/api/boards/1/invite')
+          .send({user_emails: ['newnew@aol.com']});
+      })
+      .then((res) => {
+        expect(res.status).to.equal(201);
+        expect(res.body.length).to.equal(1);
+        expect(res.body[0]).to.equal('duplicate invite');
+        return agent.get('/api/boards/1/invite');
+      })
+      .then((res) => {
+        expect(res.status).to.equal(200);
+        expect(res.body.length).to.equal(1);
+        expect(res.body[0].email).to.equal('newnew@aol.com');
+        expect(res.body[0].github_handle).to.equal('newnew@aol.com');
+        return agent.get('/api/boards/1/members');
+      })
+      .then((res) => {
+        expect(res.status).to.equal(200);
+        expect(res.body.length).to.equal(1);
+        done();
+      })
+      .catch((err) => {
+        return done(err);
+      });
+  });
+  it('accepts GET and POST requests to /api/boards/:id/invite to invite 1 non-verified, 1 verified person who is already member and see 1 invitees', function(done) {
+    agent.get('/auth/fake')
+      .then((res) => {
+        return agent.get('/api/boards/1/invite');
+      })
+      .then((res) => {
+        expect(res.status).to.equal(200);
+        expect(res.body.length).to.equal(0);
+        return agent.post('/api/boards/1/invite')
+          .send({user_emails: ['newnew@aol.com', 'blah@aol.com']});
+      })
+      .then((res) => {
+        expect(res.status).to.equal(201);
+        expect(res.body.length).to.equal(2);
+        expect(res.body[0][0]['1']).to.exist;
+        expect(res.body[1]).to.equal('already member');
+        return agent.get('/api/boards/1/invite');
+      })
+      .then((res) => {
+        expect(res.status).to.equal(200);
+        expect(res.body.length).to.equal(1);
+        expect(res.body[0].email).to.equal('newnew@aol.com');
+        expect(res.body[0].github_handle).to.equal('newnew@aol.com');
+        return agent.get('/api/boards/1/members');
+      })
+      .then((res) => {
+        expect(res.status).to.equal(200);
+        expect(res.body.length).to.equal(1);
+        done();
+      })
+      .catch((err) => {
+        return done(err);
+      });
+  });
+  it('accepts DELETE requests to /api/boards/:id/invite to invite/uninvite 1 non-verified person', function(done) {
+    agent.get('/auth/fake')
+      .then((res) => {
+        return agent.get('/api/boards/1/invite');
+      })
+      .then((res) => {
+        expect(res.status).to.equal(200);
+        expect(res.body.length).to.equal(0);
+        return agent.post('/api/boards/1/invite')
+          .send({user_emails: ['newnew@aol.com']});
+      })
+      .then((res) => {
+        expect(res.status).to.equal(201);
+        expect(res.body.length).to.equal(1);
+        expect(res.body[0][0]['1']).to.exist;
+        return agent.get('/api/boards/1/invite');
+      })
+      .then((res) => {
+        expect(res.status).to.equal(200);
+        expect(res.body.length).to.equal(1);
+        expect(res.body[0].email).to.equal('newnew@aol.com');
+        expect(res.body[0].github_handle).to.equal('newnew@aol.com');
+        return agent.get('/api/boards/1/members');
+      })
+      .then((res) => {
+        expect(res.status).to.equal(200);
+        expect(res.body.length).to.equal(1);
+        return agent.delete('/api/boards/1/invite')
+          .send({user_handles: ['newnew@aol.com']});
+      })
+      .then((res) => {
+        expect(res.status).to.equal(201);
+        expect(res.body[0].isFulfilled).to.equal(true);
+        return agent.get('/api/boards/1/invite');
+      })
+      .then((res) => {
+        expect(res.status).to.equal(200);
+        expect(res.body.length).to.equal(0);
+        done();
+      })
+      .catch((err) => {
+        return done(err);
+      });
+  });
+  it('Invite 1 non-verified person. Person uses claim code to join the website and group.', function(done) {
+    var apiKey;
+    agent.get('/auth/fake')
+      .then((res) => {
+        return agent.get('/api/boards/1/invite');
+      })
+      .then((res) => {
+        expect(res.status).to.equal(200);
+        expect(res.body.length).to.equal(0);
+        return agent.post('/api/boards/1/invite')
+          .send({user_emails: ['newnew@aol.com']});
+      })
+      .then((res) => {
+        expect(res.status).to.equal(201);
+        expect(res.body.length).to.equal(1);
+        expect(res.body[0][0]['1']).to.exist;
+        return agent.get('/api/boards/1/invite');
+      })
+      .then((res) => {
+        expect(res.status).to.equal(200);
+        expect(res.body.length).to.equal(1);
+        expect(res.body[0].email).to.equal('newnew@aol.com');
+        expect(res.body[0].github_handle).to.equal('newnew@aol.com');
+        return agent.get('/logout');
+      })
+      .then(res => {
+        return agent.get('/auth/fake4');
+      })
+      .then(res => {
+        return agent.get('/profile');
+      })
+      .then(res => {
+        expect(res.status).to.equal(200);
+        apiKey = res.body.api_key;
+        return agent.get('/logout');
+      })
+      .then(res => {
+        return agent.get(`/signup/${apiKey}`);
+      })
+      .then(res => {
+        expect(res.status).to.equal(302);
+        return agent.get('/auth/fake2');
+      })
+      .then(res => {
+        return agent.get('/');
+      })
+      .then(res => {
+        expect(res.status).to.equal(200);
+        return agent.get('/api/boards/1/members');
+      })
+      .then((res) => {
+        expect(res.status).to.equal(200);
+        expect(res.body.length).to.equal(2);
+        expect(res.body[1].github_handle).to.equal('stevepkuo2');
+        return agent.get('/logout');
+      })
+      .then(res => {
+        return agent.get('/auth/fake');
+      })
+      .then(res => {
+        return agent.get('/api/boards/1/invite');
+      })
+      .then((res) => {
+        expect(res.status).to.equal(200);
+        expect(res.body.length).to.equal(0);
+        done();
+      })
+      .catch((err) => {
+        return done(err);
+      });
+  });
+  it('Rejects bogus claim code to join the website and group.', function(done) {
+    agent.get('/signup/fakeclaimcode')
+      .then((res) => {
+        expect(res.status).to.equal(404);
+        done();
+      })
+      .catch((err) => {
+        return done(err);
+      });
+  });
+});

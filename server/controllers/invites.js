@@ -70,6 +70,7 @@ module.exports.getInvitees = (req, res) => {
 // };
 
 //Invite by email
+//Returns an array of 'duplicate invite', 'already member', or successful invite object
 module.exports.addInvitees = (req, res) => {
   if (helper.checkUndefined(req.params.id, req.body.user_emails)) {
     res.status(400).send('one of parameters from client is undefined');
@@ -125,7 +126,7 @@ module.exports.addInvitees = (req, res) => {
         if (usersExist[i].verified && usersExist[i].verified === 1 && emailsAreAlreadyOnBoard[i] !== true) {
           console.log('user is verified and needs to be added to board UserId', usersExist[i]);
           //go ahead and add to board as long as user is a verified member of app and not already member of board
-          addVerifiedUsersNotInBoard.push(db.addUserToBoard(usersExist[i].id, boardId));
+          addVerifiedUsersNotInBoard.push(dbhelper.addUserToBoard(usersExist[i].id, boardId));
         }
       }
       return Promise.all(addVerifiedUsersNotInBoard);

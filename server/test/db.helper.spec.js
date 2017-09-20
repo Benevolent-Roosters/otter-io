@@ -80,6 +80,59 @@ describe('User', () => {
         });
     });
   });
+
+  describe('delUserById()', () => {
+    it('Should exist', () => {
+      expect(dbhelper.delUserById).to.exist;
+    });
+    it('Should be a function', () => {
+      expect(dbhelper.delUserById).to.be.a('function');
+    });
+    it('Should delete a user in the database', (done) => {
+      var profileInfo = {
+        github_handle: 'dummyuser',
+        profile_photo: 'http://www.mypic.com',
+        oauth_id: '12345',
+        email: 'baseball@aol.com',
+        api_key: 'blah',
+        verified: 0
+      };
+      dbhelper.createUser(profileInfo)
+        .then((user) => {
+          expect(user.github_handle).to.equal('dummyuser');
+          return dbhelper.delUserById(user.id);
+        })
+        .then(delresult => {
+          expect(delresult).to.equal('success');
+          return dbhelper.getUserByEmailNoError('baseball@aol.com');
+        })
+        .then(result => {
+          expect(result).to.equal('nonexisting user');
+          done();
+        })
+        .error((err) => done(err));
+    });
+    it('Should reject if delete a user that does not exist in the database', (done) => {
+      dbhelper.delUserById(200)
+        .then(delresult => {
+          expect(delresult).to.equal('delete error');
+          return dbhelper.getUserByEmailNoError('baseball@aol.com');
+        })
+        .then((result) => {
+          expect('not thrown').to.equal('thrown error');
+          done();
+        })
+        .catch((err) => {
+          expect('thrown error').to.equal('thrown error');
+          done();
+        })
+        .error((err) => {
+          expect('thrown error').to.equal('thrown error');
+          done();
+        });
+    });
+  });
+
   describe('getUserById()', () => {
     it('Should exist', () => {
       expect(dbhelper.getUserById).to.exist;
@@ -633,18 +686,18 @@ describe('getBoardByRepoUrl()', () => {
   });
   it('Should reject if the passed in board repo-url does not exist', (done) => {
     dbhelper.getBoardByRepoUrl('https://github.com/foobar')
-    .then((result) => {
-      expect('not thrown').to.equal('thrown error');
-      done();
-    })
-    .catch((err) => {
-      expect('thrown error').to.equal('thrown error');
-      done();
-    })
-    .error((err) => {
-      expect('thrown error').to.equal('thrown error');
-      done();
-    });
+      .then((result) => {
+        expect('not thrown').to.equal('thrown error');
+        done();
+      })
+      .catch((err) => {
+        expect('thrown error').to.equal('thrown error');
+        done();
+      })
+      .error((err) => {
+        expect('thrown error').to.equal('thrown error');
+        done();
+      });
   });
 });
 
@@ -1484,28 +1537,65 @@ describe('Invites', () => {
         .error((err) => done(err));
     });
     it('Should show 1 invitee after inviting 1 person', (done) => {
-      dbhelper.inviteByBoard('stevepkuo', 2)
+      var profileInfo = {
+        github_handle: 'dummyuser',
+        profile_photo: 'http://www.mypic.com',
+        oauth_id: '12345',
+        email: 'baseball@aol.com',
+        api_key: 'blah',
+        verified: 0
+      };
+      dbhelper.createUser(profileInfo)
+        .then((user) => {
+          expect(user).to.exist;
+          expect(user['github_handle']).to.equal('dummyuser');
+          return dbhelper.inviteByBoard('dummyuser', 2);
+        })
         .then((result) => {
           expect(result).to.exist;
           expect(result).to.not.equal('duplicate invite'); //a success object that is not a duplicate message
           return dbhelper.getInviteesByBoard(2);
         })
         .then((result) => {
-          console.log('invitees');
-          console.log(result);
           expect(result).to.exist;
-          expect(result.length).to.equal(1); //array of 1
-          expect(result[0].github_handle).to.equal('stevepkuo');
+          expect(result.length).to.equal(1);
+          expect(result[0].github_handle).to.equal('dummyuser');
           done();
         })
         .error((err) => done(err));
     });
-    it('Should show 2 invitee after inviting 2 people', (done) => {
-      dbhelper.inviteByBoard('stevepkuo', 2)
+    it('Should show 2 invitees after inviting 2 people', (done) => {
+      var profileInfo = {
+        github_handle: 'dummyuser',
+        profile_photo: 'http://www.mypic.com',
+        oauth_id: '12345',
+        email: 'baseball@aol.com',
+        api_key: 'blah',
+        verified: 0
+      };
+      var profileInfo2 = {
+        github_handle: 'dummyuser2',
+        profile_photo: 'http://www.mypic2.com',
+        oauth_id: '54321',
+        email: 'baseball2@aol.com',
+        api_key: 'blah2',
+        verified: 0
+      };
+      dbhelper.createUser(profileInfo)
+        .then((user) => {
+          expect(user).to.exist;
+          expect(user['github_handle']).to.equal('dummyuser');
+          return dbhelper.createUser(profileInfo2);
+        })
+        .then((user) => {
+          expect(user).to.exist;
+          expect(user['github_handle']).to.equal('dummyuser2');
+          return dbhelper.inviteByBoard('dummyuser', 2);
+        })
         .then((result) => {
           expect(result).to.exist;
           expect(result).to.not.equal('duplicate invite'); //a success object that is not a duplicate message
-          return dbhelper.inviteByBoard('dsc03', 2);
+          return dbhelper.inviteByBoard('dummyuser2', 2);
         })
         .then((result) => {
           expect(result).to.exist;
@@ -1515,8 +1605,8 @@ describe('Invites', () => {
         .then((result) => {
           expect(result).to.exist;
           expect(result.length).to.equal(2);
-          expect(result[0].github_handle).to.equal('stevepkuo');
-          expect(result[1].github_handle).to.equal('dsc03');
+          expect(result[0].github_handle).to.equal('dummyuser');
+          expect(result[1].github_handle).to.equal('dummyuser2');
           done();
         })
         .error((err) => done(err));
@@ -1559,7 +1649,7 @@ describe('Invites', () => {
         .then((result) => {
           expect(result).to.exist;
           expect(result).to.not.equal('duplicate invite'); //a success object that is not a duplicate message
-          return dbhelper.getInviteesByBoard(2);
+          return dbhelper.getRecentlyAdded();
         })
         .then((result) => {
           expect(result).to.exist;
@@ -1570,7 +1660,7 @@ describe('Invites', () => {
         .then((result) => {
           expect(result).to.exist;
           expect(result.length).to.equal(0); //empty array is sucessful
-          return dbhelper.getInviteesByBoard(2);
+          return dbhelper.getRecentlyAdded();
         })
         .then((result) => {
           expect(result).to.exist;
@@ -1598,7 +1688,20 @@ describe('Invites', () => {
         .error((err) => done(err));
     });
     it('Should show 1 invitee after inviting 1 person', (done) => {
-      dbhelper.inviteByBoard('stevepkuo', 2)
+      var profileInfo = {
+        github_handle: 'dummyuser',
+        profile_photo: 'http://www.mypic.com',
+        oauth_id: '12345',
+        email: 'baseball@aol.com',
+        api_key: 'blah',
+        verified: 0
+      };
+      dbhelper.createUser(profileInfo)
+        .then((user) => {
+          expect(user).to.exist;
+          expect(user['github_handle']).to.equal('dummyuser');
+          return dbhelper.inviteByBoard('dummyuser', 2);
+        })
         .then((result) => {
           expect(result).to.exist;
           expect(result).to.not.equal('duplicate invite'); //a success object that is not a duplicate message
@@ -1607,7 +1710,7 @@ describe('Invites', () => {
         .then((result) => {
           expect(result).to.exist;
           expect(result.length).to.equal(1);
-          expect(result[0].github_handle).to.equal('stevepkuo');
+          expect(result[0].github_handle).to.equal('dummyuser');
           expect(result[0].invitedToBoards.length).to.equal(1);
           expect(result[0].invitedToBoards[0].board_name).to.equal('testboard2');
           done();
@@ -1615,11 +1718,37 @@ describe('Invites', () => {
         .error((err) => done(err));
     });
     it('Should show 2 invitees after inviting 2 people', (done) => {
-      dbhelper.inviteByBoard('stevepkuo', 2)
+      var profileInfo = {
+        github_handle: 'dummyuser',
+        profile_photo: 'http://www.mypic.com',
+        oauth_id: '12345',
+        email: 'baseball@aol.com',
+        api_key: 'blah',
+        verified: 0
+      };
+      var profileInfo2 = {
+        github_handle: 'dummyuser2',
+        profile_photo: 'http://www.mypic2.com',
+        oauth_id: '54321',
+        email: 'baseball2@aol.com',
+        api_key: 'blah2',
+        verified: 0
+      };
+      dbhelper.createUser(profileInfo)
+        .then((user) => {
+          expect(user).to.exist;
+          expect(user['github_handle']).to.equal('dummyuser');
+          return dbhelper.createUser(profileInfo2);
+        })
+        .then((user) => {
+          expect(user).to.exist;
+          expect(user['github_handle']).to.equal('dummyuser2');
+          return dbhelper.inviteByBoard('dummyuser', 2);
+        })
         .then((result) => {
           expect(result).to.exist;
           expect(result).to.not.equal('duplicate invite'); //a success object that is not a duplicate message
-          return dbhelper.inviteByBoard('dsc03', 2);
+          return dbhelper.inviteByBoard('dummyuser2', 2);
         })
         .then((result) => {
           expect(result).to.exist;
@@ -1629,10 +1758,10 @@ describe('Invites', () => {
         .then((result) => {
           expect(result).to.exist;
           expect(result.length).to.equal(2);
-          expect(result[0].github_handle).to.equal('stevepkuo');
+          expect(result[0].github_handle).to.equal('dummyuser');
           expect(result[0].invitedToBoards.length).to.equal(1);
           expect(result[0].invitedToBoards[0].board_name).to.equal('testboard2');
-          expect(result[1].github_handle).to.equal('dsc03');
+          expect(result[1].github_handle).to.equal('dummyuser2');
           expect(result[1].invitedToBoards.length).to.equal(1);
           expect(result[1].invitedToBoards[0].board_name).to.equal('testboard2');
           done();
@@ -1640,11 +1769,24 @@ describe('Invites', () => {
         .error((err) => done(err));
     });
     it('Should show 1 invitees with 2 boards after inviting 1 person to 2 boards', (done) => {
-      dbhelper.inviteByBoard('stevepkuo', 2)
+      var profileInfo = {
+        github_handle: 'dummyuser',
+        profile_photo: 'http://www.mypic.com',
+        oauth_id: '12345',
+        email: 'baseball@aol.com',
+        api_key: 'blah',
+        verified: 0
+      };
+      dbhelper.createUser(profileInfo)
+        .then((user) => {
+          expect(user).to.exist;
+          expect(user['github_handle']).to.equal('dummyuser');
+          return dbhelper.inviteByBoard('dummyuser', 2);
+        })
         .then((result) => {
           expect(result).to.exist;
           expect(result).to.not.equal('duplicate invite'); //a success object that is not a duplicate message
-          return dbhelper.inviteByBoard('stevepkuo', 3);
+          return dbhelper.inviteByBoard('dummyuser', 3);
         })
         .then((result) => {
           expect(result).to.exist;
@@ -1654,7 +1796,7 @@ describe('Invites', () => {
         .then((result) => {
           expect(result).to.exist;
           expect(result.length).to.equal(1);
-          expect(result[0].github_handle).to.equal('stevepkuo');
+          expect(result[0].github_handle).to.equal('dummyuser');
           expect(result[0].invitedToBoards.length).to.equal(2);
           expect(result[0].invitedToBoards[0].board_name).to.equal('testboard2');
           expect(result[0].invitedToBoards[1].board_name).to.equal('testboard3');
@@ -1751,6 +1893,185 @@ describe('Invites', () => {
         .then((result) => {
           expect(result).to.exist;
           expect(result).to.equal('success');
+          done();
+        })
+        .error((err) => done(err));
+    });
+  });
+
+  describe('deleteInvites()', () => {
+    it('Should exist', () => {
+      expect(dbhelper.deleteInvites).to.exist;
+    });
+    it('Should be a function', () => {
+      expect(dbhelper.deleteInvites).to.be.a('function');
+    });
+    it('Should work when there are 0 invites to delete', (done) => {
+      dbhelper.deleteInvites([])
+        .then((result) => {
+          expect(result).to.exist;
+          expect(result).to.equal('empty');
+          done();
+        })
+        .error((err) => done(err));
+    });
+    it('Should work when invite id to delete doesnt exist', (done) => {
+      dbhelper.deleteInvites([0])
+        .then((result) => {
+          expect(result).to.exist;
+          expect(result).to.equal('empty');
+          done();
+        })
+        .error((err) => done(err));
+    });
+    it('Should work when there are 1 found invites to delete', (done) => {
+      dbhelper.inviteByBoard('stevepkuo', 2)
+        .then((result) => {
+          expect(result).to.exist;
+          expect(result).to.not.equal('duplicate invite'); //a success object that is not a duplicate message
+          return dbhelper.deleteInvites([1]);
+        })
+        .then((result) => {
+          expect(result).to.exist;
+          expect(result).to.equal('success');
+          done();
+        })
+        .error((err) => done(err));
+    });
+    it('Should work when deleting 2 invites after inviting 2 people', (done) => {
+      dbhelper.inviteByBoard('stevepkuo', 2)
+        .then((result) => {
+          expect(result).to.exist;
+          expect(result).to.not.equal('duplicate invite'); //a success object that is not a duplicate message
+          return dbhelper.inviteByBoard('dsc03', 2);
+        })
+        .then((result) => {
+          expect(result).to.exist;
+          expect(result).to.not.equal('duplicate invite'); //a success object that is not a duplicate message
+          return dbhelper.deleteInvites([1, 2]);
+        })
+        .then((result) => {
+          expect(result).to.exist;
+          expect(result).to.equal('success');
+          done();
+        })
+        .error((err) => done(err));
+    });
+    it('Should work when deleting 2 invites for single person', (done) => {
+      dbhelper.inviteByBoard('stevepkuo', 2)
+        .then((result) => {
+          expect(result).to.exist;
+          expect(result).to.not.equal('duplicate invite'); //a success object that is not a duplicate message
+          return dbhelper.inviteByBoard('stevepkuo', 3);
+        })
+        .then((result) => {
+          expect(result).to.exist;
+          expect(result).to.not.equal('duplicate invite'); //a success object that is not a duplicate message
+          return dbhelper.deleteInvites([1, 2]);
+        })
+        .then((result) => {
+          expect(result).to.exist;
+          expect(result).to.equal('success');
+          done();
+        })
+        .error((err) => done(err));
+    });
+    it('Should work when there are 1 found and 1 unfound invites to delete', (done) => {
+      dbhelper.inviteByBoard('stevepkuo', 2)
+        .then((result) => {
+          expect(result).to.exist;
+          expect(result).to.not.equal('duplicate invite'); //a success object that is not a duplicate message
+          return dbhelper.deleteInvites([1, 200]);
+        })
+        .then((result) => {
+          expect(result).to.exist;
+          expect(result).to.equal('success');
+          done();
+        })
+        .error((err) => done(err));
+    });
+  });
+
+  describe('getRecentlyAdded()', () => {
+    it('Should exist', () => {
+      expect(dbhelper.getRecentlyAdded).to.exist;
+    });
+    it('Should be a function', () => {
+      expect(dbhelper.getRecentlyAdded).to.be.a('function');
+    });
+    it('Should show 0 invites initially', (done) => {
+      dbhelper.getRecentlyAdded()
+        .then((result) => {
+          expect(result).to.exist;
+          expect(result.length).to.equal(0); //blank array
+          done();
+        })
+        .error((err) => done(err));
+    });
+    it('Should show 1 invitee after inviting 1 person', (done) => {
+      dbhelper.inviteEmailByBoard('blah@aol.com', 2)
+        .then((result) => {
+          expect(result).to.exist;
+          expect(result).to.not.equal('duplicate invite'); //a success object that is not a duplicate message
+          return dbhelper.getRecentlyAdded();
+        })
+        .then((result) => {
+          expect(result).to.exist;
+          expect(result.length).to.equal(1);
+          expect(result[0].github_handle).to.equal('stevepkuo');
+          expect(result[0].invitedToBoards.length).to.equal(1);
+          expect(result[0].invitedToBoards[0].board_name).to.equal('testboard2');
+          done();
+        })
+        .error((err) => done(err));
+    });
+    it('Should show 2 invitees after inviting 2 people', (done) => {
+      dbhelper.inviteEmailByBoard('blah@aol.com', 2)
+        .then((result) => {
+          expect(result).to.exist;
+          expect(result).to.not.equal('duplicate invite'); //a success object that is not a duplicate message
+          return dbhelper.inviteEmailByBoard('dsc03@aol.com', 2);
+        })
+        .then((result) => {
+          expect(result).to.exist;
+          expect(result).to.not.equal('duplicate invite'); //a success object that is not a duplicate message
+          return dbhelper.getRecentlyAdded();
+        })
+        .then((result) => {
+          expect(result).to.exist;
+          expect(result.length).to.equal(2);
+          expect(result[0].github_handle).to.equal('stevepkuo');
+          expect(result[0].invitedToBoards.length).to.equal(1);
+          expect(result[0].invitedToBoards[0].board_name).to.equal('testboard2');
+          expect(result[1].github_handle).to.equal('dsc03');
+          expect(result[1].invitedToBoards.length).to.equal(1);
+          expect(result[1].invitedToBoards[0].board_name).to.equal('testboard2');
+          done();
+        })
+        .catch(err => {
+          done(err);
+        })
+        .error((err) => done(err));
+    });
+    it('Should show 1 invitees with 2 boards after inviting 1 person to 2 boards', (done) => {
+      dbhelper.inviteEmailByBoard('blah@aol.com', 2)
+        .then((result) => {
+          expect(result).to.exist;
+          expect(result).to.not.equal('duplicate invite'); //a success object that is not a duplicate message
+          return dbhelper.inviteEmailByBoard('blah@aol.com', 3);
+        })
+        .then((result) => {
+          expect(result).to.exist;
+          expect(result).to.not.equal('duplicate invite'); //a success object that is not a duplicate message
+          return dbhelper.getRecentlyAdded();
+        })
+        .then((result) => {
+          expect(result).to.exist;
+          expect(result.length).to.equal(1);
+          expect(result[0].github_handle).to.equal('stevepkuo');
+          expect(result[0].invitedToBoards.length).to.equal(2);
+          expect(result[0].invitedToBoards[0].board_name).to.equal('testboard2');
+          expect(result[0].invitedToBoards[1].board_name).to.equal('testboard3');
           done();
         })
         .error((err) => done(err));

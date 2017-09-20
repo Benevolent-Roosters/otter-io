@@ -12,7 +12,4 @@ router.route('/:id')
   .put(ProfileController.update);
 // .delete(ProfileController.deleteOne)
 
-//db helper  getUserById(userId)
-//db helper  updateUserById(userId, obj)
-
 module.exports = router;

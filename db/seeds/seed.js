@@ -105,7 +105,8 @@ exports.seed = function (knex, Promise) {
         github_handle: 'dsc03',
         profile_photo: 'https://avatars0.githubusercontent.com/u/25214199?v=4',
         oauth_id: '25214199',
-        api_key: 'cat'
+        api_key: 'cat',
+        email: 'dsc03@aol.com'
       }).save();
     })
     .then((user) => {

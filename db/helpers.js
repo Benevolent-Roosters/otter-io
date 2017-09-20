@@ -10,6 +10,7 @@ const knex = require('knex')(require('../knexfile'));
 // Functions are in the following order:
 
 // createUser
+// delUserById
 // getUserById
 // getUserByApiKey
 // getUserByIdUnhidden
@@ -22,8 +23,10 @@ const knex = require('knex')(require('../knexfile'));
 // addUserToBoard
 // inviteByBoard
 // inviteEmailByBoard
+// getRecentlyAdded
 // getInvitesByUser
 // uninviteByBoard
+// deleteInvites
 // getUsersByBoard
 // getInviteesByBoard
 // getBoardsByUser
@@ -62,6 +65,22 @@ module.exports.createUser = function(data) {
     })
     .catch(situation => {
       console.log(`There is a situation: user ${data.github_handle} already exists!`);
+      throw situation;
+    });
+};
+
+module.exports.delUserById = function(userId) {
+  return User.forge({id: userId})
+    .destroy()
+    .then(result => {
+      if (!result) {
+        throw 'delete error';
+      }
+      console.log(result.toJSON());
+      return 'success';
+    })
+    .catch(situation => {
+      console.log(`There is a situation: could not delete user ID ${userId}!`);
       throw situation;
     });
 };
@@ -310,9 +329,9 @@ module.exports.inviteEmailByBoard = function(email, boardId) {
 };
 
 //for email worker to
-//get invite list of verified users and their invited boards, where last_email > 2 days ago
-module.exports.getInvitees = function() {
-  return User.where({verified: 1}).fetchAll()
+//get invite list of non-verified users and their invited boards, where last_email > 2 days ago
+module.exports.getInvitees = function(unhide=false) {
+  return User.where({verified: 0}).fetchAll()
     .then(users => {
       if (!users) {
         throw 'error';
@@ -329,7 +348,9 @@ module.exports.getInvitees = function() {
       if (!users) {
         throw 'error';
       }
-      users = users.map(eachUser => eachUser.toJSON());
+      //unhide or hide the api key
+      var hideObj = unhide ? {hidden: []} : {};
+      users = users.map(eachUser => eachUser.toJSON(hideObj));
       //users = users.filter(eachUser => eachUser.toJSON().length > 0);
       //console.log('all invitees in the db', users.map(eachUser => eachUser.toJSON().invitedToBoards));
       users = users.filter(eachUser => eachUser.invitedToBoards.length > 0);
@@ -342,7 +363,7 @@ module.exports.getInvitees = function() {
     });
 };
 
-//for email worker to
+//after email worker emails invitees, it will call this function to
 //mark invites in the invite join table between invitee and board as recently emailed
 module.exports.emailedInvites = function(inviteIDs) {
   return Promise.resolve(inviteIDs)
@@ -375,13 +396,44 @@ module.exports.emailedInvites = function(inviteIDs) {
     })
     .catch(situation => {
       if (situation === 'empty array') {
-        console.log('there is nothing to update');
+        console.log('there is no email dates to update in invite table');
         return 'empty';
       }
       if (situation === 'save error') {
         console.log('Saving recent emailed invites failed');
       }
       throw situation;
+    });
+};
+
+//for email worker to
+//get recent added list of verified users and the boards they were added to, where last_email is null
+//they will later be emailed once and then deleted from invite board by web worker
+module.exports.getRecentlyAdded = function() {
+  return User.where({verified: 1}).fetchAll()
+    .then(users => {
+      if (!users) {
+        throw 'error';
+      }
+      var promiseArray = users.map(eachUser => eachUser.fetch({withRelated: [
+        {invitedToBoards: function(query) {
+          query.where('last_email', null);
+        }}
+      ]}));
+      return Promise.all(promiseArray);
+    })
+    .then(users => {
+      if (!users) {
+        throw 'error';
+      }
+      users = users.map(eachUser => eachUser.toJSON());
+      users = users.filter(eachUser => eachUser.invitedToBoards.length > 0);
+      console.log('all invitees in the db', users);
+      return users;
+    })
+    .catch(err => {
+      console.log('Error while getting all invites in the db');
+      throw err;
     });
 };
 
@@ -440,6 +492,49 @@ module.exports.uninviteByBoard = function(githandle, boardId) {
     });
 };
 
+//after email worker emails recently added members, it will call this function to
+//remove them from join table
+module.exports.deleteInvites = function(inviteIDs) {
+  return Promise.resolve(inviteIDs)
+    .then(arrayIn => {
+      if (inviteIDs.length === 0) {
+        throw 'empty array';
+      }
+      return true;
+    })
+    .then(() => {
+      return Invite.where('id', 'in', inviteIDs).fetch();
+    })
+    .then(invites => {
+      if (!invites) {
+        throw 'empty array';
+      }
+      return Invite.where('id', 'in', inviteIDs)
+        .destroy();
+    })
+    .then(result => {
+      if (!result) {
+        throw 'save error';
+      }
+      console.log(result.toJSON());
+      return 'success';
+    })
+    .error(err => {
+      console.log('there was an error deleting invites');
+      throw err;
+    })
+    .catch(situation => {
+      if (situation === 'empty array') {
+        console.log('there is nothing to delete from invites table');
+        return 'empty';
+      }
+      if (situation === 'save error') {
+        console.log('Deleting invites failed');
+      }
+      throw situation;
+    });
+};
+
 module.exports.getUsersByBoard = function(boardId) {
   return Board.forge({id: boardId})
     .fetch()
@@ -465,7 +560,7 @@ module.exports.getInviteesByBoard = function(boardId) {
       if (!board) {
         throw 'invalid board';
       }
-      return board.related('invitedHandles').fetch();
+      return board.related('invitedHandles').query('where', 'verified', 0).fetch();
     })
     .then((handles) => {
       console.log('Invited to board', handles.toJSON());

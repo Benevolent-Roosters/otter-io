@@ -46,6 +46,7 @@ router.route('/boards/:id/invite')
 //Leave a board
 //router.route('/boards/:id/leave') //only if member of board
 
+//Get, Add, Update panels
 router.route('/panels')
   .get(middleware.auth.verifyBoardMemberElse401, PanelController.getBoardPanels) //only if member of board
   .post(middleware.auth.verifyBoardOwnerElse401, PanelController.createBoardPanel) //only if owner of board
@@ -56,6 +57,7 @@ router.route('/panels/:id')
 //  .delete(middleware.auth.verifyPanelMemberElse401, PanelController.deleteOne) //only if owner of board
 //  //also delete all of panel's tickets???
 
+//Get, Add, Update tickets
 router.route('/tickets')
   .get(middleware.auth.verifyPanelMemberElse401, TicketController.getPanelTickets) //only if member of board
   .post(middleware.auth.verifyPanelMemberElse401, TicketController.createPanelTicket) //only if member of board

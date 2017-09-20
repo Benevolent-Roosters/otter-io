@@ -21,6 +21,8 @@
     }
   },
 
+  "gmail": {},
+
   "passport": {
     "Google": {},
     "Facebook": {},

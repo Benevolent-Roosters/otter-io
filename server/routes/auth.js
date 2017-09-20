@@ -2,6 +2,7 @@ const express = require('express');
 const middleware = require('../middleware');
 const dbhelper = require('../../db/helpers.js');
 const helper = require('../controllers/helper');
+const Promise = require('bluebird');
 
 const router = express.Router();
 
@@ -48,28 +49,85 @@ if (process.env.NODE_ENV === 'test') {
     .get((req, res) => {
       req.session = req.session || {};  
       req.session.user_tmp = fakeUser1;
-      //res.redirect('/');
       res.status(200).send();
     });
   router.route('/auth/fake2')
     .get((req, res) => {
       req.session = req.session || {};  
       req.session.user_tmp = fakeUser2;
-      //res.redirect('/');
       res.status(200).send();
     });
   router.route('/auth/fake3')
     .get((req, res) => {
       req.session = req.session || {};  
       req.session.user_tmp = fakeUser3;
-      //res.redirect('/');
+      res.status(200).send();
+    });
+  router.route('/auth/fake4')
+    .get((req, res) => {
+      req.session = req.session || {};  
+      req.session.user_tmp = fakeUser4;
       res.status(200).send();
     });
 }
 
+//This is the main route to serve up the main page
+//Has a mechanism to add new users to boards they were invited to if they have a special
+//cookie from clicking an email invite link
 router.route('/')
   .get(middleware.auth.verify, (req, res) => {
-    res.render('index.ejs');
+    var userId = req.user.id;
+    //this part is for new users who previously clicked on invitation link to join our app and add invited boards
+    if (req.cookies.claimcode) {
+      console.log('claim code is:', req.cookies.claimcode);
+      var claimcode = req.cookies.claimcode;
+      var invitedInviteIDs = [];
+      var dummyId;
+      //use claimcode to get associated invite email/github_handle
+      dbhelper.getUserByApiKey(claimcode)
+        .then(dummyuser => {
+          if (!dummyuser) {
+            throw dummyuser;
+          }
+          dummyId = dummyuser.id;
+          //then use email/gihub_handle to get associated invite boards
+          return dbhelper.getInvitesByUser(dummyuser.id);
+        })
+        .then(boards => {
+          if (!boards) {
+            throw boards;
+          }
+          invitedInviteIDs = boards.map(eachBoard => eachBoard._pivot_id);
+          var addBoardPromises = [];
+          for (var i = 0; i < boards.length; i++) {
+            //add current user to each of the associated invite boards
+            addBoardPromises.push(dbhelper.addUserToBoard(userId, boards[i].id));
+          }
+          return Promise.all(addBoardPromises);
+        })
+        .then(resolvedAddBoards => {
+          //delete those invites now that user has been added to them
+          return dbhelper.deleteInvites(invitedInviteIDs);
+        })
+        .then(deleteResult => {
+          if (!(deleteResult === 'success')) {
+            throw deleteResult;
+          }
+          //delete the dummy user entry for the invite email
+          return dbhelper.delUserById(dummyId);
+        })
+        .then(deleteresult => {
+          //remove the cookie
+          res.clearCookie('claimcode');
+          res.render('index.ejs');
+        })
+        .catch((err) => {
+          res.clearCookie('claimcode');
+          res.status(500).send(JSON.stringify(err));
+        });
+    } else {
+      res.render('index.ejs');
+    }
   });
 
 router.route('/login')
@@ -82,7 +140,29 @@ router.route('/signup')
     res.render('signup.ejs', { message: req.flash('signupMessage') });
   });
 
-/** ROUTE USED TO RETRIEVE AND UPDATE USER DATA AND SEND BACK TO CLIENT **/
+//for new users who clicked on an email invitation link to join our app and be added to invited boards
+//claim code will be added to user cookie
+//it will be used when they visit the main page to add them to their invited boards
+router.route('/signup/:claimcode')
+  .get((req, res) => {
+    var claimcode = req.params.claimcode;
+    //check that claim code is valid
+    dbhelper.getUserByApiKey(claimcode)
+      .then(user => {
+        if (!user) {
+          throw user;
+        }
+        //this cookie will help add boards associated with claim code once user has signed up and visited the site again
+        res.cookie('claimcode', claimcode, { maxAge: 900000, httpOnly: true });
+        res.redirect('/signup');
+      })
+      .catch((err) => {
+        console.log('error during claim code', claimcode);
+        res.status(404).send('not valid claim code');
+      });
+  });
+
+/** ROUTE USED TO RETRIEVE AND UPDATE USER DATA **/
 router.route('/profile')
   .get(middleware.auth.verifyElse401, (req, res) => {
     dbhelper.getUserByIdUnhidden(parseInt(req.user.id))
@@ -141,7 +221,7 @@ router.route('/profile')
 
   });
 
-/** ROUTE USED TO RETRIEVE USER INVITES SEND BACK TO CLIENT **/
+/** ROUTE USED TO RETRIEVE USER INVITES **/
 router.route('/profile/invitations')
   .get(middleware.auth.verifyElse401, (req, res) => {
     dbhelper.getInvitesByUser(parseInt(req.user.id))
@@ -156,10 +236,11 @@ router.route('/profile/invitations')
       });
   });
 
-/** ROUTE TO SERVE UP PROFILE PAGE ALONG WITH INVITATIONS**/
+/** ROUTE TO SERVE UP PROFILE PAGE **/
 router.route('/myprofile')
   .get(middleware.auth.verifyElse401, (req, res) => {
     var user;
+    //Get unhidden info about user including api_key
     dbhelper.getUserByIdUnhidden(parseInt(req.user.id))
       .then(userUnhidden => {
         if (!userUnhidden) {
@@ -167,6 +248,8 @@ router.route('/myprofile')
         }
         user = userUnhidden;
         //get my invitations and display them
+        //THIS MIGHT BE DEPRECATED, SINCE MEMBERS ARE AUTO-ADDED TO BOARDS
+        //INVITES WILL BE AUTO CLEARED BY EMAIL NOTIFICATION WORKER IN THE BACKGROUND
         return dbhelper.getInvitesByUser(parseInt(req.user.id));
       })
       .then(invites => {
