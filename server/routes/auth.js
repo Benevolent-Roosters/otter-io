@@ -82,14 +82,14 @@ router.route('/')
       console.log('claim code is:', req.cookies.claimcode);
       var claimcode = req.cookies.claimcode;
       var invitedInviteIDs = [];
-      var dummyId;
+      var dummyperson;
       //use claimcode to get associated invite email/github_handle
       dbhelper.getUserByApiKey(claimcode)
         .then(dummyuser => {
           if (!dummyuser) {
             throw dummyuser;
           }
-          dummyId = dummyuser.id;
+          dummyperson = dummyuser;
           //then use email/gihub_handle to get associated invite boards
           return dbhelper.getInvitesByUser(dummyuser.id);
         })
@@ -114,7 +114,12 @@ router.route('/')
             throw deleteResult;
           }
           //delete the dummy user entry for the invite email
-          return dbhelper.delUserById(dummyId);
+          if (dummyperson.email === dummyperson.github_handle) {
+            return dbhelper.delUserById(dummyperson.id);
+          } else {
+            //don't delete if it is a valid user
+            return true;
+          }
         })
         .then(deleteresult => {
           //remove the cookie

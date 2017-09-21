@@ -1,5 +1,5 @@
 import React from 'react';
-import { putEditedBoard, editBoards, toggleEditBoard } from '../redux/actionCreators.js';
+import { inviteToBoard, putEditedBoard, editBoards, toggleEditBoard } from '../redux/actionCreators.js';
 import { connect } from 'react-redux';
 import { Modal, Form, FormGroup, FormControl, Button, ControlLabel, Grid, Col, Row } from 'react-bootstrap';
 
@@ -12,6 +12,7 @@ class EditBoard extends React.Component {
     this.state = {
       board_name: '',
       repo_url: '',
+      invites: '',
       owner_id: this.props.owner_id,
       id: this.props.currentBoard.id
     };
@@ -67,6 +68,15 @@ class EditBoard extends React.Component {
                       <Button style={buttonStyle} bsStyle="default" onClick={this.props.handleEditBoardRendered}>Cancel</Button>
                       <Button style={buttonStyle} bsStyle="primary" type="button" onClick={() => {this.props.handleEditBoard(this.reorderBoards.bind(this), this.state); this.props.handleEditBoardRendered();}}>Update</Button>
                     </Form>
+                    <Form horizontal>
+                      <FormGroup>
+                        <Col componentClass={ControlLabel} sm={4}>Add Members</Col>
+                        <Col sm={8}>
+                        <FormControl name='invites' bsSize="large" type="text" value={this.state.invites} placeholder={'enter emails separated by commas'} onChange={this.handleInputChange.bind(this)}></FormControl>
+                        </Col>
+                      </FormGroup>
+                      <Button style={buttonStyle} bsStyle="primary" type="button" onClick={() => {this.props.handleInviteBoard(this.state.id, this.state.invites); this.props.handleEditBoardRendered();}}>Invite</Button>
+                    </Form>
                   </Modal.Body>
                 </Modal>
                 </Row>
@@ -94,6 +104,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     handleEditBoardRendered() {
       dispatch(toggleEditBoard());
+    },
+    handleInviteBoard(boardId, commaSeparatedEmails) {
+      dispatch(inviteToBoard(boardId, commaSeparatedEmails));
     }
   };
 };

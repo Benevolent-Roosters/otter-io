@@ -258,3 +258,19 @@ export function putEditedTicket(ticketObj) {
       });
   });
 }
+
+/** When a user invites emails to board*/
+export function inviteToBoard(boardId, commaSeparatedEmails) {
+  return (dispatch => {
+    var emailArray = commaSeparatedEmails.split(',');
+    var endpoint = `/api/boards/${boardId}/invite`
+    axios.post(endpoint, {user_emails: emailArray})
+      .then(() => {
+        //dispatch(editCurrentTicket(ticketObj));
+      })
+
+      .catch(error => {
+        console.log('ERROR ON INVITETOBOARD:', error);
+      });
+  });
+}
