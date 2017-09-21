@@ -2,7 +2,7 @@
   "name": "course.thesis",
   "version": "1.0.0",
   "scripts": {
-    "start": "nodemon server",
+    "start": "node server",
     "test": "NODE_ENV=test grunt test",
     "testUpdate": "jest -u NODE_ENV=test grunt test",
     "build": "webpack --watch",
