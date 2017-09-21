@@ -1,0 +1,31 @@
+{
+  "knex": {
+    "client": "postgresql",
+    "connection": {
+      "database": "daaibhaf81i9pu",
+      "user": "ptliijrgkaztdr",
+      "port": 5432,
+      "host": "ec2-107-20-195-181.compute-1.amazonaws.com",
+      "password": "8f884a54213e0a2b83d472a468219233831e45f1beeb7fc42588be7880d8ddaf"
+    },
+    "debug": false,
+    "pool": {
+      "min": 2,
+      "max": 10
+    }
+  },
+"passport": {
+    "Github": {
+      "clientID": "fe9d75e3a4abd94700a5",
+      "clientSecret": "7b0071763edfcdac32fb406c1e040875e13fe81a",
+      "callbackURL": "http://13.57.36.115/auth/github/callback"
+    }
+  },
+  "gmail": {
+    "client_user": "otterboards@gmail.com",
+    "clientId": "339381943104-973d1a9fabuavidm36ncufs71lj6gtnn.apps.googleusercontent.com",
+    "clientsecret": "1l9V7QkaJcmMjnL_fb1VQw_5",
+    "refreshtoken": "1/yzV3BheSfeabUgjeNMLIFJUZwZyjEtK3yDBSnx9MMns",
+    "accesstoken": "ya29.GlvMBHidJwzFr2sArWnXG_GJzwqvO9-47Imw_HwRGQ03pk_wnZY1VXvuguKJ2iMC6b2SpLLa3uVta77qki5fZtU0zlHXlxDW1mAvh0BBGcfTseyif6GJhWk5bg1N"
+  },
+}
