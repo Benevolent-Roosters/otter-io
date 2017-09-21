@@ -2,7 +2,7 @@
 require('dotenv').config();
 const app = require('./app');
 const db = require('../db');
-const PORT = process.env.port || 3000;
+const PORT = process.env.PORT || 3000;
 // loading models and helpers for debugging
 const models = require('../db/models');
 const helpers = require('../db/helpers.js');
