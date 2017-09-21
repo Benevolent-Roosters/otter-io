@@ -8,7 +8,7 @@ import Board from './Board.jsx';
 const boardStyle = {
   width: '100%',
   height: '750px'
-}
+};
 
 const MainRouter = props => (
   <div id='routes'>

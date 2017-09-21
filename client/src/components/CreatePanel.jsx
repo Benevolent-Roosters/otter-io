@@ -33,7 +33,7 @@ class CreatePanel extends React.Component {
   render() {
     return (
       <div>
-        <Modal show={this.props.createPanelRendered}>
+        <Modal className="create-panel" show={this.props.createPanelRendered}>
           <Modal.Header style={{backgroundColor: '#7ED321'}}>
             <Modal.Title style={{color: 'white'}}> Create A Panel </Modal.Title>
           </Modal.Header>
@@ -41,7 +41,7 @@ class CreatePanel extends React.Component {
             <Form horizontal>
               <FormGroup>
                 <Col componentClass={ControlLabel} sm={2}>
-                  Panel Name
+                  Name
                 </Col>
                 <Col sm={10}>
                   <FormControl onChange={this.handleNameChange.bind(this)} placeholder="Panel name" />

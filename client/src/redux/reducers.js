@@ -12,7 +12,6 @@ const defaultState = {
   currentBoard: {
     id: 1,
     board_name: 'benev roosters',
-    repo_name: 'thesis3',
     repo_url: 'https://github.com/Benevolent-Roosters/thesis3',
     owner_id: 3,
     _pivot_user_id: 3,
