@@ -1,0 +1,301 @@
+/** SIDEBAR NAVIGATION **/
+
+.thumbnail {
+    display: block;
+    margin: 0 auto; 
+    margin-top: 15px;
+    margin-left: 15px; 
+    margin-right: 15px;
+    background-color: rgba(0, 0, 0, 0);
+    border: 0px;
+    border-radius: 0px;
+}
+
+/** PERFORMANCE DASHBOARD **/
+
+.sidebar-nav-button .btn {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: transparent;
+}
+
+.performance-dashboard {
+    display: flex;
+    justify-content: space-between;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-bottom: 15px;
+}
+
+.performance-dashboard  div > :first-child {
+    color: #7ED321;
+    font-size: 80px;
+    text-align: center;
+}
+
+.performance-dashboard .white-border {
+    border-right: 2pt solid white;
+}
+
+.performance-dashboard .grey-border {
+    border-right: 2pt solid #9B9B9B;
+    margin-top: 15px;
+}
+
+.performance-dashboard .stat-type {
+    color: #9B9B9B;
+    font-size: 25px;
+    font-family: "Avenir Next";
+    
+}
+
+/** BOARD & CAROUSEL CSS**/
+.container {
+    padding-right: none;
+    padding-left: none;
+    margin-right: none;
+    margin-left: none;
+}
+
+.board-name {
+    font-size: 20px;
+    font-weight: normal;
+    display: flex;
+    list-style: none;
+}
+
+.board-name a {
+    color: white;
+}
+
+.board-name a:hover {
+    color: white;
+    text-decoration: underline;
+}
+
+.full-board {
+    background-color: rgba(0, 0, 0, .55);
+}
+
+.slick-prev {
+    left: 5px;
+    color: white;
+    z-index: 10;
+}
+
+.slick-next {
+    right: 5px;
+    color: white;
+    z-index: 10;
+}
+
+.slick-slider {
+    height: 750px;
+    width: 100%;
+    margin-left: 0px;
+    display: block;
+}
+
+#routes > div {
+    width: 100% !important;
+}
+
+.board-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+}
+
+.slick-slide .sprint-panel {
+    opacity: 0.5;
+    transform: scale(0.75);
+    transition: -webkit-transform 500ms ease;
+}
+
+.slick-center .sprint-panel {
+    opacity: 1;
+    transform: scale(1.00);
+    transition: -webkit-transform 500ms ease;
+}
+
+/** PANEL CSS **/
+
+.sprint-panel {
+    margin: 10px;
+    background-color: #F2F0F3;
+    width: 100%;
+}
+
+.sprint-panel .panel-heading {
+  color: white;
+  background-color: #7ED321;
+  border-color: #d6e9c6;
+  font-family: "Avenir Next";
+  font-weight: bold;
+}
+
+.panelHeader {
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.panel .panel-heading li[role='presentation'] {
+    font-size: 14px;
+    font-weight: normal;
+    list-style: none;
+}
+
+.sprint-panel .panel-body {
+    overflow-y: scroll;
+    max-height: 600px;
+}
+
+
+/** TICKET STYLING **/
+.ticket-panel {
+    border-color: #979797;
+}
+
+.ticket-panel .panel-heading {
+    color: black;
+    background-color: white;
+    border-color: grey;
+    font-family: 'Avenir Next';
+    font-size: 22px;
+    padding: 0px 15px;
+}
+
+.ticket-panel .panel-heading .panel-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ticket-panel .panel-heading .ticket-title {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.ticket-panel .panel-heading .ticket-title h4 {
+    margin-left: 10px;
+}
+
+/**STYLING FOR EDIT BUTTON IN TICKET HEADER**/
+.ticket-panel li[role='presentation'] {
+    font-size: 12px;
+    font-weight: normal;
+    list-style: none;
+}
+
+.ticket-panel .ticket-body {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.ticket-panel .panel-body {
+    overflow-y: unset;
+    max-height: none;
+    padding: 10px;
+}
+
+.description {
+    word-wrap: break-word;
+    max-width: 22vh;
+    margin-left: 5px;
+}
+
+.status {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-left: 20px;
+    margin-top: 20px;
+}
+
+.status-text {
+    margin-left: 5px
+}
+
+.ticket-panel .panel-footer {
+    background-color: white;
+    border-top: none;
+}
+
+/** NOTE: THIS STYLE IS TO OVERWRITE PANEL-FOOTER REACT BOOTSTRAP FOR OUR TICKET FOOTERS **/
+.ticket-panel .panel-footer {
+    padding: 0px 5px
+}
+
+.ticket-footer {
+    display: flex;
+    justify-content: baseline;
+    align-items: center;
+    font-family: "Avenir Next";
+    font-style: italic;
+    padding: 0px, 0px;
+}
+
+.ticket-footer .assigned-to {
+    margin-right: 10px;
+    color: #4A4A4A;
+    font-family: 'Avenir Next';
+    font-style: italic;
+    font-size: 12px;
+}
+
+.ticket-footer .assignee-handle {
+    color: #9B9B9B;
+    font-family: 'Avenir Next';
+    font-weight: bold;
+    font-size: 14px;
+}
+
+/** CREATE TICKET **/
+
+.create-ticket .btn-group>.btn:first-child {
+    margin-left: 10px;
+    margin-bottom: 15px;
+    min-width: 200px;
+}
+
+.create-ticket #split-button-pull-right {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.create-cancel-ticket {
+    display: flex;
+    justify-content: flex-end;
+}
+
+/** EDIT TICKET**/
+
+.edit-ticket .btn-group>.btn:first-child {
+    margin-left: 10px;
+    margin-bottom: 15px;
+    min-width: 200px;
+}
+
+.edit-ticket #split-button-pull-right {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.edit-cancel-ticket {
+    display: flex;
+    justify-content: flex-end;
+}
+
+/**CREATE PANEL & EDIT PANEL**/
+
+.create-panel .form-horizontal:nth-child(2) .control-label {
+    padding-top: 15px;
+}

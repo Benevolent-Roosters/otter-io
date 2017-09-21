@@ -50,14 +50,14 @@ class EditPanel extends React.Component {
     return (
       <div>
         <Modal show={this.props.editPanelRendered}>
-          <Modal.Header style={{backgroundColor: '#7ED321'}}>
+          <Modal.Header style={{backgroundColor: '#7ED321', color: 'white'}}>
             <Modal.Title> Edit Panel </Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Form horizontal>
               <FormGroup>
                 <Col componentClass={ControlLabel} sm={2}>
-                  Panel Name
+                  Name
                 </Col>
                 <Col sm={10}>
                   <FormControl onChange={this.handleNameChange.bind(this)} placeholder={this.props.currentPanel.name}></FormControl>

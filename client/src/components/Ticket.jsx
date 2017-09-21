@@ -1,32 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { getTicketsByPanel, toggleEditTicket, setCurrentTicket, setCurrentPanel } from '../redux/actionCreators.js';
-import { Panel as BootstrapPanel, NavItem } from 'react-bootstrap';
-import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
-import '../../../ticketStyle.css';
+import { Panel as BootstrapPanel, NavItem, Grid, Row, Col } from 'react-bootstrap';
+import '../../../styles.css';
 
-let ticketStyle = {
-  color: 'black',
-  fontFamily: 'Avenir Next',
-  backgroundColor: '#ffffff',
-  borderColor: '#9B9B9B'
-};
-
-let ticketHeaderAndFooter = {
-  display: 'flex'
-};
-
-let ticketTextStyle = {
-  color: 'black', 
-  fontFamily: 'Avenir Next', 
-  margin: '0px auto 0 10px',
-  fontStyle: 'bold'
-};
-
-/** Ticket Priority vertical lines can be made with hr HTML tag **/
-// <hr width="1" size="60" color="#B8E986">
-//<hr width="1" size="60" color="#D0011B">
-//<hr width="1" size="60" color="#F8E81C"> */
 
 class Ticket extends React.Component {
 
@@ -57,13 +34,13 @@ class Ticket extends React.Component {
 
     /** TICKET TYPE CONDITIONAL STYLING **/
     const ticketTypeColor = {
-      background: this.props.ticketInfo.type === 'devOps' ? '#417505' : (this.props.ticketInfo.type === 'bug') ? '#9012FE' : '#F6A623',
+      background: this.props.ticketInfo.type === 'devops' ? '#417505' : (this.props.ticketInfo.type === 'bug') ? '#9012FE' : '#F6A623',
       width: '16px',
       height: '16px',
       borderRadius: '50%'
     };
 
-    /** TICKET STATUS STYLING **/
+    /** TICKET STATUS CONDITIONAL STYLING **/
     const ticketStatusColor = {
       background: this.props.ticketInfo.status === 'not started' ? '#4990E2' : (this.props.ticketInfo.status === 'in progress') ? '#F8E81C' : '#7ED321',
       width: '16px',
@@ -71,10 +48,10 @@ class Ticket extends React.Component {
       borderRadius: '50%'
     };
 
-    /** TICKET URGENCY **/
+    /** TICKET CONDITIONAL URGENCY **/
     const ticketPriorityColor = {
       borderLeft: '2pt solid',
-      borderColor: this.props.ticketInfo.priority === 1 ? '#B8E986' : (this.props.ticketInfo.status === 2) ? '#F8E81C' : '#D0011B',
+      borderColor: this.props.ticketInfo.priority === 1 ? '#B8E986' : (this.props.ticketInfo.priority === 2) ? '#F8E81C' : '#D0011B',
     };
 
     /** TICKET HEADER **/
@@ -92,9 +69,9 @@ class Ticket extends React.Component {
 
           <div className="ticket-edit">
             <NavItem eventKey={1} onClick={() => {
-            this.props.handleSetCurrentTicket(this.props.ticketInfo);
-            this.props.handleSetCurrentPanel(this.props.panelInfo);
-            this.props.handleEditTicketRendered();
+              this.props.handleSetCurrentTicket(this.props.ticketInfo);
+              this.props.handleSetCurrentPanel(this.props.panelInfo);
+              this.props.handleEditTicketRendered();
             }}>Edit</NavItem>
           </div>
       </div>
@@ -103,22 +80,24 @@ class Ticket extends React.Component {
     /** TICKET BODY **/
 
     const ticketBody = (
-      <div className="ticketBody" style={ticketPriorityColor}>
-          <div className="description" style={{marginLeft: '5px'}}>
-            <div>{this.props.ticketInfo.description}</div>
-          </div>
-        <div className="status">
-            <div className="status-circle" style={ticketStatusColor}></div>
-            <p>{this.props.ticketInfo.status}</p>
+      <div className="ticket-body">
+
+            <div className="ticket-info" style={ticketPriorityColor}>
+              <div className="description">{this.props.ticketInfo.description}</div>
+            </div>
+
+            <div className="status">
+              <div className="status-circle" style={ticketStatusColor}></div>
+              <div className="status-text">{this.props.ticketInfo.status}</div>
+            </div>
         </div>
-      </div>
     );
 
     /** TICKET FOOTER **/
     const ticketFooter = (
       <div className="ticket-footer">
-        <h6 style={{marginRight: '10px'}}>ASSIGNED TO: </h6>
-        <h6>{this.props.ticketInfo.assignee_handle}</h6>
+        <h6 className="assigned-to">ASSIGNED TO: </h6>
+        <h6 className="assignee-handle">@{this.props.ticketInfo.assignee_handle}</h6>
       </div>
     );
 

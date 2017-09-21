@@ -11,8 +11,8 @@ import { getUserInfo, getBoardsByUser, getPanelsByBoard, getTicketsByPanel, setC
 
 const iconStyle = {
   position: 'absolute',
-  top: '20px',
-  left: '20px',
+  top: '10px',
+  left: '10px',
   backgroundColor: 'white'
 };
 
@@ -52,11 +52,8 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <div>
-          <Button style={iconStyle}><img src={require('../images/menu.png')} onClick={this.props.handleToggleDrawer}/></Button>
           <SidebarNavigation/>
           <MainRouter />
-        </div>
       </div>
     );
   } 
@@ -94,9 +91,6 @@ const mapDispatchToProps = (dispatch) => {
     },
     handleSetCurrentPanel(panel) {
       dispatch(setCurrentPanel(panel));
-    },
-    handleToggleDrawer() {
-      dispatch(toggleDrawer());
     },
     handleCreateTicketRendered() {
       dispatch(toggleCreateTicket());

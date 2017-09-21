@@ -86,58 +86,76 @@ class EditTicket extends React.Component {
                 <Modal.Header bsSize='large' style={{backgroundColor: '#7ED321'}}>
                   <Modal.Title style={{color: 'white'}}>Edit Ticket</Modal.Title>
                   </Modal.Header>
-                  <Modal.Body>
-                      <Form horizontal>
-                          <FormGroup>
-                            <Col componentClass={ControlLabel} sm={4}>Ticket Title</Col>
-                            <Col sm={8}>
-                            <FormControl name='Ticket Title' bsSize="large" type="text" placeholder={this.props.currentTicket.title} onChange={this.handleTitleChange.bind(this)}></FormControl>
-                            </Col>
-                          </FormGroup>
-                          <FormGroup>
-                            <Col componentClass={ControlLabel} sm={4}>Ticket Description</Col>
-                            <Col sm={8}>
-                            <FormControl name='Ticket Description' componentClass="textarea" bsSize="large" placeholder={this.props.currentTicket.description} onChange={this.handleDescriptionChange.bind(this)}></FormControl>
-                            </Col>
-                          </FormGroup>
-                      <ButtonToolbar>
-                      <DropdownButton title={this.state.assignee_handle ? this.state.assignee_handle : this.props.currentTicket.assignee_handle} pullRight id="split-button-pull-right">
-                        <MenuItem eventKey="1" onClick={this.handleSelectAssignee.bind(this)}>{this.props.currentTicket.assignee_handle}</MenuItem>
-                      </DropdownButton>
-                      
-                      <DropdownButton title={this.state.type ? this.state.type : this.props.currentTicket.type} pullRight id="split-button-pull-right">
-                        <MenuItem eventKey="1" onClick={this.handleSelectType.bind(this)}>{'bug'}</MenuItem>
-                        <MenuItem eventKey="2" onClick={this.handleSelectType.bind(this)}>{'feature'}</MenuItem>
-                        <MenuItem eventKey="3" onClick={this.handleSelectType.bind(this)}>{'devops'}</MenuItem>
-                      </DropdownButton>
+                    <Modal.Body>
+                        <Form horizontal>
+                            <FormGroup>
+                              <Col componentClass={ControlLabel} sm={2}>Title: </Col>
+                              <Col sm={8}>
+                              <FormControl name='Ticket Title' bsSize="large" type="text" placeholder={this.props.currentTicket.title} onChange={this.handleTitleChange.bind(this)}></FormControl>
+                              </Col>
+                            </FormGroup>
+                            <FormGroup>
+                              <Col componentClass={ControlLabel} sm={2}>Description: </Col>
+                              <Col sm={8}>
+                              <FormControl name='Ticket Description' componentClass="textarea" bsSize="large" placeholder={this.props.currentTicket.description} onChange={this.handleDescriptionChange.bind(this)}></FormControl>
+                              </Col>
+                            </FormGroup>
+                            
+                            <div className="edit-ticket">
+                              <div className="select-assignee">
+                                <Col componentClass={ControlLabel} sm={2}>Assignee: </Col>
+                                <DropdownButton title={this.state.assignee_handle ? this.state.assignee_handle : this.props.currentTicket.assignee_handle} pullRight id="split-button-pull-right">
+                                  <MenuItem eventKey="1" onClick={this.handleSelectAssignee.bind(this)}>{this.props.currentTicket.assignee_handle}</MenuItem>
+                                </DropdownButton>
+                                </div>
+                            
+                              <div className="select-type">
+                              <Col componentClass={ControlLabel} sm={2}>Type: </Col>
+                              <DropdownButton title={this.state.type ? this.state.type : this.props.currentTicket.type} pullRight id="split-button-pull-right">
+                                <MenuItem eventKey="1" onClick={this.handleSelectType.bind(this)}>{'bug'}</MenuItem>
+                                <MenuItem eventKey="2" onClick={this.handleSelectType.bind(this)}>{'feature'}</MenuItem>
+                                <MenuItem eventKey="3" onClick={this.handleSelectType.bind(this)}>{'devops'}</MenuItem>
+                              </DropdownButton>
+                                </div>
 
-                      <DropdownButton title={this.state.priority ? this.state.priority : this.props.currentTicket.priority} pullRight id="split-button-pull-right">
-                        <MenuItem eventKey="1" onClick={this.handleSelectPriority.bind(this)}>{1}</MenuItem>
-                        <MenuItem eventKey="2" onClick={this.handleSelectPriority.bind(this)}>{2}</MenuItem>
-                        <MenuItem eventKey="3" onClick={this.handleSelectPriority.bind(this)}>{3}</MenuItem>
-                      </DropdownButton>
+                              <div className="select-priority">
+                              <Col componentClass={ControlLabel} sm={2}>Priority: </Col>
+                              <DropdownButton title={this.state.priority ? this.state.priority : this.props.currentTicket.priority} pullRight id="split-button-pull-right">
+                                <MenuItem eventKey="1" onClick={this.handleSelectPriority.bind(this)}>{1}</MenuItem>
+                                <MenuItem eventKey="2" onClick={this.handleSelectPriority.bind(this)}>{2}</MenuItem>
+                                <MenuItem eventKey="3" onClick={this.handleSelectPriority.bind(this)}>{3}</MenuItem>
+                              </DropdownButton>
+                                </div>
 
-                      <DropdownButton title={this.state.status ? this.state.status : this.props.currentTicket.status} pullRight id="split-button-pull-right">
-                          <MenuItem eventKey="1" onClick={this.handleSelectStatus.bind(this)}>{'not started'}</MenuItem>
-                          <MenuItem eventKey="2" onClick={this.handleSelectStatus.bind(this)}>{'in progress'}</MenuItem>
-                          <MenuItem eventKey="3" onClick={this.handleSelectStatus.bind(this)}>{'complete'}</MenuItem>
-                        </DropdownButton>
+                              <div className="select-status">
+                                <Col componentClass={ControlLabel} sm={2}>Status: </Col>
+                                <DropdownButton title={this.state.status ? this.state.status : this.props.currentTicket.status} pullRight id="split-button-pull-right">
+                                    <MenuItem eventKey="1" onClick={this.handleSelectStatus.bind(this)}>{'not started'}</MenuItem>
+                                    <MenuItem eventKey="2" onClick={this.handleSelectStatus.bind(this)}>{'in progress'}</MenuItem>
+                                    <MenuItem eventKey="3" onClick={this.handleSelectStatus.bind(this)}>{'complete'}</MenuItem>
+                                  </DropdownButton>
+                                </div>
+                              
+                              <div className="select-panel">
+                                <Col componentClass={ControlLabel} sm={2}>Panel: </Col>
+                                <DropdownButton title={this.state.panel_name ? this.state.panel_name : this.props.currentPanel.name} pullRight id="split-button-pull-right">
+                                {this.props.panels.map(panel => <MenuItem id={panel.id} eventKey={panel.id} onClick={this.handleSelectPanel.bind(this)}> {panel.name} </MenuItem>)}
+                                </DropdownButton>
+                              </div>
+                            </div>
                       
-                      <DropdownButton title={this.state.panel_name ? this.state.panel_name : this.props.currentPanel.name} pullRight id="split-button-pull-right">
-                      {this.props.panels.map(panel => <MenuItem id={panel.id} eventKey={panel.id} onClick={this.handleSelectPanel.bind(this)}> {panel.name} </MenuItem>)}
-                    </DropdownButton>
-                    
-                    </ButtonToolbar>
-                    <Button style={buttonStyle} bsStyle="default" onClick={this.props.handleEditTicketRendered}>Cancel</Button>
-                    <Button style={buttonStyle} bsStyle="primary" type="button" onClick={() => 
-                      {let { panel_name, ...editedTicket} = this.state; 
-                      console.log('HELLO', editedTicket); 
-                      this.props.handleEditCurrentTicket(Object.assign({}, editedTicket, {creator_id:
-                        this.props.userId, board_id: this.props.currentBoardId, id: this.props.currentTicket.id})); this.handleOnEdit();
-                      this.props.handleEditTicketRendered();}}>Update</Button>
-                    </Form>
-                  </Modal.Body>
-                </Modal>
+                      <div className="edit-cancel-ticket">
+                        <Button style={buttonStyle} bsStyle="default" onClick={this.props.handleEditTicketRendered}>Cancel</Button>
+                        <Button style={buttonStyle} bsStyle="primary" type="button" onClick={() => 
+                          {let { panel_name, ...editedTicket} = this.state; 
+                          console.log('HELLO', editedTicket); 
+                          this.props.handleEditCurrentTicket(Object.assign({}, editedTicket, {creator_id:
+                            this.props.userId, board_id: this.props.currentBoardId, id: this.props.currentTicket.id})); this.handleOnEdit();
+                          this.props.handleEditTicketRendered();}}>Update</Button>
+                        </div>
+                      </Form>
+                    </Modal.Body>
+                  </Modal>
                 </Row>
               </Col>
             </Grid>

@@ -1,16 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
-<<<<<<< HEAD
-=======
-import Panel from './Panel.jsx';
-import { getPanelsByBoard, getTicketsByPanel, toggleEditBoard } from '../redux/actionCreators.js';
->>>>>>> implemented css styling on boards, panels, and tickets
 import { Carousel, Button, NavItem } from 'react-bootstrap';
 import Slider from 'react-slick';
 import PrevArrow from 'react-slick';
-import '../../../ticketStyle.css';
+import '../../../styles.css';
 
-import { getPanelsByBoard, getTicketsByPanel, toggleEditBoard, toggleCreatePanel } from '../redux/actionCreators.js';
+import { getPanelsByBoard, getTicketsByPanel, toggleEditBoard, toggleCreatePanel, setCurrentPanel } from '../redux/actionCreators.js';
 import Panel from './Panel.jsx';
 import CreateBoard from './CreateBoard.jsx';
 import CreatePanel from './CreatePanel.jsx';
@@ -18,8 +13,18 @@ import CreateTicket from './CreateTicket.jsx';
 import EditBoard from './EditBoard.jsx';
 import EditPanel from './EditPanel.jsx';
 import EditTicket from './EditTicket.jsx';
+import PerformanceDashboard from './PerformanceDashboard.jsx';
 
 const Board = (props) => {
+
+  const setCurrentPanelByIndex = (index) => {
+    for (var i = 0; i < props.panels.length; i++) {
+      if (index === i) {
+        props.handleSetCurrentPanel(props.panels[i]);
+      }
+    }
+  };
+
   let settings = {
     slidesToShow: 3,
     slidesToScroll: 1,
@@ -30,53 +35,45 @@ const Board = (props) => {
     draggable: false,
     initialSlide: 3,
     useCSS: true,
-    slickGoTo: 3
+    slickGoTo: 3,
+    afterChange: (index) => {setCurrentPanelByIndex(index);}
   };
 
-  const panelStyle = {
+  let panelStyle = {
     height: '650px'
-  };
-
-  const boardNameStyle = {
-    fontSize: '20px',
-    color: 'black',
-    fontWeight: 'normal',
-    display: 'flex',
-    listStyle: 'none',
   };
 
   return (  
     <div>
       <CreateBoard />
-      <CreatePanel />
       <CreateTicket />
       <EditBoard />
       <EditPanel />
       <EditTicket />
-      <NavItem className="boardName" style={boardNameStyle} eventKey={1} onClick={() => {
-        props.handleEditBoardRendered();}}>
-        {props.currentBoard.board_name}
-      </NavItem> 
-      <Button onClick={() => props.handleCreatePanelRendered()}>Create Panel</Button>
-      <Slider {...settings}>
-        {props.panels.map(panel => 
-        <div><Panel panelInfo={panel} key={panel.id} style={panelStyle}/></div>)}
-      </Slider>
+      <CreatePanel />
+      <PerformanceDashboard/>
+      <div className="full-board">
+        <div className="board-header">
+          <NavItem className="board-name" eventKey={1} onClick={() => {
+            props.handleEditBoardRendered();}}>
+            {props.currentBoard.board_name}
+          </NavItem> 
+          <Button bsStyle="primary" onClick={() => props.handleCreatePanelRendered()}>Create Panel</Button>
+        </div>
+        <Slider {...settings}>
+          {props.panels.map((panel, index) => 
+          <div><Panel panelInfo={panel} key={panel.id} style={panelStyle}/></div>)}
+        </Slider>
+      </div>
     </div>
   );
 };
 
 const mapStateToProps = (state) => {
   return {
-<<<<<<< HEAD
-    'currentBoard': state.rootReducer.currentBoard,
-    'panels': state.rootReducer.panels,
+    currentBoard: state.rootReducer.currentBoard,
+    panels: state.rootReducer.panels,
     currentPanel: state.rootReducer.currentPanel
-=======
-    'currentBoard': state.currentBoard,
-    'panels': state.panels,
-    'currentPanel': state.currentPanel
->>>>>>> implemented css styling on boards, panels, and tickets
   };
 };
 
@@ -90,12 +87,12 @@ const mapDispatchToProps = (dispatch) => {
     },
     handleEditBoardRendered() {
       dispatch(toggleEditBoard());
-<<<<<<< HEAD
     },
     handleCreatePanelRendered() {
       dispatch(toggleCreatePanel());
-=======
->>>>>>> implemented css styling on boards, panels, and tickets
+    },
+    handleSetCurrentPanel(panel) {
+      dispatch(setCurrentPanel(panel));
     }
   };
 };

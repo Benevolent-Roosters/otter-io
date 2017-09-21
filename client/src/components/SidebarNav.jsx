@@ -6,66 +6,37 @@ import { Thumbnail, Image, Button } from 'react-bootstrap';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
 
-let counter = 0; 
-
-let getRandomColor = function() {
-  var letters = '0123456789ABCDEF';
-  var color = '#';
-  for (var i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)];
-  }
-  return color;
-};
-
+/** STYLES FOR MATERIAL-UI COMPONENTS, GRID TILE STYLE DONE INLINE DUE TO NEED TO REFERENCE getRandomColor() **/
 const styles = {
-  root: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    justifyContent: 'space-around',
-    color: 'blue'
-  },
   gridList: {
     marginTop: '25px',
     marginBottom: '25px'
   },
 
-  tiles: {
-    backgroundColor: getRandomColor()
-  },
-
-  profileImage: {
-    display: 'block',
-    margin: '0 auto', 
-    marginTop: '15px', 
-    marginLeft: '15px', 
-    marginRight: '15px',
-    backgroundColor: 'rgba(0, 0, 0, 0)',
-    border: '0px',
-    borderRadius: '0px'
-  },
-
-  createBoardImage: {
-    display: 'block',
-    height: 'auto',
-    maxWidth: '100%',
-    marginTop: '15px',
-    marginRight: 'auto',
-    marginLeft: 'auto',
-    position: 'absolute',
-    bottom: '50px',
-    left: '64.5px',
-    backgroundColor: 'rgba(0, 0, 0, 0)',
-    border: '0px',
-    borderRadius: '0px'
-  },
-
   createBoardButton: {
     display: 'block',
     margin: '0 auto'
+  },
+
+  userHandle: {
+    textAlign: 'center', 
+    marginBottom: '15px'
   }
 };
 
 const SidebarNavigation = (props) => {
+
+  let getRandomColor = function() {
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+  
+    if (props.drawerToggled) {
+      for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    }
+  };
 
   let findCurrentPanel = (panels) => {
     let dueDates = panels.map(panel => panel.due_date.slice(0, 10));
@@ -97,18 +68,18 @@ const SidebarNavigation = (props) => {
   return (
     <div>
       <Drawer containerStyle={{backgroundColor: '#ffffff'}} docked={false} open={props.drawerToggled} onRequestChange={(open) => props.handleToggledDrawer(open)}>
-        <Thumbnail href="#" style={styles.profileImage} src={require('../images/business-person-silhouette-wearing-tie.png')} />
+        <Thumbnail href="#" src={require('../images/business-person-silhouette-wearing-tie.png')} />
 
-        <h3 style={{textAlign: 'center', marginBottom: '15px'}}>@{props.gitHandle}</h3>
+        <h3 style={styles.userHandle}>@{props.gitHandle}</h3>
 
         <Button style={styles.createBoardButton} bsSize='large' bsStyle='primary' onClick={(open) => {props.handleToggledDrawer(open); props.handleCreateBoardRendered();}}>Create Board</Button>
 
-        <GridList style={styles.gridList} cols={1} padding={15}>
+        <GridList className="grid-list" style={styles.gridList} cols={1} padding={15}>
           {props.boards.map(board => 
             <Link to={`/boards/${board.id}`}>
               <GridTile style={{marginLeft: '15px', marginRight: '15px', backgroundColor: getRandomColor()}} 
                 key={board.id} title={board.board_name} 
-                onClick={() => { onBoardClick(board.id); props.handleSetCurrentBoard(board); props.handleToggledDrawer();}}> 
+                onClick={() => { onBoardClick(board.id); props.handleSetCurrentBoard(board); props.handleToggledDrawer(); }}> 
               </GridTile>
             </Link>
             )
@@ -122,11 +93,11 @@ const SidebarNavigation = (props) => {
 
 const mapStateToProps = (state) => {
   return {
-    'gitHandle': state.rootReducer.user.github_handle,
-    'profilePicture': state.rootReducer.user.profile_photo,
-    'boards': state.rootReducer.boards,
-    'currentBoard': state.rootReducer.currentBoard,
-    'drawerToggled': state.rootReducer.drawerToggled
+    gitHandle: state.rootReducer.user.github_handle,
+    profilePicture: state.rootReducer.user.profile_photo,
+    boards: state.rootReducer.boards,
+    currentBoard: state.rootReducer.currentBoard,
+    drawerToggled: state.rootReducer.drawerToggled
   };
 };
 
