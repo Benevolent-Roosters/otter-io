@@ -1,0 +1,3 @@
+# Used for ignoring Yarn dependencies so we don't have to deal with Heroku conflicts
+
+yarn.lock
