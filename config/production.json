@@ -16,8 +16,8 @@
   },
 "passport": {
     "Github": {
-      "clientID": "fe9d75e3a4abd94700a5",
-      "clientSecret": "7b0071763edfcdac32fb406c1e040875e13fe81a",
+      "clientID": "6fafeefa7f624ac495ed",
+      "clientSecret": "3834b55b98aaf533bb7d4ecd3a5d038ee3e47b9c",
       "callbackURL": "https://otter-io.herokuapp.com/auth/github/callback"
     }
   },
