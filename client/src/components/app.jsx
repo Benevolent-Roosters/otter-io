@@ -9,13 +9,6 @@ import MainRouter from './MainRouter.jsx';
 import SidebarNavigation from './SidebarNav.jsx';
 import { getUserInfo, getBoardsByUser, getPanelsByBoard, getTicketsByPanel, setCurrentPanel, setCurrentBoard, toggleDrawer, toggleCreateBoard, toggleEditBoard, toggleCreateTicket, toggleEditTicket, toggleCreatePanel } from '../redux/actionCreators.js';
 
-const iconStyle = {
-  position: 'absolute',
-  top: '10px',
-  left: '10px',
-  backgroundColor: 'white'
-};
-
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -31,7 +24,7 @@ class App extends React.Component {
               context.props.handleSetTickets(panel.id);
             }
             let closestIndex = context.findCurrentPanel(panels);
-            context.props.handleSetCurrentPanel(panels[closestIndex]);    
+            context.props.handleSetCurrentPanel(panels[closestIndex]);
           }
         });
       });
@@ -40,13 +33,17 @@ class App extends React.Component {
 
   findCurrentPanel(panels) {
     let dueDates = panels.map(panel => panel.due_date.slice(0, 10));
+    let futureDueDates = [];
+    dueDates.forEach(date => {if (moment().diff(date) < 0) {futureDueDates.push(date);}});
     let closest = 0;
-    for (let i = 0; i < dueDates.length; i++) {
-      if (moment().diff(dueDates[i]) < 0 && moment().diff(dueDates[i]) > moment().diff(dueDates[closest])) {
-        closest = i;
+    for (let i = 0; i < futureDueDates.length; i++) {
+      if (futureDueDates[i]) {
+        if ((moment().diff(futureDueDates[i]) > moment().diff(futureDueDates[closest]))) {
+          closest = i;
+        }
       }
     }
-    return closest;
+    return dueDates.indexOf(futureDueDates[closest]);
   }
 
   render() {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { postCreatedPanel, getPanelsByBoard, toggleCreatePanel } from '../redux/actionCreators.js';
+import { postCreatedPanel, getPanelsByBoard, toggleCreatePanel, setCurrentPanel } from '../redux/actionCreators.js';
 import axios from 'axios';
 import { Modal, Form, FormGroup, ControlLabel, Col, FormControl, Button } from 'react-bootstrap';
 import DatePicker from 'material-ui/DatePicker';
@@ -94,6 +94,9 @@ const mapDispatchToProps = dispatch => {
     },
     handleCreatePanelRendered() {
       dispatch(toggleCreatePanel());
+    },
+    handleSetCurrentPanel(panelObj) {
+      dispatch(setCurrentPanel(panelObj));
     }
   };
 };

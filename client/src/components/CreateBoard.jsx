@@ -43,21 +43,21 @@ class CreateBoard extends React.Component {
                       <FormGroup>
                         <Col componentClass={ControlLabel} sm={4}>Board Name</Col>
                         <Col sm={8}>
-                        <FormControl name='board_name' bsSize="large" type="text" value={this.state.board_name} placeholder={'Board name'} onChange={this.handleInputChange.bind(this)}></FormControl>
+                        <FormControl name='board_name' bsSize="large" type="text" placeholder={'Board name'} onChange={this.handleInputChange.bind(this)}></FormControl>
                         </Col>
                       </FormGroup>
 
                       <FormGroup>
                         <Col componentClass={ControlLabel} sm={4}>Github Repo URL</Col>
                         <Col sm={8}>
-                        <FormControl name='repo_url' bsSize="large" type="text" value={this.state.repo_url} placeholder={'Github Repo'} onChange={ this.handleInputChange.bind(this)}></FormControl>
+                        <FormControl name='repo_url' bsSize="large" type="text" placeholder={'Github Repo'} onChange={ this.handleInputChange.bind(this)}></FormControl>
                         </Col>
                       </FormGroup>
 
                       <FormGroup>
                         <Col componentClass={ControlLabel} sm={4}>Add Members</Col>
                         <Col sm={8}>
-                        <FormControl name='members' bsSize="large" type="text" value={this.state.members} placeholder={'enter emails separated by commas'} onChange={ this.handleInputChange.bind(this) }></FormControl>
+                        <FormControl name='members' bsSize="large" type="text" placeholder={'enter emails separated by commas'} onChange={ this.handleInputChange.bind(this) }></FormControl>
                         </Col>
                       </FormGroup>
 
@@ -65,7 +65,7 @@ class CreateBoard extends React.Component {
                       <Button style={buttonStyle} bsStyle="primary" type="button" onClick={() => {
                         let { members, ...newBoard} = this.state; 
                         this.props.handlePostCreatedBoard(newBoard); 
-                        this.props.handleSetCurrentBoard(newBoard); 
+                        {/* this.props.handleSetCurrentBoard(newBoard);  */}
                         this.props.handleCreateBoardRendered();}}>Create</Button>
                     </Form>
                   </Modal.Body>

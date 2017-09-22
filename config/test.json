@@ -1,0 +1,33 @@
+{
+  "knex": {
+    "connection": {
+      "database": "thesis_test"
+    }
+  },
+
+  "passport": {
+    "Google": {
+      "clientID": "FILL_ME_IN",
+      "clientSecret": "FILL_ME_IN",
+      "callbackURL": "http://FILL_ME_IN/auth/google/callback"
+    },
+
+    "Facebook": {
+      "clientID": "FILL_ME_IN",
+      "clientSecret": "FILL_ME_IN",
+      "callbackURL": "http://FILL_ME_IN/auth/facebook/callback"
+    },
+
+    "Twitter": {
+      "consumerKey": "FILL_ME_IN",
+      "consumerSecret": "FILL_ME_IN",
+      "callbackURL": "http://FILL_ME_IN/auth/twitter/callback"
+    },
+
+    "Github": {
+      "clientID": "c6726c5af02ea714936e",
+      "clientSecret": "8c1725ea436714d8d16145692172ca481e8d7a85",
+      "callbackURL": "http://localhost:3000/auth/github/callback"
+    }
+  }
+}

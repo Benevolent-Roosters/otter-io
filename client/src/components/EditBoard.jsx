@@ -29,15 +29,37 @@ class EditBoard extends React.Component {
     return this.props.boards.slice(0, idx).concat(editedBoard).concat(this.props.boards.slice(idx + 1));
   }
 
-  handleInputChange(event) {
-    const target = event.target;
-    const value = target.value;
-    const name = target.name;
-
+  handleBoardNameChange(event) {
     this.setState({
-      [name]: value,
+      board_name: event.target.value || this.props.currentBoard.board_name,
+      repo_url: this.props.currentBoard.repo_url,
       owner_id: this.props.owner_id,
-      id: this.props.currentBoard.id      
+      id: this.props.currentBoard.id
+    })
+  }
+
+  handleRepoUrlChange(event) {
+    this.setState({
+      board_name: this.props.currentBoard.board_name,
+      repo_url: event.target.value || this.props.currentBoard.repo_url,
+      owner_id: this.props.owner_id,
+      id: this.props.currentBoard.id
+    })
+  }
+
+  handleMembersChange(event) {
+    this.setState({
+      board_name: this.props.currentBoard.board_name,
+      repo_url: this.props.currentBoard.repo_url,
+      owner_id: this.props.owner_id,
+      id: this.props.currentBoard.id,
+      members: event.target.value
+    })
+  }
+
+  resetMembersForm() {
+    this.setState({
+      members: ''
     });
   }
 
@@ -57,14 +79,14 @@ class EditBoard extends React.Component {
                       <FormGroup>
                         <Col componentClass={ControlLabel} sm={4}>Board Name</Col>
                         <Col sm={8}>
-                        <FormControl name='board_name' bsSize="large" type="text" value={this.state.board_name} placeholder={this.props.currentBoard.board_name} onChange={this.handleInputChange.bind(this)}></FormControl>
+                        <FormControl name='board_name' bsSize="large" type="text" value={this.state.board_name} placeholder={this.props.currentBoard.board_name} onChange={this.handleBoardNameChange.bind(this)}></FormControl>
                         </Col>
                       </FormGroup>
 
                       <FormGroup>
                         <Col componentClass={ControlLabel} sm={4}>Github Repo URL</Col>
                         <Col sm={8}>
-                        <FormControl name='repo_url' bsSize="large" type="text" value={this.state.repo_url} placeholder={this.props.currentBoard.repo_url} onChange={ this.handleInputChange.bind(this)}></FormControl>
+                        <FormControl name='repo_url' bsSize="large" type="text" value={this.state.repo_url} placeholder={this.props.currentBoard.repo_url} onChange={ this.handleRepoUrlChange.bind(this)}></FormControl>
                         </Col>
                       </FormGroup>
                     </Form>
@@ -72,16 +94,19 @@ class EditBoard extends React.Component {
                     <FormGroup>
                       <Col componentClass={ControlLabel} sm={4}>Add Members</Col>
                       <Col sm={8}>
-                      <FormControl name='members' bsSize="large" type="text" value={this.state.members} placeholder={'enter emails separated by commas'} onChange={this.handleInputChange.bind(this)}></FormControl>
+                      <FormControl name='members' bsSize="large" type="text" value={this.state.members} placeholder={'enter emails separated by commas'} onChange={this.handleMembersChange.bind(this)}></FormControl>
                       </Col>
                     </FormGroup>
 
                     <Button style={buttonStyle} bsStyle="default" onClick={this.props.handleEditBoardRendered}>Cancel</Button>
                     <Button style={buttonStyle} bsStyle="primary" type="button" onClick={() => {
+                      console.log(this.state);
                       let { members, ...editedBoard} = this.state;
                       this.props.handleEditBoard(this.reorderBoards.bind(this), editedBoard); 
                       this.props.handleEditBoardRendered(); 
-                      this.props.handleInviteBoard(this.state.id, this.state.members); }}>Update</Button>
+                      this.props.handleInviteBoard(this.state.id, this.state.members);
+                      this.resetMembersForm(); 
+                      }}>Update</Button>
                     
                   </Modal.Body>
                 </Modal>

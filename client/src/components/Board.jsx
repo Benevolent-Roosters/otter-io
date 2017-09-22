@@ -15,7 +15,15 @@ import EditPanel from './EditPanel.jsx';
 import EditTicket from './EditTicket.jsx';
 import PerformanceDashboard from './PerformanceDashboard.jsx';
 
+let slideRendered = {hasRun: false, runCount: 0};
+let slickRendered = {hasRun: false, runCount: 0};
+
 const Board = (props) => {
+
+  let count = () => {
+    console.log('this is the run count');
+    return props.panels.indexOf(props.currentPanel);
+  };
 
   const setCurrentPanelByIndex = (index) => {
     for (var i = 0; i < props.panels.length; i++) {
@@ -33,9 +41,9 @@ const Board = (props) => {
     centerMode: true,
     focusOnSelect: true,
     draggable: false,
-    initialSlide: 3,
+    initialSlide: count(),
     useCSS: true,
-    slickGoTo: 3,
+    slickGoTo: count(),
     afterChange: (index) => {setCurrentPanelByIndex(index);}
   };
 
@@ -43,7 +51,7 @@ const Board = (props) => {
     height: '650px'
   };
 
-  return (  
+  return (
     <div>
       <CreateBoard />
       <CreateTicket />

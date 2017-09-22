@@ -76,8 +76,9 @@ const SidebarNavigation = (props) => {
   return (
     <div>
       <Drawer containerStyle={{backgroundColor: '#ffffff'}} docked={false} open={props.drawerToggled} onRequestChange={(open) => props.handleToggledDrawer(open)}>
-        <Thumbnail href="#" src={require('../images/business-person-silhouette-wearing-tie.png')} />
 
+        <Thumbnail href="/myprofile" src={props.profilePicture} />
+        
         <h3 style={styles.userHandle}>@{props.gitHandle}</h3>
 
         <Button style={styles.createBoardButton} bsSize='large' bsStyle='primary' onClick={(open) => {props.handleToggledDrawer(open); props.handleCreateBoardRendered();}}>Create Board</Button>

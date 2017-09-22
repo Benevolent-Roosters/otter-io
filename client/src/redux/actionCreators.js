@@ -203,7 +203,7 @@ export function postCreatedBoard(newBoard) {
     /** Add new board info to board and currentBoard state ONLY if it successfully saved **/
       .then(response => {
         dispatch(addBoard(response.data));
-        dispatch(setCurrentBoard(response.data)); //set current state to most recently created Board
+        // dispatch(setCurrentBoard(response.data)); //set current state to most recently created Board
       })
       
       .catch(error => {

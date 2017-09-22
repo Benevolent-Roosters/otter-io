@@ -141,6 +141,34 @@ class EditTicket extends React.Component {
     }
   }
 
+  // checkPriorityState() {
+  //   if (this.state.priority) {
+  //     if (this.state.priority === 1) {
+  //       return 'Low';
+  //     } else if (this.state.priority === 2) {
+  //       return 'Medium';
+  //     } else {
+  //       return 'High';
+  //     }
+  //   } else {
+  //     return;
+  //   }
+  // }
+
+  // checkPropsPriorityState() {
+  //   if (this.props.currentTicket.priority) {
+  //     if (this.props.currentTicket.priority === 1) {
+  //       return 'Low';
+  //     } else if (this.props.currentTicket.priority === 2) {
+  //       return 'Medium';
+  //     } else {
+  //       return 'High';
+  //     }
+  //   } else {
+  //     return;
+  //   }
+  // }
+
   resetForm() {
     this.setState(this.baseState);
   }
@@ -195,9 +223,9 @@ class EditTicket extends React.Component {
                               <div className="select-priority">
                               <Col componentClass={ControlLabel} sm={2}>Priority: </Col>
                               <DropdownButton title={this.state.priority ? this.state.priority : this.props.currentTicket.priority} pullRight id="split-button-pull-right">
-                                <MenuItem eventKey="1" onClick={this.handleSelectPriority.bind(this)}>{1}</MenuItem>
-                                <MenuItem eventKey="2" onClick={this.handleSelectPriority.bind(this)}>{2}</MenuItem>
-                                <MenuItem eventKey="3" onClick={this.handleSelectPriority.bind(this)}>{3}</MenuItem>
+                                <MenuItem eventKey="1" id={1} onClick={this.handleSelectPriority.bind(this)}>{1}</MenuItem>
+                                <MenuItem eventKey="2" id={2} onClick={this.handleSelectPriority.bind(this)}>{2}</MenuItem>
+                                <MenuItem eventKey="3" id={3} onClick={this.handleSelectPriority.bind(this)}>{3}</MenuItem>
                               </DropdownButton>
                                 </div>
 
