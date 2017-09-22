@@ -50,6 +50,7 @@ module.exports.getPanelTicketsByUser = (req, res) => {
 };
 
 module.exports.createPanelTicket = (req, res) => {
+
   if (helper.checkUndefined(
     req.body.title,
     req.body.description,
@@ -87,6 +88,7 @@ module.exports.createPanelTicket = (req, res) => {
   };
   //check that assignee_handle is actually a member of the board_id
   //get members of board
+  console.log('typeof boardid', typeof ticketObj.board_id);
   dbhelper.getUsersByBoard(parseInt(ticketObj.board_id))
     .then((users) => {
       if (!users) {
@@ -125,6 +127,11 @@ module.exports.getOneTicket = (req, res) => {
       if (!ticket) {
         throw 'cant get ticket by id';
       }
+      // Req from CLI contains board_id; if CLI repo board ID doesn't match ticket board ID, send 401      
+      if (req.query.board_id && parseInt(req.query.board_id) !== ticket.board_id) {
+        res.status(401).send('invalid ticket id');
+        return;
+      }
       res.status(200).send(ticket);
     })
     .catch((err) => {
@@ -159,10 +166,13 @@ module.exports.updateTicket = (req, res) => {
     res.status(400).send('one of parameters from client is undefined');
     return;
   }
-  var ticketObj = req.body;
 
-  // API key included in request from CLI; removing from ticket being stored in DB
+  var ticketObj = req.body;
+  var ticketId = ticketObj.id;
+
+  // These included in request from CLI; removing from ticket being stored in DB
   delete ticketObj.api_key;
+  delete ticketObj.user_id;
 
   var validKeys = {
     'id': true,
@@ -184,14 +194,12 @@ module.exports.updateTicket = (req, res) => {
       }
     }
   }
-  var ticketId = ticketObj.id;
   if (!ticketId) {
     res.status(400).send(`Update ticket object ${JSON.stringify(ticketId)} doesnt have id field`);
     return;
   }
   dbhelper.getTicketById(parseInt(ticketId))
     .then(ticket => {
-      console.log('HEY', ticket);
       if (!ticket) {
         throw 'cant get ticket by id';
       }

@@ -5,8 +5,8 @@ const models = require('../../db/models');
 const dbhelper = require('../../db/helpers.js');
 const helper = require('../controllers/helper');
 
+// console.log(redisClient);
 
-console.log(redisClient);
 //for testing purposes to set up a fake login session
 module.exports.fakemiddleware = (req, res, next) => {
   if (req && req.session && req.session.user_tmp) {
@@ -41,12 +41,14 @@ module.exports.verifyAPIKey = (req, res, next) => {
   // LOCATE API KEY
   if (req.query.api_key) {
     apiKey = req.query.api_key;
+  } else if (req.params.api_key) {
+    apiKey = req.params.api_key;
   } else {
     apiKey = req.body.api_key;
   }
 
   dbhelper.getUserByApiKey(apiKey)
-
+  
     .then(user => {
       if (!user) {
         return res.status(401).send();
@@ -68,20 +70,32 @@ module.exports.verifyAPIKey = (req, res, next) => {
 };
 
 //to be used as middleware auth before performing BOARD CRUD api croutes
+// Should this use checkIfMemberOfPanelId helper??
 module.exports.verifyBoardMemberElse401 = (req, res, next) => {
-  var boardid;
-  // console.log('query:', req.query);
-  if (!req.params && !req.body && !req.query) {
-    res.status(400).send('board id couldnt be found in request from client');
-  }
+
+  // console.log('BODY', req.body)
+  // console.log('QUERY', req.query)
+  // console.log('PARAMS', req.params)
+
+  let boardid;
+
   if (req.params && req.params.id) {
     boardid = parseInt(req.params.id);
-  } else if (req.body && req.body.id) {
-    boardid = parseInt(req.body.id);
-  } else {
+  }
+  // CLI get request data sent in req.query
+  else if (req.query && req.query.board_id) {
     boardid = parseInt(req.query.board_id);
   }
-  var userId = req.user ? req.user.id : req.query.user_id;
+  // CLI post request data sent in body
+  else if (req.body && req.body.id || req.body.board_id) {
+    boardid = req.body.id ? parseInt(req.body.id) : parseInt(req.body.board_id);
+  } else {
+    res.status(400).send('board id couldnt be found in request from client');
+  }
+
+  var cliUser = req.query ? req.query.user_id : req.body.user_id;
+
+  var userId = req.user ? req.user.id : cliUser;
 
   //see whether the boardid shows up under any of the users boards
   dbhelper.getBoardsByUser(parseInt(userId))
@@ -146,9 +160,11 @@ module.exports.verifyBoardOwnerElse401 = (req, res, next) => {
     });
 };
 
-//to be used as middleware auth before performing a specific GET PANEL apir route or some TICKET CRUD api routes
+//to be used as middleware auth before performing a specific GET PANEL api route or some TICKET CRUD api routes
+// Should this use checkIfMemberOfPanelId helper??
 module.exports.verifyPanelMemberElse401 = (req, res, next) => {
-  var panelid;
+
+  let panelid;
   if (!req.query && !req.body && !req.params) {
     res.status(400).send('panel id couldnt be found in request from client');
   }
@@ -159,7 +175,10 @@ module.exports.verifyPanelMemberElse401 = (req, res, next) => {
   } else {
     panelid = parseInt(req.params.id);
   }
-  var userId = req.user.id;
+
+  var cliUser = req.query.user_id ? req.query.user_id : req.body.user_id;
+
+  var userId = req.user ? req.user.id : cliUser;
 
   //see whether the user belongs to panelid's board
   helper.checkIfMemberOfPanelId(userId, panelid)
@@ -189,6 +208,7 @@ module.exports.verifyTicketMemberElse401 = (req, res, next) => {
   } else {
     ticketid = parseInt(req.params.id);
   }
+  // 
   var userId = req.user.id;
   //see whether the ticketid's shows up under any of the users boards
   dbhelper.getTicketById(parseInt(ticketid))
@@ -283,3 +303,36 @@ module.exports.session = session({
   resave: false,
   saveUninitialized: false
 });
+
+module.exports.verifyTicketAssigneeElse401 = (req, res, next) => {
+
+  if (!req.body.assignee_handle) {
+    res.status(400).send('ticket assignee not found in request from client');
+  }
+
+  dbhelper.getUserByHandle(req.body.assignee_handle)
+    .then(user => {
+      return dbhelper.getBoardsByUser(user.id);
+    })
+    .then(boards => {
+      if (!boards) {
+        throw 'unable to verify boards for ticket assignee';
+      }
+      return boards.filter((eachBoard) => {
+        return eachBoard.id === req.body.board_id;
+      });
+    })
+    .then(function(results) {
+      if (results.length === 0) {
+        res.status(401).send();
+      } else {
+        return next();
+      }
+    })
+    .error(err => {
+      res.status(500).send('internal error');
+    })
+    .catch(err => {
+      res.status(404).send(JSON.stringify(err));
+    });
+};
