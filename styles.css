@@ -1,5 +1,4 @@
 /** SIDEBAR NAVIGATION **/
-
 .thumbnail {
     display: block;
     margin: 0 auto; 
@@ -12,7 +11,6 @@
 }
 
 /** PERFORMANCE DASHBOARD **/
-
 .sidebar-nav-button .btn {
     position: absolute;
     top: 10px;
@@ -121,7 +119,6 @@
 }
 
 /** PANEL CSS **/
-
 .sprint-panel {
     margin: 10px;
     background-color: #F2F0F3;
@@ -227,7 +224,6 @@
     border-top: none;
 }
 
-/** NOTE: THIS STYLE IS TO OVERWRITE PANEL-FOOTER REACT BOOTSTRAP FOR OUR TICKET FOOTERS **/
 .ticket-panel .panel-footer {
     padding: 0px 5px
 }
@@ -257,7 +253,6 @@
 }
 
 /** CREATE TICKET **/
-
 .create-ticket .btn-group>.btn:first-child {
     margin-left: 10px;
     margin-bottom: 15px;
@@ -270,13 +265,18 @@
     align-items: center;
 }
 
+.create-ticket .dropdown-menu {
+    top: 65%;
+    left: 5%;
+    min-width: 200px;
+}
+
 .create-cancel-ticket {
     display: flex;
     justify-content: flex-end;
 }
 
 /** EDIT TICKET**/
-
 .edit-ticket .btn-group>.btn:first-child {
     margin-left: 10px;
     margin-bottom: 15px;
@@ -287,6 +287,12 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+.edit-ticket .dropdown-menu {
+    top: 65%;
+    left: 5%;
+    min-width: 200px;
 }
 
 .edit-cancel-ticket {

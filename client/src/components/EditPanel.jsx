@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { putEditedPanel, editPanels, toggleEditPanel } from '../redux/actionCreators.js';
+import { putEditedPanel, getPanelsByBoard, toggleEditPanel } from '../redux/actionCreators.js';
 import axios from 'axios';
 import { Modal, Form, FormGroup, ControlLabel, Col, FormControl, Button } from 'react-bootstrap';
 import DatePicker from 'material-ui/DatePicker';
@@ -16,17 +16,6 @@ class EditPanel extends React.Component {
       due_date: this.props.currentPanel.due_date,
       board_id: this.props.currentBoardId
     };
-  }
-
-  reorderPanels(editedPanel) {
-    let idx;
-    for (let i = 0; i < this.props.panels.length; i++) {
-      if (editedPanel.panelId === this.props.panels[i].panelId) {
-        idx = i;
-        break;
-      }
-    }
-    return this.props.panels.slice(0, idx).concat(editedPanel).concat(this.props.panels.slice(idx + 1));
   }
 
   handleNameChange(e) {
@@ -76,8 +65,11 @@ class EditPanel extends React.Component {
           <Modal.Footer>
             <Button onClick={this.props.handleEditPanelRendered}>Cancel</Button>
             <Button bsStyle="primary" onClick={() => { 
-              this.state.name ? this.props.handleEditPanel(this.reorderPanels.bind(this), this.state) : '';
-              this.props.handleEditPanelRendered();
+              this.state.name ? this.props.handleEditPanel(this.state, () => {
+                this.props.handleSetPanels(this.props.currentBoardId, (response) => {
+                  this.props.handleEditPanelRendered();
+                });
+              }) : '';
             }}>Submit</Button>
           </Modal.Footer>
         </Modal>
@@ -98,9 +90,11 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    handleEditPanel(callback, panelObj) {
-      dispatch(editPanels(callback(panelObj)));
-      dispatch(putEditedPanel(panelObj));
+    handleEditPanel(panelObj, callback) {
+      dispatch(putEditedPanel(panelObj, callback));
+    },
+    handleSetPanels(boardid, callback) {
+      dispatch(getPanelsByBoard(boardid, callback));
     },
     handleEditPanelRendered() {
       dispatch(toggleEditPanel());

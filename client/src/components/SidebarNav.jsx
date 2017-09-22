@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { setCurrentBoard, toggleDrawer, toggleCreateBoard, getPanelsByBoard, getTicketsByPanel, setCurrentPanel, setPanels, setTickets, emptyPanels, emptyTickets  } from '../redux/actionCreators';
+import { setCurrentBoard, toggleDrawer, toggleCreateBoard, getPanelsByBoard, getTicketsByPanel, setCurrentPanel, setPanels, setTickets, emptyPanels, emptyTickets, getMembersByBoard } from '../redux/actionCreators';
 import { GridList, GridTile, Drawer } from 'material-ui';
 import { Thumbnail, Image, Button } from 'react-bootstrap';
 import moment from 'moment';
@@ -49,20 +49,28 @@ const SidebarNavigation = (props) => {
     return closest;
   };
 
-  let onBoardClick = (boardid) => {
-    props.handleSetPanels(boardid, function(panels) {
-      if (panels.length !== 0) {
-        props.handleEmptyTickets();
-        for (let panel of panels) {      
-          props.handleSetTickets(panel.id);
+  let onBoardClick = (board, callback) => {
+    //must get members before setting panels and tickets...because they need access to members
+    props.handleGetMembersByBoard(board, () => {
+      
+      props.handleSetPanels(board.id, (panels) => {
+        if (panels.length !== 0) {
+          props.handleEmptyTickets();
+          for (let panel of panels) {      
+            props.handleSetTickets(panel.id);
+          }
+
+          //organize panels and set current one
+          let closestIndex = findCurrentPanel(panels);
+          props.handleSetCurrentPanel(panels[closestIndex]);
+
+        } else {
+          props.handleEmptyPanels();
+          props.handleEmptyTickets();
         }
-        let closestIndex = findCurrentPanel(panels);
-        props.handleSetCurrentPanel(panels[closestIndex]);    
-      } else {
-        props.handleEmptyPanels();
-        props.handleEmptyTickets();
-      }
+      });
     });
+    callback();
   };
 
   return (
@@ -79,7 +87,8 @@ const SidebarNavigation = (props) => {
             <Link to={`/boards/${board.id}`}>
               <GridTile style={{marginLeft: '15px', marginRight: '15px', backgroundColor: getRandomColor()}} 
                 key={board.id} title={board.board_name} 
-                onClick={() => { onBoardClick(board.id); props.handleSetCurrentBoard(board); props.handleToggledDrawer(); }}> 
+                onClick={() => { onBoardClick(board, () => 
+                {props.handleSetCurrentBoard(board); props.handleToggledDrawer();});}}> 
               </GridTile>
             </Link>
             )
@@ -126,6 +135,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     handleEmptyTickets() {
       dispatch(emptyTickets());
+    },
+    handleGetMembersByBoard(boardId, callback) {
+      dispatch(getMembersByBoard(boardId, callback));
     }
   };
 };

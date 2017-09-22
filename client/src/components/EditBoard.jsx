@@ -12,7 +12,7 @@ class EditBoard extends React.Component {
     this.state = {
       board_name: '',
       repo_url: '',
-      invites: '',
+      members: '',
       owner_id: this.props.owner_id,
       id: this.props.currentBoard.id
     };
@@ -53,30 +53,36 @@ class EditBoard extends React.Component {
                   </Modal.Header>
                   <Modal.Body>
                     <Form horizontal>
+
                       <FormGroup>
                         <Col componentClass={ControlLabel} sm={4}>Board Name</Col>
                         <Col sm={8}>
                         <FormControl name='board_name' bsSize="large" type="text" value={this.state.board_name} placeholder={this.props.currentBoard.board_name} onChange={this.handleInputChange.bind(this)}></FormControl>
                         </Col>
                       </FormGroup>
+
                       <FormGroup>
                         <Col componentClass={ControlLabel} sm={4}>Github Repo URL</Col>
                         <Col sm={8}>
                         <FormControl name='repo_url' bsSize="large" type="text" value={this.state.repo_url} placeholder={this.props.currentBoard.repo_url} onChange={ this.handleInputChange.bind(this)}></FormControl>
                         </Col>
                       </FormGroup>
-                      <Button style={buttonStyle} bsStyle="default" onClick={this.props.handleEditBoardRendered}>Cancel</Button>
-                      <Button style={buttonStyle} bsStyle="primary" type="button" onClick={() => {this.props.handleEditBoard(this.reorderBoards.bind(this), this.state); this.props.handleEditBoardRendered();}}>Update</Button>
                     </Form>
-                    <Form horizontal>
-                      <FormGroup>
-                        <Col componentClass={ControlLabel} sm={4}>Add Members</Col>
-                        <Col sm={8}>
-                        <FormControl name='invites' bsSize="large" type="text" value={this.state.invites} placeholder={'enter emails separated by commas'} onChange={this.handleInputChange.bind(this)}></FormControl>
-                        </Col>
-                      </FormGroup>
-                      <Button style={buttonStyle} bsStyle="primary" type="button" onClick={() => {this.props.handleInviteBoard(this.state.id, this.state.invites); this.props.handleEditBoardRendered();}}>Invite</Button>
-                    </Form>
+                  
+                    <FormGroup>
+                      <Col componentClass={ControlLabel} sm={4}>Add Members</Col>
+                      <Col sm={8}>
+                      <FormControl name='members' bsSize="large" type="text" value={this.state.members} placeholder={'enter emails separated by commas'} onChange={this.handleInputChange.bind(this)}></FormControl>
+                      </Col>
+                    </FormGroup>
+
+                    <Button style={buttonStyle} bsStyle="default" onClick={this.props.handleEditBoardRendered}>Cancel</Button>
+                    <Button style={buttonStyle} bsStyle="primary" type="button" onClick={() => {
+                      let { members, ...editedBoard} = this.state;
+                      this.props.handleEditBoard(this.reorderBoards.bind(this), editedBoard); 
+                      this.props.handleEditBoardRendered(); 
+                      this.props.handleInviteBoard(this.state.id, this.state.members); }}>Update</Button>
+                    
                   </Modal.Body>
                 </Modal>
                 </Row>
@@ -89,10 +95,10 @@ class EditBoard extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    'boards': state.rootReducer.boards,
-    'currentBoard': state.rootReducer.currentBoard,
-    'editBoardRendered': state.rootReducer.editBoardRendered,
-    'owner_id': state.rootReducer.user.id
+    boards: state.rootReducer.boards,
+    currentBoard: state.rootReducer.currentBoard,
+    editBoardRendered: state.rootReducer.editBoardRendered,
+    owner_id: state.rootReducer.user.id
   };
 };
 
