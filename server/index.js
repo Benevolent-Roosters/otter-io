@@ -11,13 +11,13 @@ const emailworker = require('./workers/invitefetcher');
 const {CronJob} = require('cron');
 
 new CronJob({
-  cronTime: '0 0 0 * * *',
+  cronTime: '0 * * * * *',
   onTick: emailworker.notifyworker,
   start: true
 });
 
 new CronJob({
-  cronTime: '30 0 0 * * *',
+  cronTime: '30 * * * * *',
   onTick: emailworker.inviteworker,
   start: true
 });
