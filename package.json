@@ -6,6 +6,7 @@
     "test": "NODE_ENV=test grunt test",
     "testUpdate": "jest -u NODE_ENV=test grunt test",
     "build": "webpack --watch",
+    "heroku-postbuild": "webpack -p",
     "deploy": "git pull && webpack && pm2 restart all"
   },
   "author": "Hack Reactor",
