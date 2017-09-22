@@ -25,4 +25,6 @@ app.use('/api', middleware.auth.verifyElse401, routes.api);
 app.use('/api/profiles', middleware.auth.verifyElse401, routes.profiles);
 app.use('/cli', middleware.auth.verifyAPIKey, routes.cli);
 
+app.use('*', (req, res) => res.render('index'));
+
 module.exports = app;
