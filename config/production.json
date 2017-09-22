@@ -18,7 +18,7 @@
     "Github": {
       "clientID": "fe9d75e3a4abd94700a5",
       "clientSecret": "7b0071763edfcdac32fb406c1e040875e13fe81a",
-      "callbackURL": "http://13.57.36.115/auth/github/callback"
+      "callbackURL": "https://otter-io-personalrepo.herokuapp.com/auth/github/callback"
     }
   },
   "gmail": {

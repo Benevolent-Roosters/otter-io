@@ -24,7 +24,7 @@ environment-defaults:
 global:
   application_name: Otter.IO
   branch: master
-  default_ec2_keyname: aws-keypair
+  default_ec2_keyname: aws-deployment
   default_platform: Node.js
   default_region: us-west-1
   include_git_submodules: true
