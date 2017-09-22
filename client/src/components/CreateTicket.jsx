@@ -1,10 +1,12 @@
 import React from 'react';
-import { getTicketsByPanel, toggleCreateTicket, postCreatedTicket } from '../redux/actionCreators.js';
+import { getTicketsByPanel, toggleCreateTicket, postCreatedTicket, emptyTickets } from '../redux/actionCreators.js';
 import { connect } from 'react-redux';
 import { Modal, Form, FormGroup, FormControl, Button, ControlLabel, Grid, Col, Row, DropdownButton, MenuItem, ButtonToolbar } from 'react-bootstrap';
 
 const buttonStyle = {marginTop: '15px', marginRight: '15px'};
 const dropDownStyle = {marginTop: '15px'};
+
+const emptyState = {};
 
 class CreateTicket extends React.Component {
   constructor(props) {
@@ -19,9 +21,11 @@ class CreateTicket extends React.Component {
       creator_id: this.props.userId,
       assignee_handle: this.props.userHandle,
       panel_id: this.props.currentPanel.id,
-
-      board_id: this.props.currentBoardId
+      board_id: this.props.currentBoard.id,
+      members: this.props.currentBoard.members
     };
+
+    this.baseState = this.state;
   }
 
   handleTitleChange(event) {
@@ -42,7 +46,7 @@ class CreateTicket extends React.Component {
 
   handleSelectAssignee(eventKey) {
     this.setState({
-      assignee_handle: eventKey.currentTarget.textContent
+      assignee_handle: eventKey.currentTarget.textContent.trim()
     });
   }
 
@@ -62,6 +66,19 @@ class CreateTicket extends React.Component {
     this.setState({
       status: eventKey.currentTarget.textContent
     });
+  }
+
+  handleOnEdit() {
+    if (this.props.panels.length > 0) {
+      this.props.handleEmptyTickets();
+      for (let panel of this.props.panels) {
+        this.props.handleSetTickets(panel.id);
+      }
+    }
+  }
+
+  resetForm() {
+    this.setState(this.baseState);
   }
 
   render() {
@@ -96,7 +113,9 @@ class CreateTicket extends React.Component {
                         <div className="select-assignee">
                           <Col componentClass={ControlLabel} sm={2}>Assignee: </Col>
                           <DropdownButton title={this.state.assignee_handle ? this.state.assignee_handle : 'Who should do this?'} pullRight id="split-button-pull-right">
-                            <MenuItem eventKey="1" onClick={this.handleSelectAssignee.bind(this)}>{this.props.userHandle}</MenuItem>
+                            {this.props.currentBoard.members ? this.props.currentBoard.members.map(member => {
+                              return <MenuItem eventKey="1" onClick={this.handleSelectAssignee.bind(this)}> {member.github_handle} </MenuItem>;
+                            }) : ''}
                           </DropdownButton>
                         </div>
                           
@@ -130,7 +149,12 @@ class CreateTicket extends React.Component {
                         
                       <div className="create-cancel-ticket">
                         <Button style={buttonStyle} bsStyle="default" onClick={this.props.handleCreateTicketRendered}>Cancel</Button>
-                        <Button style={buttonStyle} bsStyle="primary" type="button" onClick={() => {this.props.handleSetTickets(Object.assign({}, this.state, {creator_id: this.props.userId, panel_id: this.props.currentPanel.id, board_id: this.props.currentBoardId})); this.props.handleCreateTicketRendered();}}>Create</Button>
+                        <Button style={buttonStyle} bsStyle="primary" type="button" onClick={() => {
+                          console.log(Object.assign({}, this.state, {creator_id: this.props.userId, panel_id: this.props.currentPanel.id, board_id: this.props.currentBoard.id}));
+                          this.props.handleCreatedTicket(Object.assign({}, this.state, {creator_id: this.props.userId, panel_id: this.props.currentPanel.id, board_id: this.props.currentBoard.id}), () => {
+                            this.handleOnEdit();
+                          }); this.props.handleCreateTicketRendered(); this.resetForm(); 
+                        }}>Create</Button>
                       </div>
                     </Form>
                   </Modal.Body>
@@ -148,7 +172,7 @@ const mapStateToProps = state => {
   return {
     userId: state.rootReducer.user.id, 
     userHandle: state.rootReducer.user.github_handle,
-    currentBoardId: state.rootReducer.currentBoard.id, 
+    currentBoard: state.rootReducer.currentBoard, 
     currentPanel: state.rootReducer.currentPanel,
     panels: state.rootReducer.panels,
     createTicketRendered: state.rootReducer.createTicketRendered
@@ -157,11 +181,17 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    handleSetTickets(newTicket) {
-      dispatch(postCreatedTicket(newTicket));
+    handleCreatedTicket(newTicket, callback) {
+      dispatch(postCreatedTicket(newTicket, callback));
+    },
+    handleSetTickets(panelId) {
+      dispatch(getTicketsByPanel(panelId));
     },
     handleCreateTicketRendered() {
       dispatch(toggleCreateTicket());
+    },
+    handleEmptyTickets() {
+      dispatch(emptyTickets());
     }
   };
 };

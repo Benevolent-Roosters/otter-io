@@ -1,4 +1,4 @@
-import { SET_USER, SET_CURRENT_BOARD, SET_CURRENT_PANEL, SET_BOARDS, SET_PANELS, SET_TICKETS, EDIT_CURRENT_BOARD, EDIT_BOARDS, EDIT_PANELS, EDIT_CURRENT_PANEL, EDIT_TICKETS, EDIT_CURRENT_TICKET, TOGGLE_DRAWER, TOGGLE_CREATE_BOARD, TOGGLE_EDIT_BOARD, TOGGLE_CREATE_TICKET, TOGGLE_EDIT_TICKET, TOGGLE_EDIT_PANEL, TOGGLE_CREATE_PANEL, ADD_BOARD, ADD_PANEL, ADD_TICKET, EMPTY_PANELS, EMPTY_TICKETS, SET_CURRENT_TICKET, EDIT_TICKET } from './actions';
+import { SET_USER, SET_CURRENT_BOARD, SET_CURRENT_PANEL, SET_BOARDS, SET_PANELS, SET_TICKETS, EDIT_CURRENT_BOARD, EDIT_BOARDS, EDIT_PANELS, EDIT_CURRENT_PANEL, EDIT_TICKETS, EDIT_CURRENT_TICKET, TOGGLE_DRAWER, TOGGLE_CREATE_BOARD, TOGGLE_EDIT_BOARD, TOGGLE_CREATE_TICKET, TOGGLE_EDIT_TICKET, TOGGLE_EDIT_PANEL, TOGGLE_CREATE_PANEL, ADD_BOARD, ADD_PANEL, ADD_TICKET, EMPTY_PANELS, EMPTY_TICKETS, SET_CURRENT_TICKET, EDIT_TICKET, SET_BOARD_MEMBERS } from './actions';
 
 import axios from 'axios';
 
@@ -8,6 +8,10 @@ export function setUser(user) {
 
 export function setCurrentBoard(clickedBoard) {
   return {type: SET_CURRENT_BOARD, value: clickedBoard};
+}
+
+export function setCurrentBoardMembers(members) {
+  return {type: SET_BOARD_MEMBERS, value: members};
 }
 
 export function setCurrentPanel(panel) {
@@ -125,10 +129,21 @@ export function getBoardsByUser(callback) { //userid
     axios.get('/api/boards') //{user_id: userid}
 
       //set Boards state
-      .then((response) => {
-        dispatch(setBoards(response.data));
-        dispatch(setCurrentBoard(response.data[response.data.length - 1])); //set current state to most recently created Board
-        callback(response.data[response.data.length - 1]); //return value so that you can chain this to setPanels
+      .then((boards) => {
+        let boardInfo = boards.data;
+        let currentBoard = boards.data[boards.data.length - 1];
+
+        axios.get(`/api/boards/${currentBoard.id}/members`)
+          .then(members => {
+            currentBoard.members = members.data; 
+            dispatch(setBoards(boardInfo));
+            dispatch(setCurrentBoard(currentBoard)); //set current state to most recently created Board
+            callback(currentBoard); //return value so that you can chain this to setPanels
+          })
+
+          .catch(err => {
+            console.log(err);
+          });
       })
 
       .catch((error) => {
@@ -137,8 +152,22 @@ export function getBoardsByUser(callback) { //userid
   };
 }
 
+export function getMembersByBoard(board, callback) {
+  return (dispatch) => {
+    axios.get(`/api/boards/${board.id}/members`)
+      .then(members => {
+        console.log('GOT INTO MEMBERS');
+        dispatch(setCurrentBoardMembers(members.data));
+        callback();
+      })
+
+      .catch(err => {
+        console.log('ERROR GETTING BOARD MEMBERS:', err);
+      });
+  }
+}
+
 /** Grab the selected board (or, in the case of login, grab the most recently created board) and return all the panels associated with it  **/
-//TODO: set current panel by looking at dates and sorting panels appropriately
 export function getPanelsByBoard(boardid, callback) {
   return (dispatch) => {
     axios.get('/api/panels', {params: {board_id: boardid}})
@@ -153,7 +182,6 @@ export function getPanelsByBoard(boardid, callback) {
 }
 
 /** Grab all the tickets associated with a board's panels **/
-//TODO: sorting tickets in order of completion, followed by urgency
 export function getTicketsByPanel(panelId) {
   return dispatch => {
     axios.get('/api/tickets', {params: {panel_id: panelId}})
@@ -168,7 +196,6 @@ export function getTicketsByPanel(panelId) {
 }
 
 /** Save the newly created board to the database & then retrieve all boards associated with a user **/
-//TODO: Edit param names based on React CreateBoard form inputs obj
 export function postCreatedBoard(newBoard) {
   return (dispatch => {
     /** store the new board info and current userid (as owner) in the database **/
@@ -186,13 +213,13 @@ export function postCreatedBoard(newBoard) {
 }
 
 /** Upon creation a panel, save the panel to the database and then retrieve all panels associated with the board and set the currentpanel to the newly created one **/
-//TODO: Edit param names based on React CreatePanel form inputs obj
-export function postCreatedPanel(newPanel) {
+export function postCreatedPanel(newPanel, callback) {
   return (dispatch => {
     axios.post('/api/panels', newPanel) // userid: userid
       .then(response => {
         dispatch(addPanel(response.data));
-        dispatch(setCurrentPanel(response.data)); //new panel is now current
+        // dispatch(setCurrentPanel(response.data)); //new panel is now current
+        callback();
       })
 
       .catch(error => {
@@ -202,12 +229,12 @@ export function postCreatedPanel(newPanel) {
 }
 
 /** Upon creation of a ticket, save the ticket to the database and then retrieve all tickets associated with all panels currently in state  **/
-//TODO: Edit param names based on React CreateTicket form inputs obj
-export function postCreatedTicket(newTicket) {
+export function postCreatedTicket(newTicket, callback) {
   return (dispatch => {
     axios.post('/api/tickets', newTicket) //panelid: panelid, userid: userid
       .then(response => {
-        dispatch(addTicket(response.data)); 
+        dispatch(addTicket(response.data));
+        callback();
         //no need to set current ticket upon creation
       })
 
@@ -232,11 +259,12 @@ export function putEditedBoard(boardObj) {
 }
 
 /** When a user finishes editing a panel's information, putEditedPanel stores the updated information in the database and dispatches an action to edit the currentPanel's properties' state **/
-export function putEditedPanel(panelObj) {
+export function putEditedPanel(panelObj, callback) {
   return (dispatch => {
     axios.put('/api/panels', panelObj)
       .then(() => {
         dispatch(editCurrentPanel(panelObj));
+        callback();
       })
 
       .catch(error => {
@@ -246,11 +274,13 @@ export function putEditedPanel(panelObj) {
 }
 
 /** When a user finishes editing a ticket's information, putEditedTicket stores the updated information in the database and dispatches an action to edit the currentTicket's properties' state **/
-export function putEditedTicket(ticketObj) {
+export function putEditedTicket(ticketObj, callback) {
   return (dispatch => {
     axios.put('/api/tickets', ticketObj)
       .then(() => {
         dispatch(editCurrentTicket(ticketObj));
+        callback();
+        
       })
 
       .catch(error => {

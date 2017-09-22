@@ -13,56 +13,121 @@ class EditTicket extends React.Component {
 
     this.state = {
       title: this.props.currentTicket.title,
-      description: this.props.currentTicket.description,
-      status: this.props.currentTicket.status,
-      priority: this.props.currentTicket.priority,
-      type: this.props.currentTicket.type,
+      description: '',
+      status: '',
+      priority: 0,
+      type: '',
+      assignee_handle: this.props.userHandle,
       panel_id: this.props.currentPanel.id,
       panel_name: this.props.currentPanel.name,
-      assignee_handle: this.props.userHandle
+      board_id: this.props.currentBoard.id,
+      members: this.props.currentBoard.members
     };
+    this.baseState = this.state;
   }
 
   handleTitleChange(event) {
     this.setState({
-      title: event.target.value
+      title: event.target.value,
+      description: this.state.description || this.props.currentTicket.description,
+      status: this.state.status || this.props.currentTicket.status,
+      priority: this.state.priority || this.props.currentTicket.priority,
+      type: this.state.type || this.props.currentTicket.type,
+      assignee_handle: this.state.assignee_handle || this.props.userHandle,
+      panel_id: this.state.panel_id || this.props.currentPanel.id,
+      panel_name: this.state.panel_name || this.props.currentPanel.name,
+      board_id: this.state.board_id || this.props.currentBoard.id,
+      members: this.state.members || this.props.currentBoard.members
     });
   }
 
   handleDescriptionChange(event) {
     this.setState({
-      description: event.target.value
+      title: this.state.title || this.props.currentTicket.title,
+      description: event.target.value,
+      status: this.state.status || this.props.currentTicket.status,
+      priority: this.state.priority || this.props.currentTicket.priority,
+      type: this.state.type || this.props.currentTicket.type,
+      assignee_handle: this.state.assignee_handle || this.props.userHandle,
+      panel_id: this.state.panel_id || this.props.currentPanel.id,
+      panel_name: this.state.panel_name || this.props.currentPanel.name,
+      board_id: this.state.board_id || this.props.currentBoard.id,
+      members: this.state.members || this.props.currentBoard.members
     });
   }
 
   handleSelectAssignee(eventKey) {
     this.setState({
-      assignee_handle: eventKey.currentTarget.textContent
+      title: this.state.title || this.props.currentTicket.title,
+      description: this.state.description || this.props.currentTicket.description,
+      status: this.state.status || this.props.currentTicket.status,
+      priority: this.state.priority || this.props.currentTicket.priority,
+      type: this.state.type || this.props.currentTicket.type,
+      assignee_handle: eventKey.currentTarget.textContent.trim(),
+      panel_id: this.state.panel_id || this.props.currentPanel.id,
+      panel_name: this.state.panel_name || this.props.currentPanel.name,
+      board_id: this.state.board_id || this.props.currentBoard.id,
+      members: this.state.members || this.props.currentBoard.members
     });
   }
 
   handleSelectType(eventKey) {
     this.setState({
-      type: eventKey.currentTarget.textContent
+      title: this.state.title || this.props.currentTicket.title,
+      description: this.state.description || this.props.currentTicket.description,
+      status: this.state.status || this.props.currentTicket.status,
+      priority: this.state.priority || this.props.currentTicket.priority,
+      type: eventKey.currentTarget.textContent,
+      assignee_handle: this.state.assignee_handle || this.props.userHandle,
+      panel_id: this.state.panel_id || this.props.currentPanel.id,
+      panel_name: this.state.panel_name || this.props.currentPanel.name,
+      board_id: this.state.board_id || this.props.currentBoard.id,
+      members: this.state.members || this.props.currentBoard.members
     });
   }
 
   handleSelectPriority(eventKey) {
     this.setState({
-      priority: eventKey.currentTarget.textContent
+      title: this.state.title || this.props.currentTicket.title,
+      description: this.state.description || this.props.currentTicket.description,
+      status: this.state.status || this.props.currentTicket.status,
+      priority: eventKey.currentTarget.textContent,
+      type: this.state.type || this.props.currentTicket.type,
+      assignee_handle: this.state.assignee_handle || this.props.userHandle,
+      panel_id: this.state.panel_id || this.props.currentPanel.id,
+      panel_name: this.state.panel_name || this.props.currentPanel.name,
+      board_id: this.state.board_id || this.props.currentBoard.id,
+      members: this.state.members || this.props.currentBoard.members
     });
   }
 
   handleSelectStatus(eventKey) {
     this.setState({
-      status: eventKey.currentTarget.textContent
+      title: this.state.title || this.props.currentTicket.title,
+      description: this.state.description || this.props.currentTicket.description,
+      status: eventKey.currentTarget.textContent,
+      priority: this.state.priority || this.props.currentTicket.priority,
+      type: this.state.type || this.props.currentTicket.type,
+      assignee_handle: this.state.assignee_handle || this.props.userHandle,
+      panel_id: this.state.panel_id || this.props.currentPanel.id,
+      panel_name: this.state.panel_name || this.props.currentPanel.name,
+      board_id: this.state.board_id || this.props.currentBoard.id,
+      members: this.state.members || this.props.currentBoard.members
     });
   }
 
   handleSelectPanel(eventKey) {
     this.setState({
+      title: this.state.title || this.props.currentTicket.title,
+      description: this.state.description || this.props.currentTicket.description,
+      status: this.state.status || this.props.currentTicket.status,
+      priority: this.state.priority || this.props.currentTicket.priority,
+      type: this.state.type || this.props.currentTicket.type,
+      assignee_handle: this.state.assignee_handle || this.props.userHandle,
       panel_name: eventKey.currentTarget.textContent,
-      panel_id: eventKey.currentTarget.id
+      panel_id: eventKey.currentTarget.id,
+      board_id: this.state.board_id || this.props.currentBoard.id,
+      members: this.state.members || this.props.currentBoard.members
     });
   }
 
@@ -76,6 +141,11 @@ class EditTicket extends React.Component {
     }
   }
 
+  resetForm() {
+    this.setState(this.baseState);
+  }
+
+
   render() {
     return (
       <div>
@@ -88,16 +158,18 @@ class EditTicket extends React.Component {
                   </Modal.Header>
                     <Modal.Body>
                         <Form horizontal>
+
                             <FormGroup>
                               <Col componentClass={ControlLabel} sm={2}>Title: </Col>
                               <Col sm={8}>
-                              <FormControl name='Ticket Title' bsSize="large" type="text" placeholder={this.props.currentTicket.title} onChange={this.handleTitleChange.bind(this)}></FormControl>
+                              <FormControl name='Ticket Title' bsSize="large" type="text" placeholder={this.props.currentTicket.title} defaultValue={this.props.currentTicket.title} onChange={this.handleTitleChange.bind(this)}></FormControl>
                               </Col>
                             </FormGroup>
+                            
                             <FormGroup>
                               <Col componentClass={ControlLabel} sm={2}>Description: </Col>
                               <Col sm={8}>
-                              <FormControl name='Ticket Description' componentClass="textarea" bsSize="large" placeholder={this.props.currentTicket.description} onChange={this.handleDescriptionChange.bind(this)}></FormControl>
+                              <FormControl name='Ticket Description' componentClass="textarea" bsSize="large" placeholder={this.props.currentTicket.description} defaultValue={this.props.currentTicket.description} onChange={this.handleDescriptionChange.bind(this)}></FormControl>
                               </Col>
                             </FormGroup>
                             
@@ -105,7 +177,9 @@ class EditTicket extends React.Component {
                               <div className="select-assignee">
                                 <Col componentClass={ControlLabel} sm={2}>Assignee: </Col>
                                 <DropdownButton title={this.state.assignee_handle ? this.state.assignee_handle : this.props.currentTicket.assignee_handle} pullRight id="split-button-pull-right">
-                                  <MenuItem eventKey="1" onClick={this.handleSelectAssignee.bind(this)}>{this.props.currentTicket.assignee_handle}</MenuItem>
+                                {this.props.currentBoard.members ? this.props.currentBoard.members.map(member => {
+                                  return <MenuItem eventKey="1" onClick={this.handleSelectAssignee.bind(this)}> {member.github_handle} </MenuItem>;
+                                }) : ''}
                                 </DropdownButton>
                                 </div>
                             
@@ -147,11 +221,14 @@ class EditTicket extends React.Component {
                       <div className="edit-cancel-ticket">
                         <Button style={buttonStyle} bsStyle="default" onClick={this.props.handleEditTicketRendered}>Cancel</Button>
                         <Button style={buttonStyle} bsStyle="primary" type="button" onClick={() => 
-                          {let { panel_name, ...editedTicket} = this.state; 
-                          console.log('HELLO', editedTicket); 
-                          this.props.handleEditCurrentTicket(Object.assign({}, editedTicket, {creator_id:
-                            this.props.userId, board_id: this.props.currentBoardId, id: this.props.currentTicket.id})); this.handleOnEdit();
-                          this.props.handleEditTicketRendered();}}>Update</Button>
+                          { 
+                            let { panel_name, members, ...editedTicket} = this.state;
+                            console.log(editedTicket);
+                            this.props.handleEditCurrentTicket(Object.assign({}, editedTicket, {creator_id:
+                            this.props.userId, board_id: this.props.currentBoard.id, id: this.props.currentTicket.id}), () => {
+                              this.handleOnEdit();
+                            }); 
+                          this.props.handleEditTicketRendered(); this.resetForm();}}>Update</Button>
                         </div>
                       </Form>
                     </Modal.Body>
@@ -168,7 +245,7 @@ const mapStateToProps = state => {
   return {
     userId: state.rootReducer.user.id,
     userHandle: state.rootReducer.user.github_handle,
-    currentBoardId: state.rootReducer.currentBoard.id,
+    currentBoard: state.rootReducer.currentBoard,
     currentPanel: state.rootReducer.currentPanel,
     panels: state.rootReducer.panels,
     tickets: state.rootReducer.tickets,
@@ -179,8 +256,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    handleEditCurrentTicket(ticketObj) {
-      dispatch(putEditedTicket(ticketObj));
+    handleEditCurrentTicket(ticketObj, callback) {
+      dispatch(putEditedTicket(ticketObj, callback));
     },
     handleEditTicketRendered() {
       dispatch(toggleEditTicket());

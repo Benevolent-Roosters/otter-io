@@ -1,4 +1,4 @@
-import { SET_USER, SET_CURRENT_BOARD, SET_BOARDS, SET_PANELS, SET_CURRENT_PANEL, SET_TICKETS, EDIT_CURRENT_BOARD, EDIT_BOARDS, EDIT_PANELS, EDIT_CURRENT_PANEL, EDIT_TICKETS, EDIT_CURRENT_TICKET, TOGGLE_DRAWER, TOGGLE_CREATE_BOARD, TOGGLE_EDIT_BOARD, TOGGLE_CREATE_TICKET, TOGGLE_EDIT_TICKET, TOGGLE_EDIT_PANEL, TOGGLE_CREATE_PANEL, ADD_BOARD, ADD_PANEL, ADD_TICKET, EMPTY_PANELS, EMPTY_TICKETS, SET_CURRENT_TICKET, EDIT_TICKET } from './actions';
+import { SET_USER, SET_CURRENT_BOARD, SET_BOARDS, SET_PANELS, SET_CURRENT_PANEL, SET_TICKETS, EDIT_CURRENT_BOARD, EDIT_BOARDS, EDIT_PANELS, EDIT_CURRENT_PANEL, EDIT_TICKETS, EDIT_CURRENT_TICKET, TOGGLE_DRAWER, TOGGLE_CREATE_BOARD, TOGGLE_EDIT_BOARD, TOGGLE_CREATE_TICKET, TOGGLE_EDIT_TICKET, TOGGLE_EDIT_PANEL, TOGGLE_CREATE_PANEL, ADD_BOARD, ADD_PANEL, ADD_TICKET, EMPTY_PANELS, EMPTY_TICKETS, SET_CURRENT_TICKET, EDIT_TICKET, SET_BOARD_MEMBERS } from './actions';
 import { combineReducers } from 'redux';
 import { routerReducer } from 'react-router-redux';
 
@@ -13,6 +13,7 @@ const defaultState = {
     id: 1,
     board_name: 'benev roosters',
     repo_url: 'https://github.com/Benevolent-Roosters/thesis3',
+    members: [],
     owner_id: 3,
     _pivot_user_id: 3,
     _pivot_board_id: 3
@@ -84,6 +85,8 @@ const rootReducer = (state = defaultState, action) => {
       return reduceSetCurrentTicket(state, action);
     case EDIT_TICKET:
       return reduceEditTicket(state, action);
+    case SET_BOARD_MEMBERS:
+      return reduceSetCurrentBoardMembers(state, action);
     default:
       return state;
   }
@@ -96,6 +99,11 @@ export const reduceSetCurrentBoard = (state, action) => Object.assign({}, state,
 export const reduceSetCurrentPanel = (state, action) => Object.assign({}, state, {currentPanel: action.value});
 
 export const reduceSetBoards = (state, action) => Object.assign({}, state, {boards: action.value});
+
+export const reduceSetCurrentBoardMembers = (state, action) => {
+  return {...state, currentBoard: {...state.currentBoard, members: action.value}}};
+
+// Object.assign({}, state, {currentBoard: state.currentBoard.concat(action.value)});
 
 export const reduceSetPanels = (state, action) => Object.assign({}, state, {panels: action.value});
 
@@ -142,6 +150,7 @@ export const reduceToggleCreatePanel = (state) => Object.assign({}, state, {crea
 export const reduceToggleEditPanel = (state) => Object.assign({}, state, {editPanelRendered: !state.editPanelRendered});
 
 export const reduceSetCurrentTicket = (state, action) => Object.assign({}, state, {currentTicket: action.value});
+
 
 const combinedReducers = combineReducers({
   routing: routerReducer,

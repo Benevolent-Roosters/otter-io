@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { postCreatedPanel, toggleCreatePanel } from '../redux/actionCreators.js';
+import { postCreatedPanel, getPanelsByBoard, toggleCreatePanel } from '../redux/actionCreators.js';
 import axios from 'axios';
 import { Modal, Form, FormGroup, ControlLabel, Col, FormControl, Button } from 'react-bootstrap';
 import DatePicker from 'material-ui/DatePicker';
@@ -59,7 +59,14 @@ class CreatePanel extends React.Component {
           </Modal.Body>
           <Modal.Footer>
             <Button onClick={this.props.handleCreatePanelRendered}>Cancel</Button>
-            <Button bsStyle="primary" onClick={() => {console.log(this.state); this.props.handleSetPanels(this.state); this.props.handleCreatePanelRendered();}}>Submit</Button>
+            <Button bsStyle="primary" 
+            onClick={() => {
+              this.props.handleCreatedPanel(this.state, () => {
+                this.props.handleSetPanels(this.props.currentBoardId, () => {
+                  this.props.handleCreatePanelRendered();
+                });
+              });
+            }}>Submit</Button>
           </Modal.Footer>
         </Modal>
       </div>
@@ -71,14 +78,19 @@ const mapStateToProps = state => {
   return {
     userId: state.rootReducer.user.userid,
     currentBoardId: state.rootReducer.currentBoard.id,
-    createPanelRendered: state.rootReducer.createPanelRendered 
+    createPanelRendered: state.rootReducer.createPanelRendered ,
+    panels: state.rootReducer.panels,
+    currentPanel: state.rootReducer.currentPanel
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    handleSetPanels(newPanel) {
-      dispatch(postCreatedPanel(newPanel));
+    handleCreatedPanel(newPanel, callback) {
+      dispatch(postCreatedPanel(newPanel, callback));
+    },
+    handleSetPanels(boardid, callback) {
+      dispatch(getPanelsByBoard(boardid, callback));
     },
     handleCreatePanelRendered() {
       dispatch(toggleCreatePanel());

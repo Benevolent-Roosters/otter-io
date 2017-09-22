@@ -368,6 +368,7 @@ module.exports.getInvitees = function(unhide=false) {
       users = users.map(eachUser => eachUser.toJSON(hideObj));
       //users = users.filter(eachUser => eachUser.toJSON().length > 0);
       //console.log('all invitees in the db', users.map(eachUser => eachUser.toJSON().invitedToBoards));
+      // console.log('HELLO', users[0].invitedToBoards);
       users = users.filter(eachUser => eachUser.invitedToBoards.length > 0);
       console.log('all invitees in the db', users);
       return users;

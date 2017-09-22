@@ -12,6 +12,7 @@ class CreateBoard extends React.Component {
     this.state = {
       board_name: '',
       repo_url: '',
+      members: '',
       owner_id: this.props.owner_id
     };
   }
@@ -45,14 +46,27 @@ class CreateBoard extends React.Component {
                         <FormControl name='board_name' bsSize="large" type="text" value={this.state.board_name} placeholder={'Board name'} onChange={this.handleInputChange.bind(this)}></FormControl>
                         </Col>
                       </FormGroup>
+
                       <FormGroup>
                         <Col componentClass={ControlLabel} sm={4}>Github Repo URL</Col>
                         <Col sm={8}>
                         <FormControl name='repo_url' bsSize="large" type="text" value={this.state.repo_url} placeholder={'Github Repo'} onChange={ this.handleInputChange.bind(this)}></FormControl>
                         </Col>
                       </FormGroup>
+
+                      <FormGroup>
+                        <Col componentClass={ControlLabel} sm={4}>Add Members</Col>
+                        <Col sm={8}>
+                        <FormControl name='members' bsSize="large" type="text" value={this.state.members} placeholder={'enter emails separated by commas'} onChange={ this.handleInputChange.bind(this) }></FormControl>
+                        </Col>
+                      </FormGroup>
+
                       <Button style={buttonStyle} bsStyle="default" onClick={this.props.handleCreateBoardRendered}>Cancel</Button>
-                      <Button style={buttonStyle} bsStyle="primary" type="button" onClick={() => {this.props.handlePostCreatedBoard(this.state); this.props.handleSetCurrentBoard(this.state); this.props.handleCreateBoardRendered();}}>Create</Button>
+                      <Button style={buttonStyle} bsStyle="primary" type="button" onClick={() => {
+                        let { members, ...newBoard} = this.state; 
+                        this.props.handlePostCreatedBoard(newBoard); 
+                        this.props.handleSetCurrentBoard(newBoard); 
+                        this.props.handleCreateBoardRendered();}}>Create</Button>
                     </Form>
                   </Modal.Body>
                 </Modal>

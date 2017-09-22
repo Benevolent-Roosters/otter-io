@@ -118,7 +118,7 @@ module.exports.updateBoard = (req, res) => {
     'id': true,
     'board_name': true,
     'repo_url': true,
-    'owner_id': true
+    'owner_id': true,
   };
   for (var key in updateBoardObj) {
     if (updateBoardObj.hasOwnProperty(key)) {
