@@ -1,6 +1,6 @@
 const session = require('express-session');
 const RedisStore = require('connect-redis')(session);
-const redisClient = require('redis').createClient('6379', process.env.REDIS_URL || 'localhost');
+const redisClient = require('redis').createClient(process.env.REDIS_URL || 'localhost');
 const models = require('../../db/models');
 const dbhelper = require('../../db/helpers.js');
 const helper = require('../controllers/helper');
