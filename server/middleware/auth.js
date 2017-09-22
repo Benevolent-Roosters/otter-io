@@ -1,6 +1,11 @@
 const session = require('express-session');
 const RedisStore = require('connect-redis')(session);
-const redisClient = require('redis').createClient(process.env.REDIS_URL || 'localhost');
+var redisClient;
+if (process.env.NODE_ENV === 'production') {
+  redisClient = require('redis').createClient(process.env.REDIS_URL);
+} else {
+  redisClient = require('redis').createClient('6379', 'localhost');
+}
 const models = require('../../db/models');
 const dbhelper = require('../../db/helpers.js');
 const helper = require('../controllers/helper');
@@ -81,13 +86,11 @@ module.exports.verifyBoardMemberElse401 = (req, res, next) => {
 
   if (req.params && req.params.id) {
     boardid = parseInt(req.params.id);
-  }
-  // CLI get request data sent in req.query
-  else if (req.query && req.query.board_id) {
+  } else if (req.query && req.query.board_id) {
+    // CLI get request data sent in req.query
     boardid = parseInt(req.query.board_id);
-  }
-  // CLI post request data sent in body
-  else if (req.body && req.body.id || req.body.board_id) {
+  } else if (req.body && req.body.id || req.body.board_id) {
+    // CLI post request data sent in body
     boardid = req.body.id ? parseInt(req.body.id) : parseInt(req.body.board_id);
   } else {
     res.status(400).send('board id couldnt be found in request from client');

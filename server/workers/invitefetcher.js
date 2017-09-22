@@ -11,21 +11,25 @@ exports.notifyworker = function() {
     .then((recentlyadded) => {
       results = recentlyadded;
       //email them here
-      console.log('these people were recently added to boards...', results);
+      if (results.length > 0) {
+        console.log('these people were recently added to boards...', results);
+      }
 
       var emailMessages = emailhelper.composeEmails(results);
       var emailPromises = [];
       results.forEach((eachUser, index) => {
-        console.log('eachUser', eachUser);
-        console.log('eachUser message', emailMessages[index]);
-        emailPromises.push(emailhelper.sendMail(eachUser.email, emailMessages[index]), `http://localhost:3000/`);
+        //console.log('eachUser', eachUser);
+        //console.log('eachUser message', emailMessages[index]);
+        emailPromises.push(emailhelper.sendMail(eachUser.email, emailMessages[index]), `https://otter-io.herokuapp.com/`);
       });
       return Promise.all(emailPromises);
     })
     .then((fulfilledEmails) => {
-      console.log('emails sent');
       var inviteIDsToDelete = emailhelper.extractInviteIDs(results);
-      console.log('these are the inviteIDs to delete...', inviteIDsToDelete);
+      if (inviteIDsToDelete.length > 0) {
+        console.log('emails sent');
+        console.log('these are the inviteIDs to delete...', inviteIDsToDelete);
+      }
       return dbhelper.deleteInvites(inviteIDsToDelete);
     })
     .then((resolvedDel) => {
@@ -46,22 +50,26 @@ exports.inviteworker = function() {
     .then((recentlyinvited) => {
       results = recentlyinvited;
       //email them here
-      console.log('these people were recently invited to boards...', results);
+      if (results.length > 0) {
+        console.log('these people were recently invited to boards...', results);
+      }
 
       var emailMessages = emailhelper.composeInvites(results);
       var emailPromises = [];
       results.forEach((eachUser, index) => {
-        console.log('eachUser', eachUser);
-        console.log('eachUser email', eachUser.email);
-        console.log('eachUser message', emailMessages[index]);
+        //console.log('eachUser', eachUser);
+        //console.log('eachUser email', eachUser.email);
+        //console.log('eachUser message', emailMessages[index]);
         emailPromises.push(emailhelper.sendMail(eachUser.email, emailMessages[index].message, emailMessages[index].inviteURL));
       });
       return Promise.all(emailPromises);
     })
     .then((fulfilledEmails) => {
-      console.log('emails sent');
       var inviteIDsToMarkEmailed = emailhelper.extractInviteIDs(results);
-      console.log('these are the inviteIDs to mark as emailed...', inviteIDsToMarkEmailed);
+      if (inviteIDsToMarkEmailed.length > 0) {
+        console.log('emails sent');
+        console.log('these are the inviteIDs to mark as emailed...', inviteIDsToMarkEmailed);
+      }
       return dbhelper.emailedInvites(inviteIDsToMarkEmailed);
     })
     .then((updated) => {

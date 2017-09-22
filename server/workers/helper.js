@@ -87,10 +87,10 @@ exports.extractInviteIDs = (usersAndTheirInvites) => {
 exports.composeEmails = function(usersAndTheirInvites) {
   var emails = [];
   usersAndTheirInvites.forEach(eachUser => {
-    var eachUserEmailMessage = 'You have been added to the following Otter boards...;';
+    var eachUserEmailMessage = 'You have been added to the following Otter project boards...;';
     eachUser.invitedToBoards.forEach(eachInviteBoard => {
-      eachUserEmailMessage += `;board_name: ${eachInviteBoard.board_name};`;
-      eachUserEmailMessage += `board github repo_url: ${eachInviteBoard.repo_url};`;
+      eachUserEmailMessage += `;Otter Board Name: ${eachInviteBoard.board_name};`;
+      eachUserEmailMessage += `Github Repo URL: ${eachInviteBoard.repo_url};`;
     });
     emails.push(eachUserEmailMessage);
   });
@@ -101,13 +101,13 @@ exports.composeEmails = function(usersAndTheirInvites) {
 exports.composeInvites = function(usersAndTheirInvites) {
   var emails = [];
   usersAndTheirInvites.forEach(eachUser => {
-    var eachUserEmailMessage = 'You have been invited to the following Otter boards...;';
+    var eachUserEmailMessage = 'You have been invited to the following Otter project boards...;';
     eachUser.invitedToBoards.forEach(eachInviteBoard => {
-      eachUserEmailMessage += `;board_name: ${eachInviteBoard.board_name};`;
-      eachUserEmailMessage += `board github repo_url: ${eachInviteBoard.repo_url};`;
+      eachUserEmailMessage += `;Otter Board Name: ${eachInviteBoard.board_name};`;
+      eachUserEmailMessage += `Github Repo URL: ${eachInviteBoard.repo_url};`;
     });
     eachUserEmailMessage += 'Sign up and add these boards by clicking the following link;';
-    emails.push({message: eachUserEmailMessage, inviteURL: `http://localhost:3000/signup/${eachUser.api_key}`});
+    emails.push({message: eachUserEmailMessage, inviteURL: `https://otter-io.herokuapp.com/signup/${eachUser.api_key}`});
   });
   return emails;
 };

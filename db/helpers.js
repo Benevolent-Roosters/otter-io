@@ -370,7 +370,9 @@ module.exports.getInvitees = function(unhide=false) {
       //console.log('all invitees in the db', users.map(eachUser => eachUser.toJSON().invitedToBoards));
       // console.log('HELLO', users[0].invitedToBoards);
       users = users.filter(eachUser => eachUser.invitedToBoards.length > 0);
-      console.log('all invitees in the db', users);
+      if (users.length > 0) {
+        console.log('all invitees in the db', users);
+      }
       return users;
     })
     .catch(err => {
@@ -412,7 +414,6 @@ module.exports.emailedInvites = function(inviteIDs) {
     })
     .catch(situation => {
       if (situation === 'empty array') {
-        console.log('there is no email dates to update in invite table');
         return 'empty';
       }
       if (situation === 'save error') {
@@ -444,7 +445,9 @@ module.exports.getRecentlyAdded = function() {
       }
       users = users.map(eachUser => eachUser.toJSON());
       users = users.filter(eachUser => eachUser.invitedToBoards.length > 0);
-      console.log('all invitees in the db', users);
+      if (users.length > 0) {
+        console.log('all invitees in the db', users);
+      }
       return users;
     })
     .catch(err => {
@@ -541,7 +544,6 @@ module.exports.deleteInvites = function(inviteIDs) {
     })
     .catch(situation => {
       if (situation === 'empty array') {
-        console.log('there is nothing to delete from invites table');
         return 'empty';
       }
       if (situation === 'save error') {

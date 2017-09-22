@@ -78,6 +78,12 @@ module.exports.addInvitees = (req, res) => {
   }
   console.log('req.body', req.body);
   var userEmails = req.body.user_emails;
+  userEmails = userEmails.map(eachEmail => {
+    return eachEmail.trim();
+  }).filter(eachEmail => {
+    var regular = /\S+@\S+\.\S+/;
+    return regular.test(eachEmail);
+  });
   var userHandles = [];
   var boardId = req.params.id;
   //see which github handles are NOT in the users table
