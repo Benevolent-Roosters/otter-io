@@ -20,7 +20,7 @@ exports.notifyworker = function() {
       results.forEach((eachUser, index) => {
         //console.log('eachUser', eachUser);
         //console.log('eachUser message', emailMessages[index]);
-        emailPromises.push(emailhelper.sendMail(eachUser.email, emailMessages[index]), `https://otter-io.herokuapp.com/`);
+        emailPromises.push(emailhelper.sendMail(eachUser.email, emailMessages[index], 'https://otter-io.herokuapp.com/'));
       });
       return Promise.all(emailPromises);
     })
