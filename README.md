@@ -1,6 +1,8 @@
-# Project Name
+# Otter.io
 
-The project description
+A project management tool catered to improving the software engineer's workflow.
+
+Follow this link for a video-tutorial: [https://youtu.be/Or-JEfKEPT4](https://youtu.be/Or-JEfKEPT4)
 
 ## Team
 
